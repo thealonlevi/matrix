@@ -1,0 +1,143 @@
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    background-color: #111214;
+  }
+  
+  .product-card {
+    background-color: #010119;
+    width: 280px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+    color: white;
+    margin: 0;
+    border-radius: 0;
+    position: relative;
+    border: 2px solid;
+    padding: 0px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .product-card:nth-child(odd) {
+    border-color: #b94247;
+  }
+  
+  .product-card:nth-child(even) {
+    border-color: #4970f4;
+  }
+  
+  .inner-card {
+    position: relative;
+    background-color: #010119;
+    border-radius: 0;
+    overflow: hidden;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+  
+  .product-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .product-info {
+    padding: 15px;
+    background-color: #010119;
+    position: relative;
+    z-index: 1;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .product-title {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+  
+  .product-category,
+  .product-price {
+    margin: 5px 0;
+  }
+  
+  .product-details {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Ensure elements are beside each other */
+  }
+  
+  .product-stock {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+  }
+  
+  .product-stock img {
+    width: 25px; /* Adjusted size for eye icon */
+    height: auto;
+    margin-right: 5px;
+  }
+  
+  .product-stock span {
+    color: inherit;
+  }
+  
+  .product-price {
+    color: #10b63d; /* Green color for price */
+    font-size: 18px; /* Adjust font size if needed */
+  }
+  
+  .buy-now-button {
+    border: none;
+    color: white;
+    padding: 10px 0; /* Adjust padding to fit the full width */
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    border-radius: 5px; /* Slightly rounded corners */
+    cursor: pointer;
+    width: 100%; /* Full width of the card */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+    background-image: linear-gradient(to top, #ff5f5f, #ff7a7a); /* Default shiny gradient */
+  }
+  
+  .buy-now-button img {
+    width: 20px;
+    height: auto;
+    margin-right: 8px;
+  }
+  
+  .buy-now-button-red {
+    background-image: linear-gradient(to top, #c1444a, #c1444a); /* Shiny red gradient */
+  }
+  
+  .buy-now-button-red:hover {
+    background-image: linear-gradient(to top, #c1444a, #c1444a); /* Darker shiny red gradient */
+  }
+  
+  .buy-now-button-blue {
+    background-image: linear-gradient(to top, #486ff4, #486ff4); /* Shiny blue gradient */
+  }
+  
+  .buy-now-button-blue:hover {
+    background-image: linear-gradient(to top, #486ff4, #486ff4); /* Darker shiny blue gradient */
+  }
+  
