@@ -1,91 +1,88 @@
+/* src/styles/Banner.css */
 .banner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #111214;
-    padding: 0; /* Removed padding */
-    border-top: 3px solid #58a6ff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #111214;
+  padding: 0;
+  border-top: 3px solid #58a6ff;
+}
+
+.announcement-bar {
+  width: 100%;
+  background-color: #1f2833;
+  color: #c5c6c7;
+  text-align: center;
+  font-size: 16px;
+  border-bottom: 3px solid #58a6ff;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.announcement-bar p {
+  margin: 0;
+  padding: 10px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.highlight {
+  color: #45a29e;
+  font-weight: bold;
+  animation: colorChange 2s infinite alternate;
+}
+
+.animated-highlight {
+  color: #66fcf1;
+  font-weight: bold;
+  animation: textGlow 2s infinite;
+}
+
+.announcement-bar a {
+  color: #66fcf1;
+  text-decoration: none;
+}
+
+.announcement-bar a:hover {
+  text-decoration: underline;
+}
+
+.banner-image {
+  width: 70%;
+  max-width: 600px;
+  height: auto;
+  border: 2px solid #23395d;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  margin-top: 25px;
+  animation: float 3s infinite;
+}
+
+@keyframes textGlow {
+  from {
+    text-shadow: 0 0 5px #66fcf1, 0 0 10px #66fcf1, 0 0 20px #66fcf1, 0 0 40px #0b0f1a, 0 0 80px #0b0f1a;
   }
-  
-  .announcement-bar {
-    width: 100%;
-    background-color: #1f2833;
-    color: #c5c6c7;
-    text-align: center;
-    font-size: 16px;
-    border-bottom: 3px solid #58a6ff;
-    margin: 0; /* Removed margin */
-    padding: 0; /* Removed padding */
-    position: relative;
-    overflow: hidden;
+  to {
+    text-shadow: 0 0 10px #66fcf1, 0 0 20px #66fcf1, 0 0 30px #66fcf1, 0 0 50px #0b0f1a, 0 0 100px #0b0f1a;
   }
-  
-  .announcement-bar p {
-    margin: 0; /* Ensure no margin around text */
-    padding: 10px 0; /* Padding for the text */
-    position: relative;
-    z-index: 1;
-  }
-  
-  .highlight {
+}
+
+@keyframes colorChange {
+  from {
     color: #45a29e;
-    font-weight: bold;
-    animation: colorChange 2s infinite alternate;
   }
-  
-  .animated-highlight {
-    color: #66fcf1;
-    font-weight: bold;
-    animation: textGlow 2s infinite;
+  to {
+    color: #0b0f1a;
   }
-  
-  .announcement-bar a {
-    color: #66fcf1;
-    text-decoration: none;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
   }
-  
-  .announcement-bar a:hover {
-    text-decoration: underline;
+  50% {
+    transform: translateY(-10px);
   }
-  
-  .banner-image {
-    width: 70%;
-    max-width: 600px;
-    height: auto;
-    border: 2px solid #23395d;
-    border-radius: 10px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    margin-top: 25px;
-  }
-  
-  .animated-image {
-    animation: float 3s infinite;
-  }
-  
-  @keyframes textGlow {
-    from {
-      text-shadow: 0 0 5px #66fcf1, 0 0 10px #66fcf1, 0 0 20px #66fcf1, 0 0 40px #0b0f1a, 0 0 80px #0b0f1a;
-    }
-    to {
-      text-shadow: 0 0 10px #66fcf1, 0 0 20px #66fcf1, 0 0 30px #66fcf1, 0 0 50px #0b0f1a, 0 0 100px #0b0f1a;
-    }
-  }
-  
-  @keyframes colorChange {
-    from {
-      color: #45a29e;
-    }
-    to {
-      color: #0b0f1a;
-    }
-  }
-  
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-  }
-  
+}
