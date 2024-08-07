@@ -6,40 +6,43 @@ body, html, #root, .App {
     min-height: 100vh;
     overflow-x: hidden;
     background-color: #111214; /* Updated background color */
-  }
-  
-  .signin-form-container {
+}
+
+.signin-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to the top */
+    padding-top: 20px; /* Add some padding to the top */
+    height: 100vh; /* Make container take the full height of the viewport */
+}
+
+.signin-form {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 20px 40px; /* Add padding to all sides */
     background-color: #1a1a1d;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    margin: 20px auto;
     max-width: 400px;
     width: 100%;
-  }
-  
-  .signin-form {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-  
-  .form-group {
+    box-sizing: border-box;
+}
+
+.form-group {
     margin-bottom: 15px;
-  }
-  
-  label {
+    width: 100%;
+}
+
+label {
     display: block;
     margin-bottom: 5px;
     color: #58a6ff;
     font-size: 16px;
     font-weight: 600;
-  }
-  
-  input {
+}
+
+input {
     width: 100%;
     padding: 10px;
     border: 1px solid #23395d;
@@ -47,9 +50,10 @@ body, html, #root, .App {
     background-color: #1a1a1d;
     color: #c5c6c7;
     font-size: 14px;
-  }
-  
-  .form-button {
+    box-sizing: border-box;
+}
+
+.form-button {
     padding: 10px 20px;
     background-color: #58a6ff;
     color: white;
@@ -59,17 +63,19 @@ body, html, #root, .App {
     transition: background-color 0.3s;
     font-size: 16px;
     font-weight: 600;
-  }
-  
-  .form-button:hover {
+    width: 100%; /* Make button take the full width */
+    box-sizing: border-box;
+}
+
+.form-button:hover {
     background-color: #1f78c1;
-  }
-  
-  .error-message {
+}
+
+.error-message {
     color: #e74c3c;
-  }
-  
-  .link-button {
+}
+
+.link-button {
     background: none;
     color: #58a6ff;
     border: none;
@@ -77,31 +83,34 @@ body, html, #root, .App {
     text-decoration: underline;
     padding: 0;
     font-size: 14px;
-  }
-  
-  .signup-prompt {
+}
+
+.signup-prompt {
     color: #c5c6c7;
     margin-top: 10px;
     font-size: 14px;
-  }
-  
-  .signup-prompt a {
+    text-align: center;
+    width: 100%; /* Ensure it takes full width */
+}
+
+.signup-prompt a {
     color: #58a6ff;
     text-decoration: none;
-  }
-  
-  .signup-prompt a:hover {
+}
+
+.signup-prompt a:hover {
     text-decoration: underline;
-  }
-  
-  .forgot-password {
+}
+
+.forgot-password {
     color: #58a6ff;
     text-decoration: none;
     font-size: 14px;
     margin-top: 10px;
-  }
-  
-  .forgot-password:hover {
+    text-align: center;
+    width: 100%; /* Ensure it takes full width */
+}
+
+.forgot-password:hover {
     text-decoration: underline;
-  }
-  
+}

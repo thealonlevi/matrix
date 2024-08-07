@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { signIn } from 'aws-amplify/auth';
 import '../styles/SignInForm.css';
 
-const SignInForm = () => {
+const SignInForm = ({ onSignUpClick }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,7 +18,7 @@ const SignInForm = () => {
         password: password,
       });
       console.log('Sign in successful');
-      navigate('/'); // Redirect to Home page
+      navigate('/user-area'); // Redirect to UserAreaScreen
     } catch (err) {
       console.error('Error signing in:', err);
       setError(err.message);
@@ -48,9 +48,13 @@ const SignInForm = () => {
         </div>
         {error && <p className="error-message">{error}</p>}
         <button type="submit" className="form-button">Sign In</button>
+        <div className="signup-prompt">
+          <p>Don't have an account? <a href="/register">Sign Up</a></p>
+        </div>
+        <div className="forgot-password">
+          <a href="/forgot-password">Forgot Password?</a>
+        </div>
       </form>
-      <p className="signup-prompt">Don't have an account? <button onClick={() => navigate('/register')} className="link-button">Sign Up</button></p>
-      <a href="/forgot-password" className="forgot-password">Forgot Password?</a>
     </div>
   );
 };
