@@ -16,3 +16,11 @@ body, html, #root, .App {
 header, .banner {
   width: 100%;
 }
+
+.content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
