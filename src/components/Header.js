@@ -1,45 +1,50 @@
-// src/components/Header.js
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Header.css';
 import homeIcon from '../assets/icons/house.png';
 import cartIcon from '../assets/icons/shopping_cart.png';
 import registerIcon from '../assets/icons/register.png';
 import loginIcon from '../assets/icons/login.png';
-import starIcon from '../assets/icons/star.png'; // Importing the star icon
+import starIcon from '../assets/icons/star.png';
 
 const Header = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   return (
     <header className="header">
       <div className="logo-container">
         <Link to="/">
           <img src="/assets/images/logo.png" alt="Logo" className="logo" />
         </Link>
+        <span>&nbsp;&nbsp;</span>
+        <span className="menu-text" onClick={toggleMenu}>&nbsp;MENU</span>
       </div>
-      <nav className="nav-links">
-        <Link to="/">
+      <nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
+        <Link to="/" onClick={toggleMenu}>
           <img src={homeIcon} alt="Home" className="icon" />
           Shop
         </Link>
-        <Link to="/reviews">
-          <img src={starIcon} alt="Reviews" className="icon" /> {/* Star icon for Reviews */}
+        <Link to="/reviews" onClick={toggleMenu}>
+          <img src={starIcon} alt="Reviews" className="icon" />
           Reviews
         </Link>
-      </nav>
-      <div className="user-options">
-        <Link to="/register">
+        <Link to="/register" onClick={toggleMenu}>
           <img src={registerIcon} alt="Register" className="icon" />
           Register
         </Link>
-        <Link to="/login">
+        <Link to="/login" onClick={toggleMenu}>
           <img src={loginIcon} alt="Login" className="icon" />
           Login
         </Link>
-        <Link to="/cart">
+        <Link to="/cart" onClick={toggleMenu}>
           <img src={cartIcon} alt="Cart" className="icon" />
           Cart
         </Link>
-      </div>
+      </nav>
     </header>
   );
 };
