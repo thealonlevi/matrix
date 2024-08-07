@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-thematrix-dev-a4a9d-authRole",
+      "UnauthRoleArn": "arn:aws:iam::022499023652:role/amplify-thematrix-dev-a4a9d-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::022499023652:role/amplify-thematrix-dev-a4a9d-authRole",
+      "Region": "eu-west-1",
+      "DeploymentBucketName": "amplify-thematrix-dev-a4a9d-deployment",
+      "UnauthRoleName": "amplify-thematrix-dev-a4a9d-unauthRole",
+      "StackName": "amplify-thematrix-dev-a4a9d",
+      "StackId": "arn:aws:cloudformation:eu-west-1:022499023652:stack/amplify-thematrix-dev-a4a9d/935c8ca0-548e-11ef-aed8-0a9b7bd42579",
+      "AmplifyAppId": "d31vf160f10k69"
+    },
+    "categories": {
+      "auth": {
+        "thematrixe8cdc8b4": {}
+      }
+    }
+  }
+}

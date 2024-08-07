@@ -27,7 +27,6 @@ package-lock.json
 # amplify
 node_modules
 .amplify
-amplify
 amplify_outputs*
 amplifyconfiguration*
 

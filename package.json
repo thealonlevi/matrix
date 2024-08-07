@@ -26,22 +26,18 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "@aws-amplify/backend": "^1.0.4",
-    "@aws-amplify/backend-cli": "^1.2.2",
-    "aws-cdk": "^2.151.0",
-    "aws-cdk-lib": "^2.151.0",
-    "constructs": "^10.3.0",
-    "esbuild": "^0.23.0",
-    "tsx": "^4.16.5",
-    "typescript": "^5.5.4"
-  },
   "dependencies": {
-    "ajv": "^8.17.1",
+    "@aws-amplify/ui-react": "^6.1.14",
     "aws-amplify": "^6.4.4",
+    "axios": "^1.7.3",
+    "dotenv": "^16.4.5",
+    "eslint": "^8.57.0",
+    "eslint-config-react-app": "^7.0.1",
+    "prettier": "^3.3.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.0",
     "react-scripts": "^5.0.1",
-    "web-vitals": "^4.2.2"
+    "web-vitals": "^4.2.3"
   }
 }
