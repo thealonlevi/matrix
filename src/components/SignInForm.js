@@ -49,7 +49,7 @@ const SignInForm = () => {
         {error && <p className="error-message">{error}</p>}
         <button type="submit" className="form-button">Sign In</button>
       </form>
-      <p>Don't have an account? <button onClick={() => navigate('/register')} className="link-button">Sign Up</button></p>
+      <p className="signup-prompt">Don't have an account? <button onClick={() => navigate('/register')} className="link-button">Sign Up</button></p>
     </div>
   );
 };

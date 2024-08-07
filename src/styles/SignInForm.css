@@ -63,3 +63,18 @@
     padding: 0;
   }
   
+  .signup-prompt {
+    color: #c5c6c7; /* Light grey color to match other text */
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  
+  .signup-prompt a {
+    color: #58a6ff;
+    text-decoration: none;
+  }
+  
+  .signup-prompt a:hover {
+    text-decoration: underline;
+  }
+  
