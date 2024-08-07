@@ -64,6 +64,7 @@ const SignUpForm = () => {
 
   return (
     <div className="signup-form-container">
+      <h2>Create Your Account</h2>
       {error && <p className="error-message">{error}</p>}
       {!isSignedUp ? (
         <form onSubmit={handleSubmit} className="signup-form">

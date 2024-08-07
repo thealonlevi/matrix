@@ -50,6 +50,7 @@ const SignInForm = () => {
         <button type="submit" className="form-button">Sign In</button>
       </form>
       <p className="signup-prompt">Don't have an account? <button onClick={() => navigate('/register')} className="link-button">Sign Up</button></p>
+      <a href="/forgot-password" className="forgot-password">Forgot Password?</a>
     </div>
   );
 };

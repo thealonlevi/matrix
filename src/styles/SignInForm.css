@@ -1,14 +1,24 @@
 /* src/styles/SignInForm.css */
-.signin-form-container {
+body, html, #root, .App {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-color: #111214; /* Updated background color */
+  }
+  
+  .signin-form-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-color: #111214;
+    background-color: #1a1a1d;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     margin: 20px auto;
     max-width: 400px;
+    width: 100%;
   }
   
   .signin-form {
@@ -25,6 +35,8 @@
     display: block;
     margin-bottom: 5px;
     color: #58a6ff;
+    font-size: 16px;
+    font-weight: 600;
   }
   
   input {
@@ -34,6 +46,7 @@
     border-radius: 4px;
     background-color: #1a1a1d;
     color: #c5c6c7;
+    font-size: 14px;
   }
   
   .form-button {
@@ -44,6 +57,8 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
+    font-size: 16px;
+    font-weight: 600;
   }
   
   .form-button:hover {
@@ -61,10 +76,11 @@
     cursor: pointer;
     text-decoration: underline;
     padding: 0;
+    font-size: 14px;
   }
   
   .signup-prompt {
-    color: #c5c6c7; /* Light grey color to match other text */
+    color: #c5c6c7;
     margin-top: 10px;
     font-size: 14px;
   }
@@ -75,6 +91,17 @@
   }
   
   .signup-prompt a:hover {
+    text-decoration: underline;
+  }
+  
+  .forgot-password {
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  .forgot-password:hover {
     text-decoration: underline;
   }
   
