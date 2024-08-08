@@ -18,7 +18,7 @@ const SignInForm = ({ onSignUpClick }) => {
         password: password,
       });
       console.log('Sign in successful');
-      navigate('/user-area'); // Redirect to UserAreaScreen
+      navigate('/'); // Redirect to UserAreaScreen
     } catch (err) {
       console.error('Error signing in:', err);
       setError(err.message);

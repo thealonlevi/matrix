@@ -25,7 +25,7 @@
   align-items: center;
 }
 
-.nav-links a, .user-options a {
+.nav-links a, .user-options a, .logout-button {
   display: flex;
   align-items: center;
   margin-right: 20px;
@@ -35,19 +35,19 @@
   font-weight: 500;
 }
 
-.nav-links a img, .user-options a img {
+.nav-links a img, .user-options a img, .logout-button img {
   width: 22px;
   height: 22px;
   margin-right: 8px;
   transition: filter 0.3s ease; /* Smooth transition on hover */
 }
 
-.nav-links a:hover, .user-options a:hover {
+.nav-links a:hover, .user-options a:hover, .logout-button:hover {
   color: #ffffff; /* White color on hover */
   text-decoration: underline;
 }
 
-.nav-links a:hover img, .user-options a:hover img {
+.nav-links a:hover img, .user-options a:hover img, .logout-button:hover img {
   filter: brightness(1.2); /* Increase brightness on hover */
 }
 
@@ -125,12 +125,12 @@
     display: flex;
   }
 
-  .nav-links a {
+  .nav-links a, .logout-button {
     margin: 10px 0; /* Space out links vertically */
     font-size: 18px; /* Adjust font size for better fit */
   }
 
-  .nav-links a img {
+  .nav-links a img, .logout-button img {
     width: 24px; /* Adjust icon size for better fit */
     height: 24px;
   }

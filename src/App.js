@@ -1,6 +1,6 @@
 // src/App.js
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Banner from './components/Banner';
 import ProductList from './components/ProductList';
@@ -54,15 +54,6 @@ const AppContent = () => {
             <>
               <Banner />
               <ProductList />
-              {user.isGuest ? (
-                <div>
-                  <Link to="/login">Login</Link> | <Link to="/register">Sign Up</Link>
-                </div>
-              ) : (
-                <div>
-                  <span>Welcome, {user.email}</span> | <button onClick={handleLogout}>Logout</button>
-                </div>
-              )}
             </>
           }
         />
