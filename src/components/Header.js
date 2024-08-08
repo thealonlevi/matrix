@@ -1,3 +1,4 @@
+// src/components/Header.js
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Header.css';
@@ -6,8 +7,9 @@ import cartIcon from '../assets/icons/shopping_cart.png';
 import registerIcon from '../assets/icons/register.png';
 import loginIcon from '../assets/icons/login.png';
 import starIcon from '../assets/icons/star.png';
+import logoutIcon from '../assets/icons/signout.png'; // Importing the logout icon
 
-const Header = () => {
+const Header = ({ user, handleLogout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -32,14 +34,23 @@ const Header = () => {
           <img src={starIcon} alt="Reviews" className="icon" />
           Reviews
         </Link>
-        <Link to="/register" onClick={toggleMenu}>
-          <img src={registerIcon} alt="Register" className="icon" />
-          Register
-        </Link>
-        <Link to="/login" onClick={toggleMenu}>
-          <img src={loginIcon} alt="Login" className="icon" />
-          Login
-        </Link>
+        {user.isGuest ? (
+          <>
+            <Link to="/register" onClick={toggleMenu}>
+              <img src={registerIcon} alt="Register" className="icon" />
+              Register
+            </Link>
+            <Link to="/login" onClick={toggleMenu}>
+              <img src={loginIcon} alt="Login" className="icon" />
+              Login
+            </Link>
+          </>
+        ) : (
+          <button onClick={handleLogout} className="logout-button">
+            <img src={logoutIcon} alt="Logout" className="icon" />
+            Logout
+          </button>
+        )}
         <Link to="/cart" onClick={toggleMenu}>
           <img src={cartIcon} alt="Cart" className="icon" />
           Cart

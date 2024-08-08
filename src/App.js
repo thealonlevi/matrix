@@ -22,15 +22,15 @@ async function currentAuthenticatedUser() {
   }
 }
 
-const App = () => {
+const AppContent = () => {
   const [user, setUser] = useState({ email: null, isGuest: true });
   const location = useLocation();
 
   useEffect(() => {
-    const checkUser = async () => {
+    async function checkUser() {
       const userData = await currentAuthenticatedUser();
       setUser(userData);
-    };
+    }
 
     checkUser();
   }, [location]);
@@ -46,10 +46,10 @@ const App = () => {
 
   return (
     <div className="App">
-      <Header />
+      <Header user={user} handleLogout={handleLogout} />
       <Routes>
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={
             <>
               <Banner />
@@ -64,7 +64,7 @@ const App = () => {
                 </div>
               )}
             </>
-          } 
+          }
         />
         <Route path="/register" element={<SignUpForm />} />
         <Route path="/login" element={<SignInForm />} />
@@ -76,10 +76,12 @@ const App = () => {
   );
 };
 
-const AppWrapper = () => (
-  <Router>
-    <App />
-  </Router>
-);
+const App = () => {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+};
 
-export default AppWrapper;
+export default App;
