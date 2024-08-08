@@ -7,7 +7,7 @@ import cartIcon from '../assets/icons/shopping_cart.png';
 import registerIcon from '../assets/icons/register.png';
 import loginIcon from '../assets/icons/login.png';
 import starIcon from '../assets/icons/star.png';
-import logoutIcon from '../assets/icons/signout.png'; // Importing the logout icon
+import logoutIcon from '../assets/icons/signout.png';
 
 const Header = ({ user, handleLogout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -46,10 +46,16 @@ const Header = ({ user, handleLogout }) => {
             </Link>
           </>
         ) : (
-          <button onClick={handleLogout} className="logout-button">
-            <img src={logoutIcon} alt="Logout" className="icon" />
-            Logout
-          </button>
+          <>
+            <Link to="/admin" onClick={toggleMenu}>
+              <img src={homeIcon} alt="Admin" className="icon" />
+              Admin
+            </Link>
+            <button className="logout-button" onClick={() => { handleLogout(); toggleMenu(); }}>
+              <img src={logoutIcon} alt="Logout" className="icon" />
+              Logout
+            </button>
+          </>
         )}
         <Link to="/cart" onClick={toggleMenu}>
           <img src={cartIcon} alt="Cart" className="icon" />

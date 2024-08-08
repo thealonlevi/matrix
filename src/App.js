@@ -7,6 +7,8 @@ import ProductList from './components/ProductList';
 import SignUpForm from './components/SignUpForm';
 import SignInForm from './components/SignInForm';
 import ForgotPasswordForm from './components/ForgotPasswordForm';
+import AdminDashboard from './components/AdminDashboard';
+import ManageProducts from './components/ManageProducts';
 import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
 
@@ -62,6 +64,8 @@ const AppContent = () => {
         <Route path="/forgot-password" element={<ForgotPasswordForm />} />
         <Route path="/cart" element={<div>Cart Page</div>} />
         <Route path="/reviews" element={<div>Reviews Page</div>} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/products" element={<ManageProducts />} />
       </Routes>
     </div>
   );
