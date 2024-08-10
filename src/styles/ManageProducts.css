@@ -1,4 +1,4 @@
-.manage-products-container {
+.admin-manage-products-container {
   padding: 20px;
   background-color: #171725;
   color: #ffffff;
@@ -7,66 +7,71 @@
   margin: 0 auto;
 }
 
-h1 {
+.admin-manage-products-header {
   color: #ff4c4c;
   margin-bottom: 20px;
   text-align: center;
 }
 
-.product-list {
+.admin-product-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 }
 
-.product-item {
-  background-color: #202038;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #444;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.product-details {
+.admin-product-header, .admin-product-item {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
+  grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr;
+  padding: 10px;
   align-items: center;
-  width: 100%;
 }
 
-.product-details p {
-  margin: 0;
-}
-
-.product-details p strong {
+.admin-product-header {
+  background-color: #202038;
+  border-bottom: 2px solid #ff4c4c;
+  font-weight: bold;
   color: #61dafb;
 }
 
-.edit-link {
+.admin-product-item {
+  background-color: #202038;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.admin-edit-link, .admin-delete-button {
   display: inline-block;
-  padding: 10px 15px;
+  padding: 8px 12px;
   background-color: #ff4c4c;
   color: #ffffff;
   border-radius: 5px;
   text-decoration: none;
   font-weight: bold;
   transition: background-color 0.3s;
-  margin-left: auto;
+  margin-right: 5px;
 }
 
-.edit-link:hover {
+.admin-edit-link:hover, .admin-delete-button:hover {
   background-color: #e63e3e;
 }
 
-.product-details p a {
+.admin-delete-button {
+  border: none;
+  cursor: pointer;
+}
+
+.admin-product-header p, .admin-product-item p {
+  margin: 0;
+  text-align: left;
+}
+
+.admin-product-item p a {
   color: #61dafb;
   text-decoration: underline;
 }
 
-.product-details p a:hover {
+.admin-product-item p a:hover {
   color: #ff4c4c;
 }
