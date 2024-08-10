@@ -1,6 +1,7 @@
+// src/components/ImageUpload.js
 import React, { useState } from 'react';
 
-const ImageUpload = () => {
+const ImageUpload = ({ onUploadSuccess }) => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
@@ -40,6 +41,7 @@ const ImageUpload = () => {
           const parsedBody = JSON.parse(responseData.body);
           const imageUrl = parsedBody.imageUrl;
           setImageUrl(imageUrl);
+          onUploadSuccess(imageUrl); // Pass the URL to the parent component
           console.log("Image URL:", imageUrl);
         } else {
           const errorData = await response.json();

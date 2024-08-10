@@ -11,7 +11,9 @@ import AdminDashboard from './components/AdminDashboard';
 import ManageProducts from './components/ManageProducts';
 import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
-import ImageUpload from './components/ImageUpload'
+import ImageUpload from './components/ImageUpload';
+import CreateProductForm from './components/CreateProductForm';
+import ModifyProductForm from './components/ModifyProductForm'; // Import ModifyProductForm
 
 async function currentAuthenticatedUser() {
   try {
@@ -68,6 +70,8 @@ const AppContent = () => {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/products" element={<ManageProducts />} />
         <Route path="/upload" element={<ImageUpload />} />
+        <Route path="/createproduct" element={<CreateProductForm />} />
+        <Route path="/modifyproduct/:productId" element={<ModifyProductForm />} /> {/* Add ModifyProductForm route */}
       </Routes>
     </div>
   );
