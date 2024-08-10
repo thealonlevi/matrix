@@ -4,16 +4,15 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Header from './components/Header';
 import Banner from './components/Banner';
 import ProductList from './components/ProductList';
-import SignUpForm from './components/SignUpForm';
-import SignInForm from './components/SignInForm';
-import ForgotPasswordForm from './components/ForgotPasswordForm';
-import AdminDashboard from './components/AdminDashboard';
-import ManageProducts from './components/ManageProducts';
+import SignUpForm from './components/userSystem/SignUpForm';
+import SignInForm from './components/userSystem/SignInForm';
+import ForgotPasswordForm from './components/userSystem/ForgotPasswordForm';
+import AdminDashboard from './components/admin-dashboard/AdminDashboard';
+import ManageProducts from './components/admin-dashboard/ManageProducts';
 import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
-import ImageUpload from './components/ImageUpload';
-import CreateProductForm from './components/CreateProductForm';
-import ModifyProductForm from './components/ModifyProductForm'; // Import ModifyProductForm
+import CreateProductForm from './components/admin-dashboard/CreateProductForm';
+import ModifyProductForm from './components/admin-dashboard/ModifyProductForm'; // Import ModifyProductForm
 
 async function currentAuthenticatedUser() {
   try {
@@ -69,7 +68,6 @@ const AppContent = () => {
         <Route path="/reviews" element={<div>Reviews Page</div>} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/products" element={<ManageProducts />} />
-        <Route path="/upload" element={<ImageUpload />} />
         <Route path="/createproduct" element={<CreateProductForm />} />
         <Route path="/modifyproduct/:productId" element={<ModifyProductForm />} /> {/* Add ModifyProductForm route */}
       </Routes>

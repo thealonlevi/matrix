@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/AdminSidebar.css';
+import './styles/AdminSidebar.css';
 
 const AdminSidebar = () => {
   return (

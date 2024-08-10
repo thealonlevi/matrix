@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { signUp, confirmSignUp } from 'aws-amplify/auth';
 import { useNavigate } from 'react-router-dom';
-import '../styles/SignUpForm.css';
+import './styles/SignUpForm.css';
 
 const SignUpForm = () => {
   const [email, setEmail] = useState('');

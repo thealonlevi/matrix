@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import '../styles/ManageProducts.css';
-import editIcon from '../assets/icons/edit.png';  // Adjust the path as necessary
-import deleteIcon from '../assets/icons/trash.png';  // Adjust the path as necessary
+import './styles/ManageProducts.css';
+import editIcon from '../../assets/icons/edit.png';  // Adjust the path as necessary
+import deleteIcon from '../../assets/icons/trash.png';  // Adjust the path as necessary
 
 const ManageProducts = () => {
   const [products, setProducts] = useState([]);

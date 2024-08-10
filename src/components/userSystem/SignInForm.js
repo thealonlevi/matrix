@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signIn } from 'aws-amplify/auth';
-import '../styles/SignInForm.css';
+import './styles/SignInForm.css';
 
 const SignInForm = ({ onSignUpClick }) => {
   const [email, setEmail] = useState('');

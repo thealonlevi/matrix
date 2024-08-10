@@ -1,7 +1,7 @@
 // src/components/ForgotPasswordForm.js
 import React, { useState } from 'react';
 import { resetPassword, confirmResetPassword } from 'aws-amplify/auth';
-import '../styles/ForgotPasswordForm.css';
+import './styles/ForgotPasswordForm.css';
 
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState('');

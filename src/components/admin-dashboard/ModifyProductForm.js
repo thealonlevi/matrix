@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import '../styles/ModifyProductForm.css';
+import './styles/ModifyProductForm.css';
 
 const ModifyProductForm = () => {
   const { productId } = useParams();
@@ -9,7 +9,7 @@ const ModifyProductForm = () => {
   const [price, setPrice] = useState('');
   const [title, setTitle] = useState('');
   const [imgUrl, setImgUrl] = useState('');
-  const [imageFile, setImageFile] = useState(null);
+  const [imageFile, setImageFile] = useState(null); //imageFile
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
