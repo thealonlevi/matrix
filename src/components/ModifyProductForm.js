@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import '../styles/ModifyProductForm.css';
 
 const ModifyProductForm = () => {
   const { productId } = useParams();
@@ -8,6 +9,7 @@ const ModifyProductForm = () => {
   const [price, setPrice] = useState('');
   const [title, setTitle] = useState('');
   const [imgUrl, setImgUrl] = useState('');
+  const [imageFile, setImageFile] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -51,6 +53,15 @@ const ModifyProductForm = () => {
     }
   };
 
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    setImageFile(file);
+
+    // Simulate image upload and get URL (in a real scenario, upload to S3 and get the URL)
+    const simulatedImageUrl = URL.createObjectURL(file);
+    setImgUrl(simulatedImageUrl);
+  };
+
   const handleSave = async () => {
     try {
       console.log('Saving changes...');
@@ -90,29 +101,38 @@ const ModifyProductForm = () => {
     }
   };
 
+  const handleCancel = () => {
+    navigate('/admin/products');
+  };
+
   return (
-    <div>
+    <div className="modify-product-form-container">
       <h2>Modify Product Details</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className="error-message">{error}</p>}
       {product ? (
         <>
-          <div>
+          <div className="form-group">
             <label>Title:</label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
           </div>
-          <div>
+          <div className="form-group">
             <label>Category:</label>
             <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} />
           </div>
-          <div>
+          <div className="form-group">
             <label>Price:</label>
             <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
           </div>
-          <div>
-            <label>Image URL:</label>
-            <input type="text" value={imgUrl} onChange={(e) => setImgUrl(e.target.value)} />
+          <div className="form-group">
+            <label>Current Image:</label>
+            <div className="image-preview">
+              <img src={imgUrl} alt="Product" />
+            </div>
+            <label>Upload New Image:</label>
+            <input type="file" accept="image/*" onChange={handleImageUpload} />
           </div>
-          <button onClick={handleSave}>Save Changes</button>
+          <button className="save-button" onClick={handleSave}>Save Changes</button>
+          <button className="cancel-button" onClick={handleCancel}>Cancel</button>
         </>
       ) : (
         <p>Loading product details...</p>
