@@ -10,6 +10,33 @@ const ModifyStockForm = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const logRequest = async () => {
+      try {
+        console.log(`Logging request for product ID: ${productId}`);
+
+        const logResponse = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_Logging', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ product_id: productId, function_name: 'Matrix_FetchStock' }),
+        });
+
+        if (logResponse.status === 200) {
+          console.log('Request logged successfully');
+          return true;
+        } else {
+          console.error('Failed to log the request:', logResponse.status);
+          setError('Failed to log the request');
+          return false;
+        }
+      } catch (error) {
+        console.error('Error logging the request:', error);
+        setError('Error logging the request');
+        return false;
+      }
+    };
+
     const fetchStock = async () => {
       try {
         console.log(`Fetching stock for product ID: ${productId}`);
@@ -27,6 +54,7 @@ const ModifyStockForm = () => {
           console.log('Fetched stock:', data);
 
           setStock(data.body);
+          setError(null); // Clear any previous errors if the fetch is successful
         } else {
           console.error('Failed to fetch stock:', response.status);
           setError('Failed to fetch stock');
@@ -39,7 +67,15 @@ const ModifyStockForm = () => {
       }
     };
 
-    fetchStock();
+    // Log the request and then fetch the stock if logging succeeds
+    const executeLoggingAndFetch = async () => {
+      const isLogged = await logRequest();
+      if (isLogged) {
+        await fetchStock();
+      }
+    };
+
+    executeLoggingAndFetch();
   }, [productId]);
 
   const handleSave = async () => {
