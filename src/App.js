@@ -68,7 +68,7 @@ const AppContent = () => {
         <Route path="/reviews" element={<div>Reviews Page</div>} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/products" element={<ManageProducts />} />
-        <Route path="/createproduct" element={<CreateProductForm />} />
+        <Route path="/admin/createproduct" element={<CreateProductForm />} />
         <Route path="/modifyproduct/:productId" element={<ModifyProductForm />} />
         <Route path="/modifystock/:productId" element={<ModifyStockForm />} /> {/* Add ModifyStockForm route */}
       </Routes>

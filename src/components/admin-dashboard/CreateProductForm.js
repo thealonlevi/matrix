@@ -1,12 +1,13 @@
 // src/components/CreateProductForm.js
 import React, { useState } from 'react';
 import ImageUpload from './ImageUpload';
+import './styles/CreateProductForm.css';  // Import the CSS file
 
 const CreateProductForm = () => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
-  const [imageUrl, setImageUrl] = useState(null); // To hold the image URL after upload
+  const [imageUrl, setImageUrl] = useState(null);
   const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
@@ -46,27 +47,27 @@ const CreateProductForm = () => {
   };
 
   return (
-    <div>
-      <h2>Create a New Product</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
+    <div className="create-product-container">
+      <h2 className="form-header">Create a New Product</h2>
+      <form onSubmit={handleSubmit} className="product-form">
+        <div className="form-group">
           <label>Title:</label>
           <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
         </div>
-        <div>
+        <div className="form-group">
           <label>Category:</label>
           <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} />
         </div>
-        <div>
+        <div className="form-group">
           <label>Price:</label>
           <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
         </div>
-        <div>
+        <div className="form-group">
           <h3>Upload an Image</h3>
           <ImageUpload onUploadSuccess={(url) => setImageUrl(url)} />
         </div>
-        <button type="submit">Create Product</button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <button type="submit" className="submit-button">Create Product</button>
+        {error && <p className="error-message">{error}</p>}
       </form>
     </div>
   );

@@ -3,6 +3,7 @@ import './styles/ManageProducts.css';
 import editIcon from '../../assets/icons/edit.png';  // Adjust the path as necessary
 import deleteIcon from '../../assets/icons/trash.png';  // Adjust the path as necessary
 import stockIcon from '../../assets/icons/box.png';  // Add this icon for stock management
+import plusIcon from '../../assets/icons/plus.png';  // Add this icon for creating a new product
 
 const ManageProducts = () => {
   const [products, setProducts] = useState([]);
@@ -78,6 +79,14 @@ const ManageProducts = () => {
   return (
     <div className="admin-manage-products-container">
       <h1 className="admin-manage-products-header">Manage Products</h1>
+      
+      {/* Add New Product Button */}
+      <div className="admin-add-product">
+        <a href="/admin/createproduct" className="admin-add-product-link">
+          <img src={plusIcon} alt="Add Product" className="admin-icon" />
+        </a>
+      </div>
+
       <div className="admin-product-list">
         <div className="admin-product-header">
           <p>ID</p>

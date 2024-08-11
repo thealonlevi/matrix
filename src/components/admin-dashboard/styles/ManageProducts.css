@@ -13,6 +13,22 @@
   text-align: center;
 }
 
+.admin-add-product {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.admin-add-product-link {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .admin-product-list {
   display: flex;
   flex-direction: column;
@@ -61,6 +77,11 @@
   width: 16px;
   height: 16px;
   transition: transform 0.3s;
+}
+
+.admin-add-product-link img {
+  width: 24px;
+  height: 24px;
 }
 
 .admin-edit-link:hover .admin-icon, .admin-delete-button:hover .admin-icon, .admin-stock-link:hover .admin-icon {
