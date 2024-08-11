@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
@@ -9,10 +8,11 @@ import SignInForm from './components/userSystem/SignInForm';
 import ForgotPasswordForm from './components/userSystem/ForgotPasswordForm';
 import AdminDashboard from './components/admin-dashboard/AdminDashboard';
 import ManageProducts from './components/admin-dashboard/ManageProducts';
+import CreateProductForm from './components/admin-dashboard/CreateProductForm';
+import ModifyProductForm from './components/admin-dashboard/ModifyProductForm';
+import ModifyStockForm from './components/admin-dashboard/ModifyStockForm'; // Import ModifyStockForm
 import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
-import CreateProductForm from './components/admin-dashboard/CreateProductForm';
-import ModifyProductForm from './components/admin-dashboard/ModifyProductForm'; // Import ModifyProductForm
 
 async function currentAuthenticatedUser() {
   try {
@@ -69,7 +69,8 @@ const AppContent = () => {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/products" element={<ManageProducts />} />
         <Route path="/createproduct" element={<CreateProductForm />} />
-        <Route path="/modifyproduct/:productId" element={<ModifyProductForm />} /> {/* Add ModifyProductForm route */}
+        <Route path="/modifyproduct/:productId" element={<ModifyProductForm />} />
+        <Route path="/modifystock/:productId" element={<ModifyStockForm />} /> {/* Add ModifyStockForm route */}
       </Routes>
     </div>
   );

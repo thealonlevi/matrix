@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './styles/ManageProducts.css';
 import editIcon from '../../assets/icons/edit.png';  // Adjust the path as necessary
 import deleteIcon from '../../assets/icons/trash.png';  // Adjust the path as necessary
+import stockIcon from '../../assets/icons/box.png';  // Add this icon for stock management
 
 const ManageProducts = () => {
   const [products, setProducts] = useState([]);
@@ -101,6 +102,9 @@ const ManageProducts = () => {
                 <button onClick={() => handleDelete(product.product_id)} className="admin-delete-button">
                   <img src={deleteIcon} alt="Delete" className="admin-icon" />
                 </button>
+                <a href={`/modifystock/${product.product_id}`} className="admin-stock-link">
+                  <img src={stockIcon} alt="Manage Stock" className="admin-icon" />
+                </a>
               </div>
             </div>
           ))

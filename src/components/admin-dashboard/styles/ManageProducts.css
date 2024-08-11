@@ -47,7 +47,7 @@
   justify-content: flex-end;
 }
 
-.admin-edit-link, .admin-delete-button {
+.admin-edit-link, .admin-delete-button, .admin-stock-link {
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -63,7 +63,7 @@
   transition: transform 0.3s;
 }
 
-.admin-edit-link:hover .admin-icon, .admin-delete-button:hover .admin-icon {
+.admin-edit-link:hover .admin-icon, .admin-delete-button:hover .admin-icon, .admin-stock-link:hover .admin-icon {
   transform: scale(1.2);
 }
 
