@@ -1,7 +1,8 @@
-// src/components/CreateProductForm.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ImageUpload from './ImageUpload';
 import './styles/CreateProductForm.css';  // Import the CSS file
+import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import the utility function
+import { useNavigate } from 'react-router-dom';
 
 const CreateProductForm = () => {
   const [title, setTitle] = useState('');
@@ -9,6 +10,29 @@ const CreateProductForm = () => {
   const [price, setPrice] = useState('');
   const [imageUrl, setImageUrl] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const verifyAccess = async () => {
+      try {
+        const hasPermission = await checkAdminPermission();
+
+        if (!hasPermission) {
+          setError('Page not found.');
+          setTimeout(() => {
+            navigate('/'); // Redirect to the home page after 2 seconds
+          }, 2000);
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        setError('An error occurred during permission verification.');
+      }
+    };
+
+    verifyAccess();
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,6 +69,10 @@ const CreateProductForm = () => {
       setError(`Error: ${error.message}`);
     }
   };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div className="create-product-container">

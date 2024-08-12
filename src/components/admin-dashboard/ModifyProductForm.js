@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './styles/ModifyProductForm.css';
+import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import the utility function
 
 const ModifyProductForm = () => {
   const { productId } = useParams();
@@ -9,20 +10,33 @@ const ModifyProductForm = () => {
   const [price, setPrice] = useState('');
   const [title, setTitle] = useState('');
   const [imgUrl, setImgUrl] = useState('');
-  const [imageFile, setImageFile] = useState(null); //imageFile
+  const [imageFile, setImageFile] = useState(null); // Image file
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (productId) {
-      fetchProductDetails(productId);
-    }
-  }, [productId]);
+    const verifyAccessAndFetchProduct = async () => {
+      try {
+        const hasPermission = await checkAdminPermission();
+
+        if (!hasPermission) {
+          setError('Page not found.');
+          setTimeout(() => {
+            navigate('/'); // Redirect to the home page after 2 seconds
+          }, 2000);
+        } else if (productId) {
+          fetchProductDetails(productId);
+        }
+      } catch (error) {
+        setError('An error occurred during permission verification.');
+      }
+    };
+
+    verifyAccessAndFetchProduct();
+  }, [productId, navigate]);
 
   const fetchProductDetails = async (id) => {
     try {
-      console.log(`Fetching details for product ID: ${id}`);
-
       const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchProductDetails', {
         method: 'POST',
         headers: {
@@ -33,10 +47,7 @@ const ModifyProductForm = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Raw response data:', data);
-
         const parsedBody = JSON.parse(data.body);
-        console.log('Parsed response body:', parsedBody);
 
         setProduct(parsedBody);
         setCategory(parsedBody.product_category);
@@ -45,15 +56,13 @@ const ModifyProductForm = () => {
         setImgUrl(parsedBody.product_img_url);
       } else {
         setError('Failed to fetch product details');
-        console.error('Fetch failed with status:', response.status);
       }
     } catch (error) {
       setError('Error fetching product details: ' + error.message);
-      console.error('Error during fetch:', error);
     }
   };
 
-  const handleImageUpload = async (event) => {
+  const handleImageUpload = (event) => {
     const file = event.target.files[0];
     setImageFile(file);
 
@@ -64,15 +73,6 @@ const ModifyProductForm = () => {
 
   const handleSave = async () => {
     try {
-      console.log('Saving changes...');
-      console.log({
-        product_id: productId,
-        product_category: category,
-        product_price: price,
-        product_title: title,
-        product_img_url: imgUrl,
-      });
-
       const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ModifyProductDetails', {
         method: 'POST',
         headers: {
@@ -89,15 +89,12 @@ const ModifyProductForm = () => {
 
       if (response.ok) {
         alert(`Product updated successfully`);
-        console.log('Product updated successfully');
         navigate('/admin/products');
       } else {
         setError('Failed to update product');
-        console.error('Update failed with status:', response.status);
       }
     } catch (error) {
       setError('Error updating product: ' + error.message);
-      console.error('Error during update:', error);
     }
   };
 

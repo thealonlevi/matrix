@@ -1,9 +1,41 @@
 // src/components/AdminDashboard.js
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './styles/AdminDashboard.css';
+import { checkAdminPermission } from './utils/checkAdminPermissions'; // Adjust the path as needed
 
 const AdminDashboard = () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const verifyAccess = async () => {
+      const hasPermission = await checkAdminPermission();
+
+      if (!hasPermission) {
+        setError('Page not found.');
+        setTimeout(() => {
+          navigate('/');  // Redirect to the home page after 2 seconds
+        }, 2000);
+      } else {
+        setLoading(false);
+      }
+    };
+
+    verifyAccess();
+  }, [navigate]);
+
+  if (loading) {
+    console.log("Loading state: true");
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    console.log(`Error encountered: ${error}`);
+    return <p style={{ color: 'red' }}>{error}</p>;
+  }
+
   return (
     <div className="admin-container">
       <div className="sidebar">

@@ -4,13 +4,29 @@ import editIcon from '../../assets/icons/edit.png';  // Adjust the path as neces
 import deleteIcon from '../../assets/icons/trash.png';  // Adjust the path as necessary
 import stockIcon from '../../assets/icons/box.png';  // Add this icon for stock management
 import plusIcon from '../../assets/icons/plus.png';  // Add this icon for creating a new product
+import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import the utility function
+import { useNavigate } from 'react-router-dom';
 
 const ManageProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const verifyAccessAndFetchProducts = async () => {
+      const hasPermission = await checkAdminPermission();
+
+      if (!hasPermission) {
+        setError('Page not found.');
+        setTimeout(() => {
+          navigate('/');  // Redirect to the home page after 2 seconds
+        }, 2000);
+      } else {
+        fetchProducts();
+      }
+    };
+
     const fetchProducts = async () => {
       try {
         console.log("Fetching products from API...");
@@ -39,8 +55,8 @@ const ManageProducts = () => {
       }
     };
 
-    fetchProducts();
-  }, []);
+    verifyAccessAndFetchProducts();
+  }, [navigate]);
 
   const handleDelete = async (productId) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
