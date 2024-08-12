@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import '../styles/ProductList.css';
+import { Link } from 'react-router-dom';  // Import Link from react-router-dom
+import '../styles/ProductList.css'; 
 import ShoppingCartIcon from '../assets/icons/white_shopping_cart.png';
 import RedEyeIcon from '../assets/icons/red_eye.png';
 import BlueEyeIcon from '../assets/icons/blue_eye.png';
@@ -7,21 +8,43 @@ import BlueEyeIcon from '../assets/icons/blue_eye.png';
 const ProductList = () => {
   const [products, setProducts] = useState([]);
 
+  // Function to compare two lists
+  const areProductsDifferent = (newProducts, storedProducts) => {
+    if (newProducts.length !== storedProducts.length) return true;
+    return newProducts.some((product, index) => {
+      return JSON.stringify(product) !== JSON.stringify(storedProducts[index]);
+    });
+  };
+
   useEffect(() => {
-    fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_GetProductList')
-      .then(response => response.json())
-      .then(data => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_GetProductList');
+        const data = await response.json();
+        
         if (data && data.body) {
-          try {
-            const parsedData = JSON.parse(data.body);
-            console.log(parsedData);
-            setProducts(parsedData);
-          } catch (error) {
-            console.error("Error parsing data:", error);
+          const parsedData = JSON.parse(data.body);
+
+          // Retrieve the product list stored in localStorage
+          const storedProducts = JSON.parse(localStorage.getItem('offlineProductList')) || [];
+
+          // Compare the fetched product list with the stored one
+          if (areProductsDifferent(parsedData, storedProducts)) {
+            console.log('Product lists are different. Updating offline list.');
+            // Update the localStorage with the new product list
+            localStorage.setItem('offlineProductList', JSON.stringify(parsedData));
+          } else {
+            console.log('Product lists are the same. No update needed.');
           }
+
+          setProducts(parsedData);
         }
-      })
-      .catch(error => console.error('Error fetching products:', error));
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   return (
@@ -60,14 +83,16 @@ const ProductList = () => {
                     : 'Price Unavailable'}
                 </p>
               </div>
-              <button
-                className={`buy-now-button ${
-                  index % 2 === 0 ? 'buy-now-button-red' : 'buy-now-button-blue'
-                }`}
-              >
-                <img src={ShoppingCartIcon} alt="cart" />
-                Buy Now
-              </button>
+              <Link to={`/product/${product.product_id}`}> {/* Link to product details page */}
+                <button
+                  className={`buy-now-button ${
+                    index % 2 === 0 ? 'buy-now-button-red' : 'buy-now-button-blue'
+                  }`}
+                >
+                  <img src={ShoppingCartIcon} alt="cart" />
+                  Buy Now
+                </button>
+              </Link>
             </div>
           </div>
         ))

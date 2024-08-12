@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Header from './components/Header';
 import Banner from './components/Banner';
 import ProductList from './components/ProductList';
+import ProductDetails from './components/ProductDetails'; // Import ProductDetails
 import SignUpForm from './components/userSystem/SignUpForm';
 import SignInForm from './components/userSystem/SignInForm';
 import ForgotPasswordForm from './components/userSystem/ForgotPasswordForm';
@@ -10,7 +11,9 @@ import AdminLayout from './components/admin-dashboard/AdminLayout';
 import ManageProducts from './components/admin-dashboard/ManageProducts';
 import CreateProductForm from './components/admin-dashboard/CreateProductForm';
 import ModifyProductForm from './components/admin-dashboard/ModifyProductForm';
-import ModifyStockForm from './components/admin-dashboard/ModifyStockForm'; // Import ModifyStockForm
+import ModifyStockForm from './components/admin-dashboard/ModifyStockForm'; 
+import CartPage from './components/cart/CartPage'; // Import CartPage
+import { CartProvider } from './components/cart/CartContext';
 import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
 
@@ -64,9 +67,9 @@ const AppContent = () => {
         <Route path="/register" element={<SignUpForm />} />
         <Route path="/login" element={<SignInForm />} />
         <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-        <Route path="/cart" element={<div>Cart Page</div>} />
+        <Route path="/cart" element={<CartPage />} /> {/* Cart Page Route */}
         <Route path="/reviews" element={<div>Reviews Page</div>} />
-        
+        <Route path="/product/:productId" element={<ProductDetails />} /> {/* Product Details Route */}
         {/* Wrap all admin routes under AdminLayout */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="products" element={<ManageProducts />} />
@@ -82,7 +85,9 @@ const AppContent = () => {
 const App = () => {
   return (
     <Router>
-      <AppContent />
+      <CartProvider> {/* Wrap everything in CartProvider */}
+        <AppContent />
+      </CartProvider>
     </Router>
   );
 };
