@@ -6,7 +6,7 @@ import ProductList from './components/ProductList';
 import SignUpForm from './components/userSystem/SignUpForm';
 import SignInForm from './components/userSystem/SignInForm';
 import ForgotPasswordForm from './components/userSystem/ForgotPasswordForm';
-import AdminDashboard from './components/admin-dashboard/AdminDashboard';
+import AdminLayout from './components/admin-dashboard/AdminLayout';
 import ManageProducts from './components/admin-dashboard/ManageProducts';
 import CreateProductForm from './components/admin-dashboard/CreateProductForm';
 import ModifyProductForm from './components/admin-dashboard/ModifyProductForm';
@@ -66,11 +66,14 @@ const AppContent = () => {
         <Route path="/forgot-password" element={<ForgotPasswordForm />} />
         <Route path="/cart" element={<div>Cart Page</div>} />
         <Route path="/reviews" element={<div>Reviews Page</div>} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/products" element={<ManageProducts />} />
-        <Route path="/admin/createproduct" element={<CreateProductForm />} />
-        <Route path="/modifyproduct/:productId" element={<ModifyProductForm />} />
-        <Route path="/modifystock/:productId" element={<ModifyStockForm />} /> {/* Add ModifyStockForm route */}
+        
+        {/* Wrap all admin routes under AdminLayout */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="products" element={<ManageProducts />} />
+          <Route path="createproduct" element={<CreateProductForm />} />
+          <Route path="modifyproduct/:productId" element={<ModifyProductForm />} />
+          <Route path="modifystock/:productId" element={<ModifyStockForm />} />
+        </Route>
       </Routes>
     </div>
   );

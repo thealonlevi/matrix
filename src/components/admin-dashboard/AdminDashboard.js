@@ -1,6 +1,5 @@
-// src/components/AdminDashboard.js
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './styles/AdminDashboard.css';
 import { checkAdminPermission } from './utils/checkAdminPermissions'; // Adjust the path as needed
 
@@ -8,6 +7,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation(); // To get the current URL
 
   useEffect(() => {
     const verifyAccess = async () => {
@@ -27,12 +27,10 @@ const AdminDashboard = () => {
   }, [navigate]);
 
   if (loading) {
-    console.log("Loading state: true");
     return <p>Loading...</p>;
   }
 
   if (error) {
-    console.log(`Error encountered: ${error}`);
     return <p style={{ color: 'red' }}>{error}</p>;
   }
 
@@ -42,9 +40,14 @@ const AdminDashboard = () => {
         <h2>Admin Dashboard</h2>
         <ul>
           <li>
-            <Link to="/admin/products">Manage Products</Link>
+            <Link
+              to="/admin/products"
+              className={location.pathname === '/admin/products' ? 'active' : ''}
+            >
+              Manage Products
+            </Link>
           </li>
-          {/* Add more links as needed */}
+          {/* Add more links as needed, with similar logic for highlighting */}
         </ul>
       </div>
       <div className="main-content">
