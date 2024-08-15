@@ -83,17 +83,18 @@ const ProductList = () => {
                     : 'Price Unavailable'}
                 </p>
               </div>
-              <Link to={`/product/${product.product_id}`}> {/* Link to product details page */}
+              <Link to={`/product/${product.product_id}`}>
                 <button
-                  className={`buy-now-button ${
-                    index % 2 === 0 ? 'buy-now-button-red' : 'buy-now-button-blue'
-                  }`}
-                >
-                  <img src={ShoppingCartIcon} alt="cart" />
-                  Buy Now
+                    className={`buy-now-button ${
+                      index % 2 === 0 ? 'buy-now-button-red' : 'buy-now-button-blue'
+                    }`}
+                  >
+                    <img src={ShoppingCartIcon} alt="cart" />
+                    Buy Now
                 </button>
-              </Link>
+            </Link>
             </div>
+            
           </div>
         ))
       ) : (
