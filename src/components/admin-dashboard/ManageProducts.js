@@ -121,7 +121,7 @@ const ManageProducts = () => {
               <p>${product.product_price}</p>
               <p><a href={product.product_img_url} target="_blank" rel="noopener noreferrer">View Image</a></p>
               <div className="admin-action-buttons">
-                <a href={`/modifyproduct/${product.product_id}`} className="admin-edit-link">
+                <a href={`/admin/modifyproduct/${product.product_id}`} className="admin-edit-link">
                   <img src={editIcon} alt="Edit" className="admin-icon" />
                 </a>
                 <button onClick={() => handleDelete(product.product_id)} className="admin-delete-button">

@@ -8,6 +8,7 @@ const CreateProductForm = () => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
+  const [description, setDescription] = useState('');  // New state for product description
   const [imageUrl, setImageUrl] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -55,6 +56,7 @@ const CreateProductForm = () => {
           product_img_url: imageUrl,
           product_price: parseFloat(price),
           product_title: title,
+          product_description: description,  // Include the product description
         }),
       });
 
@@ -89,6 +91,14 @@ const CreateProductForm = () => {
         <div className="form-group">
           <label>Price:</label>
           <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+        </div>
+        <div className="form-group">
+          <label>Description:</label>  {/* New input for product description */}
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter product description"
+          />
         </div>
         <div className="form-group">
           <h3>Upload an Image</h3>

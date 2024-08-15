@@ -25,19 +25,25 @@ const ProductList = () => {
         if (data && data.body) {
           const parsedData = JSON.parse(data.body);
 
+          // Ensure that every product has a product_description, even if it's just an empty string
+          const productsWithDescriptions = parsedData.map(product => ({
+            ...product,
+            product_description: product.product_description || '', // Default to empty string if undefined
+          }));
+
           // Retrieve the product list stored in localStorage
           const storedProducts = JSON.parse(localStorage.getItem('offlineProductList')) || [];
 
           // Compare the fetched product list with the stored one
-          if (areProductsDifferent(parsedData, storedProducts)) {
+          if (areProductsDifferent(productsWithDescriptions, storedProducts)) {
             console.log('Product lists are different. Updating offline list.');
             // Update the localStorage with the new product list
-            localStorage.setItem('offlineProductList', JSON.stringify(parsedData));
+            localStorage.setItem('offlineProductList', JSON.stringify(productsWithDescriptions));
           } else {
             console.log('Product lists are the same. No update needed.');
           }
 
-          setProducts(parsedData);
+          setProducts(productsWithDescriptions);
         }
       } catch (error) {
         console.error('Error fetching products:', error);

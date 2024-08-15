@@ -12,52 +12,51 @@ const ProductDetails = () => {
   const { addToCart } = useCart(); // Destructure addToCart from useCart
 
   useEffect(() => {
-        const fetchProductDetails = async () => {
-            try {
-                const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchProductDetails', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ product_id: productId }),
-                });
+    const fetchProductDetails = async () => {
+      try {
+        const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchProductDetails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ product_id: productId }),
+        });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log("Product details fetched: ", data);
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Product details fetched: ", data);
 
-                    // Check the structure of `data.body` and ensure it's parsed correctly.
-                    const parsedData = JSON.parse(data.body);
-                    console.log("Parsed product details: ", parsedData);
+          // Check the structure of `data.body` and ensure it's parsed correctly.
+          const parsedData = JSON.parse(data.body);
+          console.log("Parsed product details: ", parsedData);
 
-                    setProduct(parsedData);
-                } else {
-                    setError('Failed to fetch product details');
-                }
-            } catch (error) {
-                setError('Error fetching product details');
-            }
-        };
-
-        fetchProductDetails();
-    }, [productId]);
-
-    const handleAddToCart = () => {
-        if (product && product.product_id) {
-            console.log("Adding to cart:", {
-                product_id: product.product_id,
-                quantity: quantity
-            });
-            addToCart({
-                product_id: product.product_id,
-                quantity: quantity
-            });
-            navigate('/cart'); // Redirect to cart page after adding to cart
+          setProduct(parsedData);
         } else {
-            console.error("Product details not loaded yet");
+          setError('Failed to fetch product details');
         }
+      } catch (error) {
+        setError('Error fetching product details');
+      }
     };
 
+    fetchProductDetails();
+  }, [productId]);
+
+  const handleAddToCart = () => {
+    if (product && product.product_id) {
+      console.log("Adding to cart:", {
+        product_id: product.product_id,
+        quantity: quantity
+      });
+      addToCart({
+        product_id: product.product_id,
+        quantity: quantity
+      });
+      navigate('/cart'); // Redirect to cart page after adding to cart
+    } else {
+      console.error("Product details not loaded yet");
+    }
+  };
 
   return (
     <div className="product-details-container">
@@ -67,6 +66,7 @@ const ProductDetails = () => {
           <h2 className="product-details-title">{product.product_title}</h2>
           <p className="product-details-category">{product.product_category}</p>
           <p className="product-details-price">${product.product_price}</p>
+          <p className="product-details-description">{product.product_description || 'No description available.'}</p> {/* Display the description */}
           <div className="product-details-quantity">
             <label htmlFor="quantity">Quantity:</label>
             <input

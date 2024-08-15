@@ -9,6 +9,7 @@ const ModifyProductForm = () => {
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState(''); // New state for product description
   const [imgUrl, setImgUrl] = useState('');
   const [imageFile, setImageFile] = useState(null); // Image file
   const [error, setError] = useState(null);
@@ -49,16 +50,20 @@ const ModifyProductForm = () => {
         const data = await response.json();
         const parsedBody = JSON.parse(data.body);
 
+        console.log("Parsed product details:", parsedBody);  // Log parsed data
+
         setProduct(parsedBody);
         setCategory(parsedBody.product_category);
         setPrice(parsedBody.product_price);
         setTitle(parsedBody.product_title);
+        setDescription(parsedBody.product_description || ''); // Set description, default to empty string
         setImgUrl(parsedBody.product_img_url);
       } else {
         setError('Failed to fetch product details');
       }
     } catch (error) {
       setError('Error fetching product details: ' + error.message);
+      console.error("Fetch error:", error);  // Log error message
     }
   };
 
@@ -83,6 +88,7 @@ const ModifyProductForm = () => {
           product_category: category,
           product_price: price,
           product_title: title,
+          product_description: description, // Include product description
           product_img_url: imgUrl,
         }),
       });
@@ -121,6 +127,14 @@ const ModifyProductForm = () => {
             <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
           </div>
           <div className="form-group">
+            <label>Description:</label> {/* New input for product description */}
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter product description"
+            />
+          </div>
+          <div className="form-group">
             <label>Current Image:</label>
             <div className="image-preview">
               <img src={imgUrl} alt="Product" />
@@ -132,7 +146,7 @@ const ModifyProductForm = () => {
           <button className="cancel-button" onClick={handleCancel}>Cancel</button>
         </>
       ) : (
-        <p>Loading product details...</p>
+        <p>{error ? error : 'Loading product details...'}</p>
       )}
     </div>
   );
