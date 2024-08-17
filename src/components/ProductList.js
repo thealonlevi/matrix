@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';  // Import Link from react-router-dom
-import '../styles/ProductList.css'; 
+import '../styles/ProductList.css';
 import ShoppingCartIcon from '../assets/icons/white_shopping_cart.png';
 import RedEyeIcon from '../assets/icons/red_eye.png';
 import BlueEyeIcon from '../assets/icons/blue_eye.png';
+import ProductDetailsModal from './ProductDetailsModal'; // Import the modal component
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
-
-  // Function to compare two lists
-  const areProductsDifferent = (newProducts, storedProducts) => {
-    if (newProducts.length !== storedProducts.length) return true;
-    return newProducts.some((product, index) => {
-      return JSON.stringify(product) !== JSON.stringify(storedProducts[index]);
-    });
-  };
+  const [selectedProduct, setSelectedProduct] = useState(null); // State for selected product
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -31,18 +25,6 @@ const ProductList = () => {
             product_description: product.product_description || '', // Default to empty string if undefined
           }));
 
-          // Retrieve the product list stored in localStorage
-          const storedProducts = JSON.parse(localStorage.getItem('offlineProductList')) || [];
-
-          // Compare the fetched product list with the stored one
-          if (areProductsDifferent(productsWithDescriptions, storedProducts)) {
-            console.log('Product lists are different. Updating offline list.');
-            // Update the localStorage with the new product list
-            localStorage.setItem('offlineProductList', JSON.stringify(productsWithDescriptions));
-          } else {
-            console.log('Product lists are the same. No update needed.');
-          }
-
           setProducts(productsWithDescriptions);
         }
       } catch (error) {
@@ -52,6 +34,16 @@ const ProductList = () => {
 
     fetchProducts();
   }, []);
+
+  const handleOpenModal = (product) => {
+    setSelectedProduct(product); // Set the selected product
+    setIsModalOpen(true); // Open the modal
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false); // Close the modal
+    setSelectedProduct(null); // Clear the selected product
+  };
 
   return (
     <div className="product-list">
@@ -89,22 +81,27 @@ const ProductList = () => {
                     : 'Price Unavailable'}
                 </p>
               </div>
-              <Link to={`/product/${product.product_id}`}>
-                <button
-                    className={`buy-now-button ${
-                      index % 2 === 0 ? 'buy-now-button-red' : 'buy-now-button-blue'
-                    }`}
-                  >
-                    <img src={ShoppingCartIcon} alt="cart" />
-                    Buy Now
-                </button>
-            </Link>
+              <button
+                className={`buy-now-button ${
+                  index % 2 === 0 ? 'buy-now-button-red' : 'buy-now-button-blue'
+                }`}
+                onClick={() => handleOpenModal(product)} // Open modal on click
+              >
+                <img src={ShoppingCartIcon} alt="cart" />
+                Buy Now
+              </button>
             </div>
-            
           </div>
         ))
       ) : (
         <p>No products found.</p>
+      )}
+      {selectedProduct && (
+        <ProductDetailsModal
+          product={selectedProduct}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />
       )}
     </div>
   );

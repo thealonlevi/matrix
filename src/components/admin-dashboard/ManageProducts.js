@@ -127,7 +127,7 @@ const ManageProducts = () => {
                 <button onClick={() => handleDelete(product.product_id)} className="admin-delete-button">
                   <img src={deleteIcon} alt="Delete" className="admin-icon" />
                 </button>
-                <a href={`/modifystock/${product.product_id}`} className="admin-stock-link">
+                <a href={`/admin/modifystock/${product.product_id}`} className="admin-stock-link">
                   <img src={stockIcon} alt="Manage Stock" className="admin-icon" />
                 </a>
               </div>
