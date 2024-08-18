@@ -3,7 +3,7 @@
   background-color: #171725;
   color: #ffffff;
   border-radius: 10px;
-  max-width: 1000px; /* Slightly increased for better content fitting */
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -45,7 +45,7 @@
 
 .admin-product-header, .admin-product-item {
   display: grid;
-  grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr 1.5fr; /* Adjusted for better spacing */
+  grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr 1.5fr;
   padding: 10px;
   align-items: center;
 }
@@ -64,6 +64,10 @@
   border: 1px solid #444;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s, background-color 0.3s;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr 1.5fr;
+  align-items: center;
 }
 
 .admin-product-item:hover {
@@ -73,7 +77,17 @@
 
 .admin-group-item {
   background-color: #2a2a3d;
-  border: 2px solid #ff4c4c;
+  border: 3px solid #ff4c4c;
+  padding: 15px;
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr 1.5fr;
+  align-items: center;
+}
+
+.admin-group-child-item {
+  padding-left: 30px;
+  background-color: #272745;
+  border-left: 3px solid #ff4c4c;
 }
 
 .admin-action-buttons {
@@ -140,4 +154,27 @@
 .admin-visibility-checkbox input[type="checkbox"]:hover {
   cursor: pointer;
   outline: 2px solid #ff4c4c;
+}
+
+.admin-expand-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  position: absolute;
+  left: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+
+.admin-expand-button:hover .admin-icon {
+  transform: scale(1.2);
+}
+
+.admin-group-products .admin-action-buttons {
+  justify-content: space-between;
 }
