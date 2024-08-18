@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import './styles/ManageProducts.css';
-import editIcon from '../../assets/icons/edit.png';  // Adjust the path as necessary
-import deleteIcon from '../../assets/icons/trash.png';  // Adjust the path as necessary
-import stockIcon from '../../assets/icons/box.png';  // Add this icon for stock management
-import plusIcon from '../../assets/icons/plus.png';  // Add this icon for creating a new product
-import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import the utility function
+import editIcon from '../../assets/icons/edit.png';
+import deleteIcon from '../../assets/icons/trash.png';
+import stockIcon from '../../assets/icons/box.png';
+import plusIcon from '../../assets/icons/plus.png';
+import { checkAdminPermission } from './utils/checkAdminPermissions';
 import { useNavigate } from 'react-router-dom';
 
 const ManageProducts = () => {
@@ -58,7 +58,7 @@ const ManageProducts = () => {
     verifyAccessAndFetchProducts();
   }, [navigate]);
 
-  const handleDelete = async (productId) => {
+  const handleDelete = useCallback(async (productId) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         console.log(`Deleting product with ID: ${productId}`);
@@ -82,9 +82,9 @@ const ManageProducts = () => {
         setError(`Error deleting product with ID: ${productId}`);
       }
     }
-  };
+  }, [products]);
 
-  const handleToggleVisibility = async (productId) => {
+  const handleToggleVisibility = useCallback(async (productId) => {
     try {
       console.log(`Toggling visibility for product ID: ${productId}`);
       const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ToggleVisibility', {
@@ -110,6 +110,46 @@ const ManageProducts = () => {
       console.error(`Error toggling visibility for product ID: ${productId}`, error);
       setError(`Error toggling visibility for product ID: ${productId}`);
     }
+  }, [products]);
+
+  const getPriceRange = (group) => {
+    if (!group || !group.length) return 'N/A';
+    const prices = group.map(item => parseFloat(item.product_price));
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    return `$${minPrice} - $${maxPrice}`;
+  };
+
+  const ProductItem = ({ product }) => {
+    const isGroup = Array.isArray(product.product_group) && product.product_group.length > 0;
+
+    return (
+      <div key={product.product_id} className={`admin-product-item ${isGroup ? 'admin-group-item' : ''}`}>
+        <p>{product.product_id}</p>
+        <p>{product.product_title}{isGroup && <span className="group-label">Group</span>}</p>
+        <p>{product.product_category}</p>
+        <p>{isGroup ? getPriceRange(product.product_group) : `$${product.product_price}`}</p>
+        <p><a href={product.product_img_url} target="_blank" rel="noopener noreferrer">View Image</a></p>
+        <div className="admin-visibility-checkbox">
+          <input
+            type="checkbox"
+            checked={product.visible !== false}  // Default to true if undefined
+            onChange={() => handleToggleVisibility(product.product_id)}
+          />
+        </div>
+        <div className="admin-action-buttons">
+          <a href={`/admin/modifyproduct/${product.product_id}`} className="admin-edit-link">
+            <img src={editIcon} alt="Edit" className="admin-icon" />
+          </a>
+          <button onClick={() => handleDelete(product.product_id)} className="admin-delete-button">
+            <img src={deleteIcon} alt="Delete" className="admin-icon" />
+          </button>
+          <a href={`/admin/modifystock/${product.product_id}`} className="admin-stock-link">
+            <img src={stockIcon} alt="Manage Stock" className="admin-icon" />
+          </a>
+        </div>
+      </div>
+    );
   };
 
   if (loading) {
@@ -142,33 +182,7 @@ const ManageProducts = () => {
           <p>Actions</p>
         </div>
         {products.length > 0 ? (
-          products.map((product) => (
-            <div key={product.product_id} className="admin-product-item">
-              <p>{product.product_id}</p>
-              <p>{product.product_title}</p>
-              <p>{product.product_category}</p>
-              <p>${product.product_price}</p>
-              <p><a href={product.product_img_url} target="_blank" rel="noopener noreferrer">View Image</a></p>
-              <div className="admin-visibility-checkbox">
-                <input
-                  type="checkbox"
-                  checked={product.visible !== false}  // Default to true if undefined
-                  onChange={() => handleToggleVisibility(product.product_id)}
-                />
-              </div>
-              <div className="admin-action-buttons">
-                <a href={`/admin/modifyproduct/${product.product_id}`} className="admin-edit-link">
-                  <img src={editIcon} alt="Edit" className="admin-icon" />
-                </a>
-                <button onClick={() => handleDelete(product.product_id)} className="admin-delete-button">
-                  <img src={deleteIcon} alt="Delete" className="admin-icon" />
-                </button>
-                <a href={`/admin/modifystock/${product.product_id}`} className="admin-stock-link">
-                  <img src={stockIcon} alt="Manage Stock" className="admin-icon" />
-                </a>
-              </div>
-            </div>
-          ))
+          products.map(product => <ProductItem key={product.product_id} product={product} />)
         ) : (
           <p>No products found.</p>
         )}

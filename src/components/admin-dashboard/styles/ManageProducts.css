@@ -3,7 +3,7 @@
   background-color: #171725;
   color: #ffffff;
   border-radius: 10px;
-  max-width: 900px;
+  max-width: 1000px; /* Slightly increased for better content fitting */
   margin: 0 auto;
 }
 
@@ -11,6 +11,8 @@
   color: #ff4c4c;
   margin-bottom: 20px;
   text-align: center;
+  font-size: 24px;
+  font-weight: bold;
 }
 
 .admin-add-product {
@@ -20,24 +22,30 @@
 }
 
 .admin-add-product-link {
-  background-color: transparent;
+  background-color: #ff4c4c;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 10px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.admin-add-product-link:hover {
+  background-color: #ff6c6c;
 }
 
 .admin-product-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
 .admin-product-header, .admin-product-item {
   display: grid;
-  grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr;
+  grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr 1.5fr; /* Adjusted for better spacing */
   padding: 10px;
   align-items: center;
 }
@@ -55,6 +63,17 @@
   border-radius: 8px;
   border: 1px solid #444;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s, background-color 0.3s;
+}
+
+.admin-product-item:hover {
+  transform: scale(1.02);
+  background-color: #272745;
+}
+
+.admin-group-item {
+  background-color: #2a2a3d;
+  border: 2px solid #ff4c4c;
 }
 
 .admin-action-buttons {
@@ -106,4 +125,19 @@
   text-align: center;
   margin-top: 50px;
   color: #ff4c4c;
+}
+
+.group-label {
+  color: #ff4c4c;
+  font-weight: bold;
+  text-align: center;
+  background-color: #2a2a3d;
+  padding: 3px 6px;
+  border-radius: 4px;
+  margin-left: 5px;
+}
+
+.admin-visibility-checkbox input[type="checkbox"]:hover {
+  cursor: pointer;
+  outline: 2px solid #ff4c4c;
 }
