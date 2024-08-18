@@ -84,6 +84,34 @@ const ManageProducts = () => {
     }
   };
 
+  const handleToggleVisibility = async (productId) => {
+    try {
+      console.log(`Toggling visibility for product ID: ${productId}`);
+      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ToggleVisibility', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ product_id: productId }),
+      });
+
+      if (response.ok) {
+        console.log(`Visibility toggled successfully for product ID: ${productId}`);
+        setProducts(products.map(product =>
+          product.product_id === productId
+            ? { ...product, visible: !product.visible }
+            : product
+        ));
+      } else {
+        console.error(`Failed to toggle visibility for product ID: ${productId}`);
+        setError(`Failed to toggle visibility for product ID: ${productId}`);
+      }
+    } catch (error) {
+      console.error(`Error toggling visibility for product ID: ${productId}`, error);
+      setError(`Error toggling visibility for product ID: ${productId}`);
+    }
+  };
+
   if (loading) {
     return <p className="admin-loading">Loading products...</p>;
   }
@@ -110,6 +138,7 @@ const ManageProducts = () => {
           <p>Category</p>
           <p>Price</p>
           <p>Image URL</p>
+          <p>Visibility</p>
           <p>Actions</p>
         </div>
         {products.length > 0 ? (
@@ -120,6 +149,13 @@ const ManageProducts = () => {
               <p>{product.product_category}</p>
               <p>${product.product_price}</p>
               <p><a href={product.product_img_url} target="_blank" rel="noopener noreferrer">View Image</a></p>
+              <div className="admin-visibility-checkbox">
+                <input
+                  type="checkbox"
+                  checked={product.visible !== false}  // Default to true if undefined
+                  onChange={() => handleToggleVisibility(product.product_id)}
+                />
+              </div>
               <div className="admin-action-buttons">
                 <a href={`/admin/modifyproduct/${product.product_id}`} className="admin-edit-link">
                   <img src={editIcon} alt="Edit" className="admin-icon" />
