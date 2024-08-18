@@ -66,9 +66,12 @@ const ManageProducts = () => {
 
   const handleDelete = useCallback(
     async (productId) => {
+      console.log(`[Delete Product] Initiating delete process for product ID: ${productId}`);
       if (window.confirm('Are you sure you want to delete this product?')) {
         try {
-          console.log(`Deleting product with ID: ${productId}`);
+          console.log(`[Delete Product] Confirmed deletion for product ID: ${productId}`);
+          console.log(`[Delete Product] Sending delete request to API for product ID: ${productId}`);
+
           const response = await fetch(
             'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_DeleteProduct',
             {
@@ -80,19 +83,25 @@ const ManageProducts = () => {
             }
           );
 
+          console.log(`[Delete Product] API Response status: ${response.status}`);
+          
           if (response.ok) {
-            console.log(`Product with ID: ${productId} deleted successfully.`);
+            console.log(`[Delete Product] Product with ID: ${productId} deleted successfully.`);
             setProducts(
               products.filter((product) => product.product_id !== productId)
             );
           } else {
-            console.error(`Failed to delete product with ID: ${productId}`);
+            console.error(`[Delete Product] Failed to delete product with ID: ${productId}. Response status: ${response.status}`);
+            const responseBody = await response.json();
+            console.error(`[Delete Product] API Response body: ${JSON.stringify(responseBody)}`);
             setError(`Failed to delete product with ID: ${productId}`);
           }
         } catch (error) {
-          console.error(`Error deleting product with ID: ${productId}`, error);
+          console.error(`[Delete Product] Error occurred while deleting product with ID: ${productId}.`, error);
           setError(`Error deleting product with ID: ${productId}`);
         }
+      } else {
+        console.log(`[Delete Product] Deletion canceled for product ID: ${productId}`);
       }
     },
     [products]
@@ -149,56 +158,61 @@ const ManageProducts = () => {
     );
   };
 
-  const renderGroupProducts = (groupProducts) => {
-    return groupProducts.map((product, index) => (
-      <div
-        key={product.product_id}
-        className={`admin-product-item admin-group-child-item ${
-          expandedGroups.includes(product.product_id) ? 'expanded' : ''
-        }`}
-      >
-        <p>{product.product_id}</p>
-        <p>{product.product_title}</p>
-        <p>{product.product_category}</p>
-        <p>${product.product_price}</p>
-        <p>
-          <a
-            href={product.product_img_url}
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            View Image
-          </a>
-        </p>
-        <div className='admin-visibility-checkbox'>
-          <input
-            type='checkbox'
-            checked={product.visible !== false}
-            onChange={() => handleToggleVisibility(product.product_id)}
-          />
+  const renderGroupProducts = (groupProducts, groupId) => {
+    return groupProducts.map((product, index) => {
+      const fullProductId = `${groupId}/${product.product_id}`;
+      const simpleProductId = `${product.product_id}`;
+
+      return (
+        <div
+          key={fullProductId}
+          className={`admin-product-item admin-group-child-item ${
+            expandedGroups.includes(groupId) ? 'expanded' : ''
+          }`}
+        >
+          <p>{product.product_id}</p>
+          <p>{product.product_title}</p>
+          <p>{product.product_category}</p>
+          <p>${product.product_price}</p>
+          <p>
+            <a
+              href={product.product_img_url}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              View Image
+            </a>
+          </p>
+          <div className='admin-visibility-checkbox'>
+            <input
+              type='checkbox'
+              checked={product.visible !== false}
+              onChange={() => handleToggleVisibility(fullProductId)}
+            />
+          </div>
+          <div className='admin-action-buttons'>
+            <a
+              href={`/admin/modifyproduct/${fullProductId}`}
+              className='admin-edit-link'
+            >
+              <img src={editIcon} alt='Edit' className='admin-icon' />
+            </a>
+            <button
+              onClick={() => handleDelete(fullProductId)}
+              className='admin-delete-button'
+            >
+              <img src={deleteIcon} alt='Delete' className='admin-icon' />
+            </button>
+            <a
+              href={`/admin/modifystock/${simpleProductId}`}
+              className='admin-stock-link'
+            >
+              <img src={stockIcon} alt='Manage Stock' className='admin-icon' />
+            </a>
+          </div>
         </div>
-        <div className='admin-action-buttons'>
-          <a
-            href={`/admin/modifyproduct/${product.product_id}`}
-            className='admin-edit-link'
-          >
-            <img src={editIcon} alt='Edit' className='admin-icon' />
-          </a>
-          <button
-            onClick={() => handleDelete(product.product_id)}
-            className='admin-delete-button'
-          >
-            <img src={deleteIcon} alt='Delete' className='admin-icon' />
-          </button>
-          <a
-            href={`/admin/modifystock/${product.product_id}`}
-            className='admin-stock-link'
-          >
-            <img src={stockIcon} alt='Manage Stock' className='admin-icon' />
-          </a>
-        </div>
-      </div>
-    ));
+      );
+    });
   };
 
   const ProductItem = ({ product }) => {
@@ -270,7 +284,7 @@ const ManageProducts = () => {
         </div>
         {isGroup && isExpanded && (
           <div className='admin-group-products'>
-            {renderGroupProducts(product.product_group)}
+            {renderGroupProducts(product.product_group, product.product_id)}
           </div>
         )}
       </>

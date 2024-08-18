@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './styles/ModifyProductForm.css';
-import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import the utility function
+import { checkAdminPermission } from './utils/checkAdminPermissions';
 
 const ModifyProductForm = () => {
-  const { productId } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState(''); // New state for product description
+  const [description, setDescription] = useState('');
   const [imgUrl, setImgUrl] = useState('');
-  const [imageFile, setImageFile] = useState(null); // Image file
+  const [imageFile, setImageFile] = useState(null);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+
+  // Extract productId at the top level so it's available throughout the component
+  const href = window.location.href;
+  const productId = href.split('/admin/modifyproduct/')[1];
 
   useEffect(() => {
     const verifyAccessAndFetchProduct = async () => {
@@ -23,7 +26,7 @@ const ModifyProductForm = () => {
         if (!hasPermission) {
           setError('Page not found.');
           setTimeout(() => {
-            navigate('/'); // Redirect to the home page after 2 seconds
+            navigate('/');
           }, 2000);
         } else if (productId) {
           fetchProductDetails(productId);
@@ -50,20 +53,17 @@ const ModifyProductForm = () => {
         const data = await response.json();
         const parsedBody = JSON.parse(data.body);
 
-        console.log("Parsed product details:", parsedBody);  // Log parsed data
-
         setProduct(parsedBody);
         setCategory(parsedBody.product_category);
         setPrice(parsedBody.product_price);
         setTitle(parsedBody.product_title);
-        setDescription(parsedBody.product_description || ''); // Set description, default to empty string
+        setDescription(parsedBody.product_description || '');
         setImgUrl(parsedBody.product_img_url);
       } else {
         setError('Failed to fetch product details');
       }
     } catch (error) {
       setError('Error fetching product details: ' + error.message);
-      console.error("Fetch error:", error);  // Log error message
     }
   };
 
@@ -71,7 +71,6 @@ const ModifyProductForm = () => {
     const file = event.target.files[0];
     setImageFile(file);
 
-    // Simulate image upload and get URL (in a real scenario, upload to S3 and get the URL)
     const simulatedImageUrl = URL.createObjectURL(file);
     setImgUrl(simulatedImageUrl);
   };
@@ -88,7 +87,7 @@ const ModifyProductForm = () => {
           product_category: category,
           product_price: price,
           product_title: title,
-          product_description: description, // Include product description
+          product_description: description,
           product_img_url: imgUrl,
         }),
       });
@@ -127,7 +126,7 @@ const ModifyProductForm = () => {
             <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
           </div>
           <div className="form-group">
-            <label>Description:</label> {/* New input for product description */}
+            <label>Description:</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}

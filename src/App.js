@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Header from './components/Header';
 import Banner from './components/Banner';
 import ProductList from './components/ProductList';
-import ProductDetails from './components/ProductDetails'; // Import ProductDetails
+import ProductDetails from './components/ProductDetails';
 import SignUpForm from './components/userSystem/SignUpForm';
 import SignInForm from './components/userSystem/SignInForm';
 import ForgotPasswordForm from './components/userSystem/ForgotPasswordForm';
@@ -12,7 +12,7 @@ import ManageProducts from './components/admin-dashboard/ManageProducts';
 import CreateProductForm from './components/admin-dashboard/CreateProductForm';
 import ModifyProductForm from './components/admin-dashboard/ModifyProductForm';
 import ModifyStockForm from './components/admin-dashboard/ModifyStockForm'; 
-import CartPage from './components/cart/CartPage'; // Import CartPage
+import CartPage from './components/cart/CartPage';
 import { CartProvider } from './components/cart/CartContext';
 import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
@@ -67,14 +67,16 @@ const AppContent = () => {
         <Route path="/register" element={<SignUpForm />} />
         <Route path="/login" element={<SignInForm />} />
         <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-        <Route path="/cart" element={<CartPage />} /> {/* Cart Page Route */}
+        <Route path="/cart" element={<CartPage />} />
         <Route path="/reviews" element={<div>Reviews Page</div>} />
-        <Route path="/product/:productId" element={<ProductDetails />} /> {/* Product Details Route */}
+        <Route path="/product/:productId" element={<ProductDetails />} />
+        <Route path="/product/:groupId/:productId" element={<ProductDetails />} /> {/* Support for group/productId format */}
         {/* Wrap all admin routes under AdminLayout */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="products" element={<ManageProducts />} />
           <Route path="createproduct" element={<CreateProductForm />} />
           <Route path="modifyproduct/:productId" element={<ModifyProductForm />} />
+          <Route path="modifyproduct/:groupId/:productId" element={<ModifyProductForm />} /> {/* Support for group/productId format */}
           <Route path="modifystock/:productId" element={<ModifyStockForm />} />
         </Route>
       </Routes>
@@ -85,7 +87,7 @@ const AppContent = () => {
 const App = () => {
   return (
     <Router>
-      <CartProvider> {/* Wrap everything in CartProvider */}
+      <CartProvider>
         <AppContent />
       </CartProvider>
     </Router>

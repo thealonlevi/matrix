@@ -43,7 +43,8 @@
   gap: 15px;
 }
 
-.admin-product-header, .admin-product-item {
+.admin-product-header,
+.admin-product-item {
   display: grid;
   grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr 1.5fr;
   padding: 10px;
@@ -82,12 +83,53 @@
   display: grid;
   grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr 1.5fr;
   align-items: center;
+  border-radius: 8px;
 }
 
 .admin-group-child-item {
-  padding-left: 30px;
-  background-color: #272745;
-  border-left: 3px solid #ff4c4c;
+  background-color: #1c1c2d;
+  margin-left: 20px;
+  padding-left: 20px;
+  padding: 10px 15px;
+  border-radius: 4px;
+  border: 1px solid #3c3c5c;
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr 1.5fr;
+  align-items: center;
+  gap: 10px; /* Ensuring proper spacing */
+}
+
+.admin-group-text-products {
+  margin-top: 10px;
+  color: #61dafb;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.admin-group-text-item {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr 1.5fr;
+  padding: 5px 0;
+  align-items: center;
+  border-bottom: 1px solid #444;
+}
+
+.admin-group-product-title {
+  font-weight: bold;
+}
+
+.admin-group-product-category,
+.admin-group-product-price {
+  font-style: italic;
+}
+
+.admin-group-product-url a {
+  color: #61dafb;
+  text-decoration: underline;
+}
+
+.admin-group-product-url a:hover {
+  color: #ff4c4c;
 }
 
 .admin-action-buttons {
@@ -96,7 +138,9 @@
   justify-content: flex-end;
 }
 
-.admin-edit-link, .admin-delete-button, .admin-stock-link {
+.admin-edit-link,
+.admin-delete-button,
+.admin-stock-link {
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -117,11 +161,14 @@
   height: 24px;
 }
 
-.admin-edit-link:hover .admin-icon, .admin-delete-button:hover .admin-icon, .admin-stock-link:hover .admin-icon {
+.admin-edit-link:hover .admin-icon,
+.admin-delete-button:hover .admin-icon,
+.admin-stock-link:hover .admin-icon {
   transform: scale(1.2);
 }
 
-.admin-product-header p, .admin-product-item p {
+.admin-product-header p,
+.admin-product-item p {
   margin: 0;
   text-align: left;
 }
@@ -135,7 +182,8 @@
   color: #ff4c4c;
 }
 
-.admin-loading, .admin-error {
+.admin-loading,
+.admin-error {
   text-align: center;
   margin-top: 50px;
   color: #ff4c4c;
@@ -151,9 +199,17 @@
   margin-left: 5px;
 }
 
-.admin-visibility-checkbox input[type="checkbox"]:hover {
+.admin-visibility-checkbox input[type='checkbox']:hover {
   cursor: pointer;
   outline: 2px solid #ff4c4c;
+}
+
+.admin-visibility-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
 }
 
 .admin-expand-button {
