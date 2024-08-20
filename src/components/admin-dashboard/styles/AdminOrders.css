@@ -1,0 +1,88 @@
+.admin-orders-container {
+    padding: 20px;
+    background-color: #1c1e29;
+    color: #cfd8e3;
+    border-radius: 10px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.admin-orders-header {
+    color: #2f89fc;
+    margin-bottom: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #3a4659;
+    background-color: #242b3d;
+    color: #cfd8e3;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #3a4659;
+}
+
+.orders-table th {
+    background-color: #2f89fc;
+    color: white;
+}
+
+.orders-table tr:nth-child(even) {
+    background-color: #242b3d;
+}
+
+.orders-table tr:hover {
+    background-color: #2b3246;
+}
+
+.status-paid {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.status-unpaid {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.action-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    margin-right: 8px;
+    color: #ffffff;
+    transition: transform 0.2s;
+}
+
+.action-btn:hover {
+    transform: scale(1.2);
+}
+
+.complete-btn {
+    color: #4caf50;
+}
+
+.favorite-btn {
+    color: #f39c12;
+}
+
+.delete-btn {
+    color: #e74c3c;
+}
