@@ -1,3 +1,5 @@
+/* src/styles/AdminDashboard.css */
+
 .admin-container {
   display: flex;
   min-height: 100vh;
@@ -11,7 +13,8 @@
   padding: 20px;
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: 100vh; /* Ensure sidebar occupies the full height of the viewport */
+  flex-shrink: 0; /* Prevent the sidebar from shrinking */
 }
 
 .sidebar h2 {
@@ -44,6 +47,7 @@
   padding: 20px;
   background-color: #202038; /* Main content background to match the theme */
   color: #ffffff;
+  overflow-y: auto; /* Ensure scrolling is possible if content overflows */
 }
 
 .main-content h1 {

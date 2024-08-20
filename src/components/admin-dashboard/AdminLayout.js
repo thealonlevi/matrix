@@ -8,8 +8,8 @@ const AdminLayout = () => {
   return (
     <div className="admin-layout-container">
       <div className="sidebar">
+        <h2></h2>
         <h2>Admin Dashboard</h2>
-        
         <ul>
           <li className={location.pathname === '/admin/products' ? 'active' : ''}>
             <Link to="/admin/products">Manage Products</Link>

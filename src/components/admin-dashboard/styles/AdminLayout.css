@@ -1,29 +1,33 @@
-.admin-layout-container {
+.admin-container {
     display: flex;
     min-height: 100vh;
-    background-color: #171725;
+    background-color: #1c1e29; /* Dark background matching the website theme */
 }
 
 .sidebar {
     width: 250px;
-    background-color: #1c1c2b;
-    color: #ecf0f1;
-    padding: 60px 20px 20px; /* Adjust the top padding here */
-    position: fixed;
+    background-color: #242b3d; /* Sidebar background to match the theme */
+    color: #cfd8e3;
+    padding: 20px;
+    position: fixed; /* Fixed positioning for the sidebar */
     top: 0;
     left: 0;
-    bottom: 0;
-    overflow-y: auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column; /* Ensures content is aligned vertically */
+    z-index: 900; /* Ensure the header is above the sidebar */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Add subtle shadow for separation */
 }
 
 .sidebar h2 {
-    color: #ff4c4c;
-    margin-bottom: 30px;
+    color: #2f89fc; /* Header color matching the primary blue */
+    margin-bottom: 20px;
 }
 
 .sidebar ul {
     list-style-type: none;
     padding: 0;
+    flex-grow: 1; /* Allows the list to take up available space */
 }
 
 .sidebar ul li {
@@ -31,40 +35,26 @@
 }
 
 .sidebar ul li a {
-    color: #ecf0f1;
+    color: #87a3be; /* Link color matching the blue/dark theme */
     text-decoration: none;
-    display: block;
-    padding: 10px 15px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-}
-
-.sidebar ul li a:hover,
-.sidebar ul li.active a {
-    background-color: #ff4c4c;
-    color: #fff;
     font-weight: bold;
 }
 
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+    color: #2f89fc; /* Highlight color for active link */
+}
+
 .main-content {
-    margin-left: 250px;
     flex: 1;
     padding: 20px;
-    background-color: #171725;
-    color: #ecf0f1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    margin-left: 250px; /* Adjust margin to make space for the fixed sidebar */
+    background-color: #202038; /* Main content background to match the theme */
+    color: #ffffff;
+    overflow-y: auto; /* Allows scrolling if content overflows */
 }
 
 .main-content h1 {
     margin-top: 0;
-    font-size: 36px;
-    color: #ff4c4c;
-}
-
-.main-content p {
-    font-size: 18px;
-    color: #ffffff;
+    color: #2f89fc; /* Header color matching the primary blue */
 }

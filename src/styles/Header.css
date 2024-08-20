@@ -7,7 +7,7 @@
   background-color: #1a1a1d;
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 1100; /* Increase z-index to ensure header overlays the sidebar */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 

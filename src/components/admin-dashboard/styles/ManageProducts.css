@@ -1,14 +1,14 @@
 .admin-manage-products-container {
   padding: 20px;
-  background-color: #171725;
-  color: #ffffff;
+  background-color: #1c1e29;
+  color: #cfd8e3;
   border-radius: 10px;
   max-width: 1000px;
   margin: 0 auto;
 }
 
 .admin-manage-products-header {
-  color: #ff4c4c;
+  color: #2f89fc;
   margin-bottom: 20px;
   text-align: center;
   font-size: 24px;
@@ -22,7 +22,7 @@
 }
 
 .admin-add-product-link {
-  background-color: #ff4c4c;
+  background-color: #2f89fc;
   border: none;
   cursor: pointer;
   padding: 10px;
@@ -34,7 +34,7 @@
 }
 
 .admin-add-product-link:hover {
-  background-color: #ff6c6c;
+  background-color: #4aa1ff;
 }
 
 .admin-product-list {
@@ -52,17 +52,17 @@
 }
 
 .admin-product-header {
-  background-color: #202038;
-  border-bottom: 2px solid #ff4c4c;
+  background-color: #242b3d;
+  border-bottom: 2px solid #2f89fc;
   font-weight: bold;
-  color: #61dafb;
+  color: #87a3be;
 }
 
 .admin-product-item {
-  background-color: #202038;
+  background-color: #242b3d;
   padding: 15px;
   border-radius: 8px;
-  border: 1px solid #444;
+  border: 1px solid #3a4659;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s, background-color 0.3s;
   position: relative;
@@ -73,12 +73,12 @@
 
 .admin-product-item:hover {
   transform: scale(1.02);
-  background-color: #272745;
+  background-color: #2b3246;
 }
 
 .admin-group-item {
-  background-color: #2a2a3d;
-  border: 3px solid #ff4c4c;
+  background-color: #2a3145;
+  border: 3px solid #2f89fc;
   padding: 15px;
   display: grid;
   grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr 1.5fr;
@@ -87,12 +87,12 @@
 }
 
 .admin-group-child-item {
-  background-color: #1c1c2d;
+  background-color: #1d2433;
   margin-left: 20px;
   padding-left: 20px;
   padding: 10px 15px;
   border-radius: 4px;
-  border: 1px solid #3c3c5c;
+  border: 1px solid #3c4561;
   display: grid;
   grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr 1.5fr;
   align-items: center;
@@ -101,7 +101,7 @@
 
 .admin-group-text-products {
   margin-top: 10px;
-  color: #61dafb;
+  color: #87a3be;
   font-size: 14px;
   line-height: 1.5;
 }
@@ -111,7 +111,7 @@
   grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr 1.5fr;
   padding: 5px 0;
   align-items: center;
-  border-bottom: 1px solid #444;
+  border-bottom: 1px solid #3a4659;
 }
 
 .admin-group-product-title {
@@ -124,12 +124,12 @@
 }
 
 .admin-group-product-url a {
-  color: #61dafb;
+  color: #87a3be;
   text-decoration: underline;
 }
 
 .admin-group-product-url a:hover {
-  color: #ff4c4c;
+  color: #2f89fc;
 }
 
 .admin-action-buttons {
@@ -174,26 +174,26 @@
 }
 
 .admin-product-item p a {
-  color: #61dafb;
+  color: #87a3be;
   text-decoration: underline;
 }
 
 .admin-product-item p a:hover {
-  color: #ff4c4c;
+  color: #2f89fc;
 }
 
 .admin-loading,
 .admin-error {
   text-align: center;
   margin-top: 50px;
-  color: #ff4c4c;
+  color: #2f89fc;
 }
 
 .group-label {
-  color: #ff4c4c;
+  color: #2f89fc;
   font-weight: bold;
   text-align: center;
-  background-color: #2a2a3d;
+  background-color: #2a3145;
   padding: 3px 6px;
   border-radius: 4px;
   margin-left: 5px;
@@ -201,7 +201,7 @@
 
 .admin-visibility-checkbox input[type='checkbox']:hover {
   cursor: pointer;
-  outline: 2px solid #ff4c4c;
+  outline: 2px solid #2f89fc;
 }
 
 .admin-visibility-checkbox {
@@ -248,14 +248,14 @@
 .admin-add-product-input {
   padding: 10px;
   border-radius: 6px;
-  border: 1px solid #444;
-  background-color: #202038;
-  color: #ffffff;
+  border: 1px solid #3a4659;
+  background-color: #242b3d;
+  color: #cfd8e3;
 }
 
 .admin-add-product-button {
   padding: 10px 20px;
-  background-color: #ff4c4c;
+  background-color: #2f89fc;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -264,7 +264,7 @@
 }
 
 .admin-add-product-button:hover {
-  background-color: #e63e3e;
+  background-color: #4aa1ff;
 }
 
 .admin-add-product-to-group-form {
@@ -278,16 +278,16 @@
 .admin-add-product-input {
   padding: 10px;
   border-radius: 6px;
-  border: 1px solid #444;
-  background-color: #202038;
-  color: #ffffff;
+  border: 1px solid #3a4659;
+  background-color: #242b3d;
+  color: #cfd8e3;
   width: 100%; /* Ensure the dropdown spans the full width */
   max-width: 400px; /* Limit the maximum width for readability */
 }
 
 .admin-add-product-button {
   padding: 10px 20px;
-  background-color: #ff4c4c;
+  background-color: #2f89fc;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -298,59 +298,16 @@
 }
 
 .admin-add-product-button:hover {
-  background-color: #e63e3e;
+  background-color: #4aa1ff;
 }
 
 .admin-add-product-to-group-form select {
   width: 100%;
   padding: 10px;
   border-radius: 6px;
-  background-color: #202038;
-  color: #ffffff;
-  border: 1px solid #444;
-}
-
-.admin-add-product-to-group-form {
-  display: flex;
-  flex-direction: column;
-  margin-top: 10px;
-  gap: 10px;
-  width: 100%; 
-}
-
-.admin-add-product-input {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #444;
-  background-color: #202038;
-  color: #ffffff;
-  width: 100%;
-  max-width: 400px; 
-}
-
-.admin-add-product-button {
-  padding: 10px 20px;
-  background-color: #ff4c4c;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-top: 10px;
-  align-self: flex-end;
-}
-
-.admin-add-product-button:hover {
-  background-color: #e63e3e;
-}
-
-.admin-add-product-to-group-form select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  background-color: #202038;
-  color: #ffffff;
-  border: 1px solid #444;
+  background-color: #242b3d;
+  color: #cfd8e3;
+  border: 1px solid #3a4659;
 }
 
 .admin-icon:hover {
@@ -362,5 +319,45 @@
 }
 
 .admin-product-item p a:hover {
-  color: #ff4c4c;
+  color: #2f89fc;
+}
+
+.admin-add-group-link {
+  background-color: #2f89fc; /* Primary blue color */
+  border: none;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 14px;
+  margin-left: 10px; /* Add some space between the Add Product link and Create Group button */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.admin-add-group-link:hover {
+  background-color: #4aa1ff; /* Lighter blue on hover */
+  transform: scale(1.05); /* Slightly enlarge the button on hover */
+}
+
+.admin-add-product {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.admin-add-product-link {
+  background-color: #2f89fc;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.admin-add-product-link:hover {
+  background-color: #4aa1ff;
 }

@@ -1,31 +1,32 @@
-/* src/styles/AdminSidebar.css */
 .admin-sidebar {
-    width: 200px;
-    background-color: #333;
-    color: #fff;
-    height: 100vh;
-    padding: 20px;
-  }
-  
-  .admin-sidebar h2 {
-    margin-top: 0;
-  }
-  
-  .admin-sidebar nav ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .admin-sidebar nav ul li {
-    margin: 10px 0;
-  }
-  
-  .admin-sidebar nav ul li a {
-    color: #fff;
-    text-decoration: none;
-  }
-  
-  .admin-sidebar nav ul li a:hover {
-    text-decoration: underline;
-  }
-  
+  width: 200px;
+  background-color: #242b3d; /* Dark background matching the blue/dark theme */
+  color: #cfd8e3; /* Light text color for better contrast */
+  height: 100vh;
+  padding: 20px;
+}
+
+.admin-sidebar h2 {
+  margin-top: 0;
+  color: #2f89fc; /* Header color matching the primary blue */
+}
+
+.admin-sidebar nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.admin-sidebar nav ul li {
+  margin: 10px 0;
+}
+
+.admin-sidebar nav ul li a {
+  color: #87a3be; /* Link color matching the blue/dark theme */
+  text-decoration: none;
+}
+
+.admin-sidebar nav ul li a:hover,
+.admin-sidebar nav ul li a.active {
+  color: #2f89fc; /* Hover and active link color to match the primary blue */
+  text-decoration: underline;
+}
