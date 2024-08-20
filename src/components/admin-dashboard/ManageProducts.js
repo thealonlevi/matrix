@@ -10,6 +10,7 @@ import {
   handleDeleteProduct,
   handleToggleProductVisibility,
 } from './utils/productutils';
+import { appendProductToGroup } from './utils/groupUtils';
 
 const ManageProducts = () => {
   const [products, setProducts] = useState([]);
@@ -56,6 +57,21 @@ const ManageProducts = () => {
     [products]
   );
 
+  const handleAppendProduct = useCallback(
+    async (groupId, productId) => {
+      try {
+        const response = await appendProductToGroup(groupId, productId);
+        alert(`Product with ID ${productId} added to group ${groupId} successfully.`);
+        // Refresh the product list after appending the product
+        const sortedProducts = await fetchProducts();
+        setProducts(sortedProducts);
+      } catch (error) {
+        setError(`Error adding product: ${error.message}`);
+      }
+    },
+    []
+  );
+
   const toggleGroupExpansionHandler = (groupId) => {
     toggleGroupExpansion(groupId, expandedGroups, setExpandedGroups);
   };
@@ -76,7 +92,6 @@ const ManageProducts = () => {
         <a href='/admin/createproduct' className='admin-add-product-link'>
           <img src={plusIcon} alt='Add Product' className='admin-icon' />
         </a>
-        {/* Add the "Create Group" button */}
         <button onClick={() => navigate('/admin/creategroup')} className='admin-add-group-link'>
           Create Group
         </button>
@@ -102,6 +117,7 @@ const ManageProducts = () => {
               toggleGroupExpansion={toggleGroupExpansionHandler}
               handleDelete={handleDelete}
               handleToggleVisibility={handleToggleVisibility}
+              handleAppendProduct={handleAppendProduct}
               expandedGroups={expandedGroups}
             />
           ))

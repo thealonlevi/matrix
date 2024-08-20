@@ -234,3 +234,35 @@
 .admin-group-products .admin-action-buttons {
   justify-content: space-between;
 }
+
+.admin-group-products {
+  margin-top: 15px;
+}
+
+.admin-add-product-to-group-form {
+  display: flex;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.admin-add-product-input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #202038;
+  color: #ffffff;
+}
+
+.admin-add-product-button {
+  padding: 10px 20px;
+  background-color: #ff4c4c;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.admin-add-product-button:hover {
+  background-color: #e63e3e;
+}

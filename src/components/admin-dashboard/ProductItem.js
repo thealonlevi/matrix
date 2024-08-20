@@ -1,5 +1,4 @@
-// ProductItem.js
-import React from 'react';
+import React, { useState } from 'react';
 import editIcon from '../../assets/icons/edit.png';
 import deleteIcon from '../../assets/icons/trash.png';
 import stockIcon from '../../assets/icons/box.png';
@@ -13,9 +12,22 @@ const ProductItem = ({
   toggleGroupExpansion,
   handleDelete,
   handleToggleVisibility,
+  handleAppendProduct,
   expandedGroups
 }) => {
+  const [productIdToAdd, setProductIdToAdd] = useState('');
+
   const groupProducts = product.product_group || [];
+
+  const handleAddProduct = (e) => {
+    e.preventDefault();
+    if (productIdToAdd) {
+      handleAppendProduct(product.product_id, productIdToAdd);
+      setProductIdToAdd(''); // Clear the input field after adding
+    } else {
+      alert('Please enter a product ID to add.');
+    }
+  };
 
   return (
     <>
@@ -126,6 +138,18 @@ const ProductItem = ({
               </div>
             </div>
           ))}
+          <form onSubmit={handleAddProduct} className='admin-add-product-to-group-form'>
+            <input
+              type='text'
+              placeholder='Enter Product ID to Add'
+              value={productIdToAdd}
+              onChange={(e) => setProductIdToAdd(e.target.value)}
+              className='admin-add-product-input'
+            />
+            <button type='submit' className='admin-add-product-button'>
+              Add Product to Group
+            </button>
+          </form>
         </div>
       )}
     </>
