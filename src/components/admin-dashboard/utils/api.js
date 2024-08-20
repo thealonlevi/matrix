@@ -48,7 +48,7 @@ export const fetchProducts = async () => {
     }
   };
 
-  export const createGroupAPI = async (groupDetails) => {
+export const createGroupAPI = async (groupDetails) => {
     const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_CreateGroup', {
       method: 'POST',
       headers: {
@@ -79,5 +79,20 @@ export const fetchProducts = async () => {
   
     return await response.json();
   };
+
+// Add the new function here:
+export const detachProductGroupAPI = async (groupId, productId) => {
+    const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_DetachProductGroup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ group_id: groupId, product_id: productId }),
+    });
   
+    if (!response.ok) {
+      throw new Error(`Error detaching product from group: ${response.statusText}`);
+    }
   
+    return await response.json();
+  };

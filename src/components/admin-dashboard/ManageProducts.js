@@ -10,7 +10,7 @@ import {
   handleDeleteProduct,
   handleToggleProductVisibility,
 } from './utils/productutils';
-import { appendProductToGroup } from './utils/groupUtils';
+import { appendProductToGroup, detachProductFromGroup } from './utils/groupUtils';
 
 const ManageProducts = () => {
   const [products, setProducts] = useState([]);
@@ -72,6 +72,21 @@ const ManageProducts = () => {
     []
   );
 
+  const handleDetachProduct = useCallback(
+    async (groupId, productId) => {
+      try {
+        const response = await detachProductFromGroup(groupId, productId);
+        alert(`Product with ID ${productId} detached from group ${groupId} successfully.`);
+        // Refresh the product list after detaching the product
+        const sortedProducts = await fetchProducts();
+        setProducts(sortedProducts);
+      } catch (error) {
+        setError(`Error detaching product: ${error.message}`);
+      }
+    },
+    []
+  );
+
   const toggleGroupExpansionHandler = (groupId) => {
     toggleGroupExpansion(groupId, expandedGroups, setExpandedGroups);
   };
@@ -119,6 +134,7 @@ const ManageProducts = () => {
               handleDelete={handleDelete}
               handleToggleVisibility={handleToggleVisibility}
               handleAppendProduct={handleAppendProduct}
+              handleDetachProduct={handleDetachProduct} // Pass detach handler
               expandedGroups={expandedGroups}
             />
           ))

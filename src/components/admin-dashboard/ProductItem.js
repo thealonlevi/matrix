@@ -4,6 +4,7 @@ import deleteIcon from '../../assets/icons/trash.png';
 import stockIcon from '../../assets/icons/box.png';
 import expandIcon from '../../assets/icons/plus.png';
 import collapseIcon from '../../assets/icons/plus.png';
+import detachIcon from '../../assets/icons/detach.png'; // Add an icon for detaching
 
 const ProductItem = ({
   product,
@@ -13,6 +14,7 @@ const ProductItem = ({
   handleDelete,
   handleToggleVisibility,
   handleAppendProduct,
+  handleDetachProduct, // Add the detach handler
   expandedGroups,
   products,
 }) => {
@@ -149,6 +151,13 @@ const ProductItem = ({
                 >
                   <img src={stockIcon} alt='Manage Stock' className='admin-icon' />
                 </a>
+                <button
+                  onClick={() => handleDetachProduct(product.product_id, groupProduct.product_id)}
+                  className='admin-detach-button'
+                  title="Detach from Group"
+                >
+                  <img src={detachIcon} alt='Detach' className='admin-icon' />
+                </button>
               </div>
             </div>
           ))}
