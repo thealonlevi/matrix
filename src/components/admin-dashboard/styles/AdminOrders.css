@@ -1,88 +1,107 @@
-.admin-orders-container {
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #181a24; /* Darker background for better contrast */
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #242b3d; /* Sidebar background matching the theme */
+    color: #e0e6ed; /* Lighter text color for better readability */
     padding: 20px;
-    background-color: #1c1e29;
-    color: #cfd8e3;
-    border-radius: 10px;
-    max-width: 1200px;
-    margin: 0 auto;
+    position: fixed; /* Fixed positioning for the sidebar */
+    top: 0;
+    left: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column; /* Ensures content is aligned vertically */
+    z-index: 900; /* Ensure the header is above the sidebar */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Add subtle shadow for separation */
 }
 
-.admin-orders-header {
-    color: #2f89fc;
-    margin-bottom: 20px;
-    font-size: 28px;
-    font-weight: bold;
-    text-align: center;
-}
-
-.search-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    border: 1px solid #3a4659;
-    background-color: #242b3d;
-    color: #cfd8e3;
+.main-content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 280px; /* Adjust margin-left to create more space between the sidebar and the content */
+    background-color: #202433;
+    color: #ffffff;
+    overflow-y: auto;
 }
 
 .orders-table {
     width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    margin-top: 20px;
+    background-color: #242b3d; /* Match the table background to the sidebar and theme */
+    color: #cfd8e3; /* Text color matching the theme */
+    border-radius: 8px; /* Rounded corners for the table */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Add subtle shadow for table */
 }
 
 .orders-table th,
 .orders-table td {
-    padding: 12px;
+    padding: 12px 20px;
     text-align: left;
-    border-bottom: 1px solid #3a4659;
+    border-bottom: 1px solid #2f3640;
 }
 
 .orders-table th {
-    background-color: #2f89fc;
-    color: white;
-}
-
-.orders-table tr:nth-child(even) {
-    background-color: #242b3d;
-}
-
-.orders-table tr:hover {
-    background-color: #2b3246;
-}
-
-.status-paid {
-    color: #4caf50;
-    font-weight: bold;
-}
-
-.status-unpaid {
-    color: #e74c3c;
-    font-weight: bold;
-}
-
-.action-btn {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    margin-right: 8px;
+    background-color: #2f89fc; /* Match the header color to the primary blue used elsewhere */
     color: #ffffff;
-    transition: transform 0.2s;
+    font-weight: bold;
 }
 
-.action-btn:hover {
-    transform: scale(1.2);
+.orders-table tbody tr {
+    background-color: #2b334a; /* Match row background to maintain consistency */
+    transition: background-color 0.3s;
 }
 
-.complete-btn {
-    color: #4caf50;
+.orders-table tbody tr:hover {
+    background-color: #3a4453; /* Darken on hover for better interaction feedback */
 }
 
-.favorite-btn {
-    color: #f39c12;
+.orders-table tbody td {
+    font-size: 14px;
+    padding: 10px 15px;
 }
 
-.delete-btn {
-    color: #e74c3c;
+.orders-table tbody td.status {
+    text-align: center;
+}
+
+.orders-table tbody td.total,
+.orders-table tbody td.modified {
+    text-align: right;
+}
+
+.admin-orders-title {
+    color: #2f89fc; /* Match title color to the primary blue used elsewhere */
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.sidebar ul li.active a {
+    color: #ffffff;
+    background-color: #3a7bd5; /* Use a brighter blue for the active state */
+    font-weight: bold;
+    border-left: 4px solid #ffffff;
+    padding-left: 16px;
+    cursor: default;
+}
+
+.sidebar ul li a {
+    color: #b0bec5; /* Lighter link color for better contrast */
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 20px; /* Padding for better spacing */
+    display: block; /* Make the link a block element for full-width clickability */
+    border-radius: 4px; /* Rounded corners */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+}
+
+.sidebar ul li a:hover {
+    color: #ffffff; /* Hover color */
+    background-color: #2b334a; /* Hover background color */
 }

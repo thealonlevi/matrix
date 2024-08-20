@@ -43,6 +43,18 @@ const ProductList = () => {
           const visibleProducts = productsWithDescriptions.filter(product => product.visible);
           setProducts(visibleProducts);
           console.log('Visible products set in state:', visibleProducts);
+
+          // Save the visible products to local storage
+          localStorage.setItem('visible_products', JSON.stringify(visibleProducts));
+          console.log('Visible products saved to local storage.');
+
+          // Save product titles to local storage for use in other components
+          const productTitles = visibleProducts.reduce((acc, product) => {
+            acc[product.product_id] = product.product_title;
+            return acc;
+          }, {});
+          localStorage.setItem('product_titles', JSON.stringify(productTitles));
+          console.log('Product titles saved to local storage.');
         } else {
           console.warn('No data body found in the response.');
         }

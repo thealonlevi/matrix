@@ -39,53 +39,76 @@ const AdminOrders = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-        const logged = await logRequest();
-        if (!logged) return;
+      const logged = await logRequest();
+      if (!logged) return;
 
-        console.log("Fetching orders...");
-        const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchOrders', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+      console.log("Fetching orders...");
+      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchOrders', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-        console.log("Fetch orders response:", response);
+      console.log("Fetch orders response:", response);
 
-        if (response.ok) {
-            const data = await response.json();
-            console.log("Orders data received:", data);
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Orders data received:", data);
 
-            if (data && data.body && data.body.length > 0) {
-                console.log("Setting orders data...");
-                setOrders(data.body);
-            } else {
-                console.warn("No orders found in the response data.");
-                setOrders([]); // Set to an empty array if no orders are found
-            }
+        if (data && data.body && data.body.length > 0) {
+          console.log("Setting orders data...");
+          setOrders(data.body);
         } else {
-            console.error("Failed to fetch orders", response.statusText);
-            setError('Failed to fetch orders');
+          console.warn("No orders found in the response data.");
+          setOrders([]); // Set to an empty array if no orders are found
         }
+      } else {
+        console.error("Failed to fetch orders", response.statusText);
+        setError('Failed to fetch orders');
+      }
     } catch (error) {
-        console.error("Error fetching orders:", error);
-        setError('Error fetching orders');
+      console.error("Error fetching orders:", error);
+      setError('Error fetching orders');
     } finally {
-        setLoading(false);
-        console.log("Loading state set to false");
+      setLoading(false);
+      console.log("Loading state set to false");
     }
-};
-
+  };
 
   // Fetch orders on component mount
   useEffect(() => {
     console.log("Component mounted, fetching orders...");
     fetchOrders();
+
+    console.log("Full localStorage data:");
+    for (let i = 0; i < localStorage.length; i++) {
+      let key = localStorage.key(i);
+      let value = localStorage.getItem(key);
+      console.log(`${key}: ${value}`);
+    }
   }, []);
+
+  // Function to get the product title by ID from the offlineProductList in localStorage
+  const getProductTitleById = (productId) => {
+    const offlineProductList = JSON.parse(localStorage.getItem('offlineProductList')) || [];
+    // Ensure both product_id and productId are treated as strings during comparison
+    const product = offlineProductList.find(item => item.product_id.toString() === productId.toString());
+  
+    if (product) {
+      console.log(`Found product:`, product); // Log the found product
+      return product.product_title;
+    } else {
+      console.log(`Product with ID: ${productId} not found.`);
+      return `Product ID: ${productId}`;
+    }
+  };
+  
+  
 
   return (
     <div className="admin-orders-container">
-      <h1 className="admin-orders-title">Admin Orders</h1>
+      <h1 className="admin-orders-title">Orders</h1>
       {loading ? (
         <p>Loading orders...</p>
       ) : error ? (
@@ -97,10 +120,11 @@ const AdminOrders = () => {
               <th>#</th>
               <th>User</th>
               <th>Title</th>
+              <th>Quantity</th>
               <th>Total</th>
               <th>Status</th>
               <th>Processor</th>
-              <th>Modified</th>
+              <th>Date</th>
             </tr>
           </thead>
           <tbody>
@@ -111,10 +135,21 @@ const AdminOrders = () => {
                 <td>
                   {order.order_contents ? (
                     order.order_contents.map((item, idx) => (
-                      <span key={`${order.orderId}-${idx}`}>{`Product ID: ${item.product_id}, Quantity: ${item.quantity}`}</span>
+                      <span key={`${order.orderId}-${idx}`}>
+                        {getProductTitleById(item.product_id)}
+                      </span>
                     ))
                   ) : (
                     <span>No items</span>
+                  )}
+                </td>
+                <td>
+                  {order.order_contents ? (
+                    order.order_contents.map((item, idx) => (
+                      <span key={`${order.orderId}-quantity-${idx}`}>{item.quantity}</span>
+                    ))
+                  ) : (
+                    <span>0</span>
                   )}
                 </td>
                 <td>{`$${order.total || '0.00'}`}</td>
