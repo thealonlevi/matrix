@@ -3,7 +3,7 @@ import editIcon from '../../assets/icons/edit.png';
 import deleteIcon from '../../assets/icons/trash.png';
 import stockIcon from '../../assets/icons/box.png';
 import expandIcon from '../../assets/icons/plus.png';
-import collapseIcon from '../../assets/icons/plus.png';
+import collapseIcon from '../../assets/icons/subtract.png';
 import detachIcon from '../../assets/icons/detach.png'; // Add an icon for detaching
 
 const ProductItem = ({
