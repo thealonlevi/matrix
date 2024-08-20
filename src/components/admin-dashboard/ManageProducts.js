@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import './styles/ManageProducts.css';
-import plusIcon from '../../assets/icons/plus.png';
 import { checkAdminPermission } from './utils/checkAdminPermissions';
 import { fetchProducts, deleteProduct, toggleProductVisibility } from './utils/api';
 import ProductItem from './ProductItem';
@@ -104,9 +103,9 @@ const ManageProducts = () => {
       <h1 className='admin-manage-products-header'>Manage Products</h1>
 
       <div className='admin-add-product'>
-        <a href='/admin/createproduct' className='admin-add-product-link'>
-          <img src={plusIcon} alt='Add Product' className='admin-icon' />
-        </a>
+        <button onClick={() => navigate('/admin/createproduct')} className='admin-add-product-link'>
+          Create Product
+        </button>
         <button onClick={() => navigate('/admin/creategroup')} className='admin-add-group-link'>
           Create Group
         </button>
