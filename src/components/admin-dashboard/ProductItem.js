@@ -13,7 +13,8 @@ const ProductItem = ({
   handleDelete,
   handleToggleVisibility,
   handleAppendProduct,
-  expandedGroups
+  expandedGroups,
+  products,
 }) => {
   const [productIdToAdd, setProductIdToAdd] = useState('');
 
@@ -25,7 +26,7 @@ const ProductItem = ({
       handleAppendProduct(product.product_id, productIdToAdd);
       setProductIdToAdd(''); // Clear the input field after adding
     } else {
-      alert('Please enter a product ID to add.');
+      alert('Please select a product to add.');
     }
   };
 
@@ -63,6 +64,7 @@ const ProductItem = ({
             <button
               onClick={() => toggleGroupExpansion(product.product_id)}
               className='admin-expand-button'
+              title="Expand/Collapse Group"
             >
               <img
                 src={isExpanded ? collapseIcon : expandIcon}
@@ -74,12 +76,14 @@ const ProductItem = ({
           <a
             href={`/admin/modifyproduct/${product.product_id}`}
             className='admin-edit-link'
+            title="Edit Product"
           >
             <img src={editIcon} alt='Edit' className='admin-icon' />
           </a>
           <button
             onClick={() => handleDelete(product.product_id)}
             className='admin-delete-button'
+            title="Delete Product"
           >
             <img src={deleteIcon} alt='Delete' className='admin-icon' />
           </button>
@@ -87,6 +91,7 @@ const ProductItem = ({
             <a
               href={`/admin/modifystock/${product.product_id}`}
               className='admin-stock-link'
+              title="Manage Stock"
             >
               <img src={stockIcon} alt='Manage Stock' className='admin-icon' />
             </a>
@@ -126,26 +131,42 @@ const ProductItem = ({
                 <a
                   href={`/admin/modifyproduct/${product.product_id}/${groupProduct.product_id}`}
                   className='admin-edit-link'
+                  title="Edit Group Product"
                 >
                   <img src={editIcon} alt='Edit' className='admin-icon' />
                 </a>
                 <button
                   onClick={() => handleDelete(`${product.product_id}/${groupProduct.product_id}`)}
                   className='admin-delete-button'
+                  title="Delete Group Product"
                 >
                   <img src={deleteIcon} alt='Delete' className='admin-icon' />
                 </button>
+                <a
+                  href={`/admin/modifystock/${groupProduct.product_id}`}
+                  className='admin-stock-link'
+                  title="Manage Group Product Stock"
+                >
+                  <img src={stockIcon} alt='Manage Stock' className='admin-icon' />
+                </a>
               </div>
             </div>
           ))}
           <form onSubmit={handleAddProduct} className='admin-add-product-to-group-form'>
-            <input
-              type='text'
-              placeholder='Enter Product ID to Add'
+            <select
               value={productIdToAdd}
               onChange={(e) => setProductIdToAdd(e.target.value)}
               className='admin-add-product-input'
-            />
+            >
+              <option value=''>Select Product to Add</option>
+              {products
+                .filter((prod) => !Array.isArray(prod.product_group)) // Exclude groups
+                .map((prod) => (
+                  <option key={prod.product_id} value={prod.product_id}>
+                    {`${prod.product_id} - ${prod.product_title}`}
+                  </option>
+                ))}
+            </select>
             <button type='submit' className='admin-add-product-button'>
               Add Product to Group
             </button>

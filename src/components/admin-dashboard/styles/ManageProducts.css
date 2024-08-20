@@ -266,3 +266,101 @@
 .admin-add-product-button:hover {
   background-color: #e63e3e;
 }
+
+.admin-add-product-to-group-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  gap: 10px;
+  width: 100%; /* Make the form take up the full width */
+}
+
+.admin-add-product-input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #202038;
+  color: #ffffff;
+  width: 100%; /* Ensure the dropdown spans the full width */
+  max-width: 400px; /* Limit the maximum width for readability */
+}
+
+.admin-add-product-button {
+  padding: 10px 20px;
+  background-color: #ff4c4c;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+  align-self: flex-end; /* Align the button to the right */
+}
+
+.admin-add-product-button:hover {
+  background-color: #e63e3e;
+}
+
+.admin-add-product-to-group-form select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: #202038;
+  color: #ffffff;
+  border: 1px solid #444;
+}
+
+.admin-add-product-to-group-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  gap: 10px;
+  width: 100%; 
+}
+
+.admin-add-product-input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #202038;
+  color: #ffffff;
+  width: 100%;
+  max-width: 400px; 
+}
+
+.admin-add-product-button {
+  padding: 10px 20px;
+  background-color: #ff4c4c;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+  align-self: flex-end;
+}
+
+.admin-add-product-button:hover {
+  background-color: #e63e3e;
+}
+
+.admin-add-product-to-group-form select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: #202038;
+  color: #ffffff;
+  border: 1px solid #444;
+}
+
+.admin-icon:hover {
+  transform: scale(1.2);
+}
+
+.admin-action-buttons .admin-icon:hover {
+  transform: scale(1.2);
+}
+
+.admin-product-item p a:hover {
+  color: #ff4c4c;
+}
