@@ -1,55 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import './styles/OrderDetails.css'; // Assuming you have a CSS file for styling
+import './styles/OrderDetails.css';
+import { checkPermissionAndFetchData, fetchData, getUserIdForOrder, getProductTitleById } from './utils/adminUtils'; // Import the utility functions
 
 const OrderDetails = () => {
-  const { orderId } = useParams(); // Access orderId from the URL params
+  const { orderId } = useParams();
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Fetch order details from the API
-  const fetchOrderDetails = async (orderId, userId) => {
-    try {
-      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchOrderDetails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ orderId, userId }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setOrderDetails(JSON.parse(data.body));
-      } else {
-        throw new Error('Failed to fetch order details');
-      }
-    } catch (error) {
-      setError('Error while fetching order details: ' + error.message);
-    } finally {
-      setLoading(false);
+  const fetchOrderDetails = async () => {
+    const userId = getUserIdForOrder(orderId);
+    if (!userId) {
+      throw new Error('User ID not found for this order.');
     }
-  };
 
-  // Get the userId for the order from the local storage
-  const getUserIdForOrder = (orderId) => {
-    const orderUserIdList = JSON.parse(localStorage.getItem('orderUserIdList')) || [];
-    const orderUserMap = orderUserIdList.find(item => item.orderId === orderId);
+    const data = await fetchData(
+      'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchOrderDetails',
+      { orderId, userId }
+    );
 
-    if (orderUserMap) {
-      return orderUserMap.userId;
-    } else {
-      setError('User ID not found for this order.');
-      return null;
+    if (data) {
+      setOrderDetails(JSON.parse(data));
     }
   };
 
   useEffect(() => {
-    const userId = getUserIdForOrder(orderId);
-    if (userId) {
-      fetchOrderDetails(orderId, userId);
-    }
+    const init = async () => {
+      try {
+        await checkPermissionAndFetchData(fetchOrderDetails, 'Matrix_FetchOrderDetails', '99990');
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    init();
   }, [orderId]);
 
   if (loading) {
@@ -77,11 +64,17 @@ const OrderDetails = () => {
         <p><strong>IP Address:</strong> {orderDetails.ip_address?.S || 'N/A'}</p>
         <p><strong>Order Contents:</strong></p>
         <ul>
-          {orderDetails.order_contents?.L.map((item, index) => (
-            <li key={index}>
-              Product ID: {item.M.product_id?.N || 'N/A'}, Quantity: {item.M.quantity?.N || 'N/A'}
-            </li>
-          ))}
+          {orderDetails.order_contents?.L.map((item, index) => {
+            const productTitle = getProductTitleById(item.M.product_id?.N);
+            const quantity = item.M.quantity?.N;
+            const totalValue = `$${(quantity * orderDetails.total?.S).toFixed(2)}`;
+
+            return (
+              <li key={index}>
+                {quantity}x {productTitle} - {totalValue}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

@@ -1,4 +1,4 @@
-// src/utils/checkAdminPermission.js
+// src/components/admin-dashboard/utils/checkAdminPermission.js
 import { fetchUserAttributes, getCurrentUser } from 'aws-amplify/auth';
 
 export const checkAdminPermission = async () => {
