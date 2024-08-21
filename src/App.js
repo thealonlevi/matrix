@@ -14,6 +14,7 @@ import ModifyProductForm from './components/admin-dashboard/ModifyProductForm';
 import ModifyStockForm from './components/admin-dashboard/ModifyStockForm'; 
 import CreateGroupForm from './components/admin-dashboard/CreateGroupForm';
 import AdminOrders from './components/admin-dashboard/AdminOrders'; // Import AdminOrders
+import OrderDetails from './components/admin-dashboard/OrderDetails';
 import CartPage from './components/cart/CartPage';
 import { CartProvider } from './components/cart/CartContext';
 import './App.css';
@@ -82,6 +83,7 @@ const AppContent = () => {
           <Route path="modifyproduct/:groupId/:productId" element={<ModifyProductForm />} /> {/* Support for group/productId format */}
           <Route path="modifystock/:productId" element={<ModifyStockForm />} />
           <Route path="orders" element={<AdminOrders />} /> {/* Route for Admin Orders */}
+          <Route path="/admin/orders/:orderId" element={<OrderDetails />} />
         </Route>
       </Routes>
     </div>
