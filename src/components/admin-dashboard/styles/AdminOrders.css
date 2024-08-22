@@ -67,7 +67,9 @@
 }
 
 .orders-table tbody td.status {
-    text-align: center;
+    text-align: left; /* Align left for bullet style */
+    font-weight: bold; /* Slightly bolder status text */
+    font-size: 14px; /* Slightly larger font size for status */
 }
 
 .orders-table tbody td.total,
@@ -104,4 +106,67 @@
 .sidebar ul li a:hover {
     color: #ffffff; /* Hover color */
     background-color: #2b334a; /* Hover background color */
+}
+
+/* Bullet and status styles */
+.bullet {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.status-unpaid {
+    color: #e74c3c; /* Red for Unpaid */
+}
+
+.status-partial {
+    color: #f39c12; /* Orange for Partial */
+}
+
+.status-pending {
+    color: #f1c40f; /* Yellow for Pending */
+}
+
+.status-paid {
+    color: #2ecc71; /* Green for Paid */
+}
+
+.status-refunded {
+    color: #3498db; /* Blue for Refunded */
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination li {
+    margin: 0 4px;
+}
+
+.pagination li a {
+    color: #ffffff;
+    background-color: #2f3640;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.pagination li a:hover {
+    background-color: #3a4453;
+}
+
+.pagination li.active a {
+    background-color: #2f89fc;
+    color: #ffffff;
 }
