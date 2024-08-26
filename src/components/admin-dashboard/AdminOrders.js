@@ -14,46 +14,61 @@ const AdminOrders = () => {
 
   const fetchOrders = async () => {
     try {
-      console.log("Starting fetchOrders function");
-
-      const response = await fetchData(
-        'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchOrders',
+      const serverResponse = await fetchData(
+        'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchOrdersCache',
         {}
       );
 
-      console.log("Data fetched from Matrix_FetchOrders API:", response);
+      const serverData = typeof serverResponse === 'string' ? JSON.parse(serverResponse) : serverResponse;
 
-      let data = typeof response === 'string' ? JSON.parse(response) : response;
+      const storedUID = localStorage.getItem('ORDERS_DATABASE_UID');
+      const serverUID = serverData.ORDERS_DATABASE_UID;
 
-      console.log("Parsed data:", data);
+      if (storedUID !== serverUID) {
+        // Update the local storage with new UID and orders data
+        localStorage.setItem('ORDERS_DATABASE_UID', serverUID);
+        localStorage.setItem('ORDERS_DATABASE', JSON.stringify(serverData.ORDERS_DATABASE));
 
-      if (Array.isArray(data) && data.length > 0) {
-        console.log("Data is valid and has items");
-        const sortedOrders = data.sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
-        console.log("Orders sorted successfully");
+        const ordersArray = Object.keys(serverData.ORDERS_DATABASE).map((key) => {
+          return JSON.parse(serverData.ORDERS_DATABASE[key].order_data);
+        });
+
+        const sortedOrders = ordersArray.sort((a, b) => {
+          const dateA = new Date(a.order_date?.S || a.order_date);
+          const dateB = new Date(b.order_date?.S || b.order_date);
+          return dateB - dateA;
+        });
+
         setOrders(sortedOrders);
         updateOrderUserIdList(sortedOrders);
       } else {
-        console.error("No valid data found. Setting orders to an empty array.");
-        setOrders([]);
+        const storedOrders = JSON.parse(localStorage.getItem('ORDERS_DATABASE') || '{}');
+        const ordersArray = Object.keys(storedOrders).map((key) => {
+          return JSON.parse(storedOrders[key].order_data);
+        });
+
+        const sortedOrders = ordersArray.sort((a, b) => {
+          const dateA = new Date(a.order_date?.S || a.order_date);
+          const dateB = new Date(b.order_date?.S || b.order_date);
+          return dateB - dateA;
+        });
+
+        setOrders(sortedOrders);
       }
     } catch (error) {
-      console.error("Error in fetchOrders:", error);
       setError("Failed to fetch orders. Please check the console for details.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const updateOrderUserIdList = (orders) => {
     try {
-      console.log("Starting updateOrderUserIdList function with orders:", orders);
-
       const storedOrderUserIdList = JSON.parse(localStorage.getItem('orderUserIdList')) || [];
       const newOrderUserIdList = orders.map(order => ({
-        orderId: order.orderId,
-        userId: order.userId,
+        orderId: order.orderId?.S || order.orderId,
+        userId: order.userId?.S || order.userId,
       }));
-
-      console.log("New order-user ID pairs generated:", newOrderUserIdList);
 
       const updatedList = [...storedOrderUserIdList];
       newOrderUserIdList.forEach(newPair => {
@@ -62,25 +77,19 @@ const AdminOrders = () => {
         }
       });
 
-      console.log("Updated orderUserIdList:", updatedList);
       localStorage.setItem('orderUserIdList', JSON.stringify(updatedList));
     } catch (error) {
-      console.error('Error updating orderUserIdList in localStorage:', error);
+      console.error('[AdminOrders] Error updating orderUserIdList in localStorage:', error);
     }
   };
 
   useEffect(() => {
     const init = async () => {
       try {
-        console.log("Starting useEffect initialization");
-
         await checkPermissionAndFetchData(fetchOrders, 'Matrix_FetchOrders', '9999');
-        setLoading(false);
-
-        console.log("Permissions checked and orders fetched successfully");
       } catch (err) {
-        console.error("Error during useEffect initialization:", err);
         setError(err.message);
+      } finally {
         setLoading(false);
       }
     };
@@ -89,12 +98,13 @@ const AdminOrders = () => {
   }, []);
 
   const handleRowClick = (orderId) => {
-    console.log("Row clicked with orderId:", orderId);
     navigate(`/admin/orders/${orderId}`);
   };
 
   const getStatusBullet = (status) => {
-    switch (status.toLowerCase()) {
+    const statusString = typeof status === 'object' && status.S ? status.S.toLowerCase() : String(status).toLowerCase();
+
+    switch (statusString) {
       case 'unpaid':
         return <span className="bullet status-unpaid">• Unpaid</span>;
       case 'partial':
@@ -142,16 +152,16 @@ const AdminOrders = () => {
             </thead>
             <tbody>
               {displayOrders.map((order, index) => (
-                <tr key={order.orderId} onClick={() => handleRowClick(order.orderId)} className="clickable-row">
+                <tr key={`${order.orderId?.S || order.orderId}-${index}`} onClick={() => handleRowClick(order.orderId?.S || order.orderId)} className="clickable-row">
                   <td>{orders.length - (currentPage * ordersPerPage + index)}</td>
-                  <td>{order.user_email || 'N/A'}</td>
-                  <td>{order.orderId}</td>
-                  <td>{`$${order.final_price || order.total || '0.00'}`}</td>
+                  <td>{order.user_email?.S || 'N/A'}</td>
+                  <td>{order.orderId?.S || order.orderId}</td>
+                  <td>{`$${order.final_price?.S || order.total?.S || '0.00'}`}</td>
                   <td className="status">
-                    {getStatusBullet(order.payment_status)}
+                    {getStatusBullet(order.payment_status?.S || order.payment_status)}
                   </td>
-                  <td>{order.payment_method || 'Unknown'}</td>
-                  <td>{new Date(order.order_date).toLocaleString() || 'Unknown'}</td>
+                  <td>{order.payment_method?.S || 'Unknown'}</td>
+                  <td>{order.order_date?.S ? new Date(order.order_date.S).toLocaleString() : 'Invalid Date'}</td>
                 </tr>
               ))}
             </tbody>

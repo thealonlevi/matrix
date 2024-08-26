@@ -1,5 +1,4 @@
-// src/components/Header.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Header.css';
 import homeIcon from '../assets/icons/house.png';
@@ -8,9 +7,23 @@ import registerIcon from '../assets/icons/register.png';
 import loginIcon from '../assets/icons/login.png';
 import starIcon from '../assets/icons/star.png';
 import logoutIcon from '../assets/icons/signout.png';
+import { fetchAndStoreProductList } from '../utils/utils';
 
 const Header = ({ user, handleLogout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const initializeProductList = async () => {
+      try {
+        await fetchAndStoreProductList();
+        console.log('Product list fetched and stored successfully.');
+      } catch (error) {
+        console.error('Failed to initialize product list:', error);
+      }
+    };
+
+    initializeProductList();
+  }, []);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);

@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import '../styles/ProductDetailsModal.css';
+import { useCart } from './cart/CartContext';
 
 const ProductDetailsModal = ({ product, isOpen, onClose }) => {
+  const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
-  const [selectedOption, setSelectedOption] = useState(product.product_group ? product.product_group[0] : product); // Default to first option in group
+  const [selectedOption, setSelectedOption] = useState(product.product_group ? product.product_group[0] : product);
 
   if (!isOpen) return null;
 
   const handleAddToCart = () => {
-    // Add the selected option to the cart with the specified quantity
-    console.log(`Added ${quantity} of ${selectedOption.product_title} to the cart`);
+    addToCart({
+      product_id: selectedOption.product_id,
+      product_title: selectedOption.product_title,
+      product_price: selectedOption.product_price,
+      product_img_url: selectedOption.product_img_url,
+      quantity
+    });
     onClose(); // Close the modal after adding to cart
   };
 
@@ -33,22 +40,20 @@ const ProductDetailsModal = ({ product, isOpen, onClose }) => {
             <div className="product-modal-categories">
               <span className="product-modal-category-tag">{product.product_category}</span>
             </div>
-            <h3 className="product-modal-subtitle">Available Options</h3>
-            <div className="product-modal-options">
-              <select className="product-modal-select" onChange={handleOptionChange}>
-                {product.product_group ? (
-                  product.product_group.map(option => (
-                    <option key={option.product_id} value={option.product_id}>
-                      {option.product_title} - ${option.product_price}
-                    </option>
-                  ))
-                ) : (
-                  <option value={product.product_id}>
-                    {product.product_title} - ${product.product_price}
-                  </option>
-                )}
-              </select>
-            </div>
+            {product.product_group && (
+              <>
+                <h3 className="product-modal-subtitle">Available Options</h3>
+                <div className="product-modal-options">
+                  <select className="product-modal-select" onChange={handleOptionChange}>
+                    {product.product_group.map(option => (
+                      <option key={option.product_id} value={option.product_id}>
+                        {option.product_title} - ${option.product_price}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            )}
             <div className="product-modal-quantity">
               <label htmlFor="quantity">Amount to Add</label>
               <input

@@ -6,13 +6,11 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
-    // Try to get the cart from localStorage when the app first loads
     const savedCart = localStorage.getItem('cart');
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
   useEffect(() => {
-    // Whenever cartItems changes, save it to localStorage
     localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
 

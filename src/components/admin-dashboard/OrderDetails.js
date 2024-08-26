@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import './styles/OrderDetails.css';
-import { checkPermissionAndFetchData, fetchData, getUserIdForOrder, getProductTitleById } from './utils/adminUtils'; // Import the utility functions
+import { checkPermissionAndFetchData, fetchData, getUserIdForOrder, getProductTitleById } from './utils/adminUtils';
 
 const OrderDetails = () => {
   const { orderId } = useParams();
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [productTitles, setProductTitles] = useState({});
 
   const fetchOrderDetails = async () => {
     const userId = getUserIdForOrder(orderId);
@@ -21,13 +22,22 @@ const OrderDetails = () => {
     );
 
     if (data) {
-      // Optionally sort the order contents if needed
-      if (Array.isArray(data.order_contents?.L)) {
-        data.order_contents.L.sort((a, b) => parseInt(a.M.product_id.N) - parseInt(b.M.product_id.N));
-      }
-
-      setOrderDetails(JSON.parse(data));
+      const parsedData = JSON.parse(data);
+      setOrderDetails(parsedData);
+      
+      const titles = await fetchProductTitles(parsedData.order_contents?.L);
+      setProductTitles(titles);
     }
+  };
+
+  const fetchProductTitles = async (orderContents) => {
+    const titles = {};
+    for (const item of orderContents) {
+      const productId = item.M.product_id?.S || item.M.product_id?.N;
+      const productTitle = await getProductTitleById(productId);
+      titles[productId] = productTitle;
+    }
+    return titles;
   };
 
   useEffect(() => {
@@ -56,7 +66,6 @@ const OrderDetails = () => {
     return <p>No order details available.</p>;
   }
 
-  // Calculate and display the discount if there is any
   const total = parseFloat(orderDetails.total_price?.S || '0');
   const final = parseFloat(orderDetails.final_price?.S || '0');
   const discount = total - final;
@@ -79,8 +88,9 @@ const OrderDetails = () => {
         <p><strong>Order Contents:</strong></p>
         <ul>
           {orderDetails.order_contents?.L.map((item, index) => {
-            const productTitle = getProductTitleById(item.M.product_id?.N);
+            const productId = item.M.product_id?.S || item.M.product_id?.N;
             const quantity = item.M.quantity?.N;
+            const productTitle = productTitles[productId] || `Product ID: ${productId}`;
             return (
               <li key={index}>
                 {quantity}x {productTitle}

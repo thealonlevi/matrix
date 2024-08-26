@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Header from './components/Header';
 import Banner from './components/Banner';
 import ProductList from './components/ProductList';
-import ProductDetails from './components/ProductDetails';
 import SignUpForm from './components/userSystem/SignUpForm';
 import SignInForm from './components/userSystem/SignInForm';
 import ForgotPasswordForm from './components/userSystem/ForgotPasswordForm';
@@ -72,8 +71,6 @@ const AppContent = () => {
         <Route path="/forgot-password" element={<ForgotPasswordForm />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/reviews" element={<div>Reviews Page</div>} />
-        <Route path="/product/:productId" element={<ProductDetails />} />
-        <Route path="/product/:groupId/:productId" element={<ProductDetails />} /> {/* Support for group/productId format */}
         {/* Wrap all admin routes under AdminLayout */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="products" element={<ManageProducts />} />
