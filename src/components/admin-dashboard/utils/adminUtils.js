@@ -94,6 +94,26 @@ export const getProductTitleById = (productId) => {
     }
   }
 
+  if (typeof offlineProductList === 'string') {
+    try {
+      // Parse the string into a JSON array
+      offlineProductList = JSON.parse(offlineProductList);
+    } catch (error) {
+      console.error('Failed to parse offlineProductList as JSON:', error);
+      return `Product ID: ${productId}`;
+    }
+  }
+
+  if (typeof offlineProductList === 'string') {
+    try {
+      // Parse the string into a JSON array
+      offlineProductList = JSON.parse(offlineProductList);
+    } catch (error) {
+      console.error('Failed to parse offlineProductList as JSON:', error);
+      return `Product ID: ${productId}`;
+    }
+  }
+
   // Now offlineProductList should be an array of objects
   if (Array.isArray(offlineProductList)) {
     console.log('Successfully parsed offlineProductList:', offlineProductList);

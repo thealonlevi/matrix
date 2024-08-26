@@ -12,6 +12,7 @@ const ProductDetailsModal = ({ product, isOpen, onClose }) => {
   const handleAddToCart = () => {
     addToCart({
       product_id: selectedOption.product_id,
+      group_id: product.product_group ? product.product_id : null, // Include group_id if the product belongs to a group
       product_title: selectedOption.product_title,
       product_price: selectedOption.product_price,
       product_img_url: selectedOption.product_img_url,
