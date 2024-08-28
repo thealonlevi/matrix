@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from './CartContext';
 import '../../styles/CartPage.css';
-import { fetchUserAttributes, signOut } from 'aws-amplify/auth'; // Import AWS Amplify Auth functions
+import { fetchUserAttributes } from 'aws-amplify/auth'; // Import AWS Amplify Auth functions
 
 // Fetch the authenticated user's email or determine if they are a guest
 async function currentAuthenticatedUser() {

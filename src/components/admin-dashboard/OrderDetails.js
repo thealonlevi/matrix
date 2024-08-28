@@ -25,7 +25,7 @@ const OrderDetails = () => {
     if (data) {
       const parsedData = JSON.parse(data);
       setOrderDetails(parsedData);
-      
+
       const titles = await fetchProductTitles(parsedData.order_contents?.L);
       setProductTitles(titles);
     }
@@ -131,6 +131,21 @@ const OrderDetails = () => {
             );
           })}
         </ul>
+        {/* Display Fulfillment History if it exists */}
+        {orderDetails.fulfillment_history?.L && (
+          <>
+            <p><strong>Fulfillment History:</strong></p>
+            <ul>
+              {orderDetails.fulfillment_history.L.map((entry, index) => (
+                <li key={index}>
+                  <p><strong>Product ID:</strong> {entry.M.product_id?.S}</p>
+                  <p><strong>Stock:</strong> {entry.M.stock?.S}</p>
+                  <p><strong>Timestamp:</strong> {new Date(entry.M.timestamp?.S).toLocaleString()}</p>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
         {/* Mark as Paid button */}
         {orderDetails.payment_status?.S === 'unpaid' && (
           <button onClick={markAsPaid} disabled={isMarkingPaid} className="mark-as-paid-button">
