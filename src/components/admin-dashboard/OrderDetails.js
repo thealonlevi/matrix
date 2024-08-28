@@ -9,6 +9,7 @@ const OrderDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [productTitles, setProductTitles] = useState({});
+  const [isMarkingPaid, setIsMarkingPaid] = useState(false);
 
   const fetchOrderDetails = async () => {
     const userId = getUserIdForOrder(orderId);
@@ -38,6 +39,38 @@ const OrderDetails = () => {
       titles[productId] = productTitle;
     }
     return titles;
+  };
+
+  const markAsPaid = async () => {
+    setIsMarkingPaid(true);
+    try {
+      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ModifyOrderStatus', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          order_id: orderDetails.orderId?.S,
+          requested_status: 'paid',
+        }),
+      });
+
+      if (response.ok) {
+        // Update the order status in the UI
+        setOrderDetails((prevDetails) => ({
+          ...prevDetails,
+          payment_status: { S: 'paid' },
+        }));
+        alert('Order status updated to Paid successfully.');
+      } else {
+        const errorResponse = await response.json();
+        alert(`Failed to update order status: ${errorResponse.error}`);
+      }
+    } catch (err) {
+      alert(`Error updating order status: ${err.message}`);
+    } finally {
+      setIsMarkingPaid(false);
+    }
   };
 
   useEffect(() => {
@@ -98,6 +131,12 @@ const OrderDetails = () => {
             );
           })}
         </ul>
+        {/* Mark as Paid button */}
+        {orderDetails.payment_status?.S === 'unpaid' && (
+          <button onClick={markAsPaid} disabled={isMarkingPaid} className="mark-as-paid-button">
+            {isMarkingPaid ? 'Marking as Paid...' : 'Mark As Paid'}
+          </button>
+        )}
       </div>
     </div>
   );
