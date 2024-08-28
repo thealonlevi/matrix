@@ -14,48 +14,53 @@ const AdminOrders = () => {
 
   const fetchOrders = async () => {
     try {
+      const storedTimestamp = localStorage.getItem('ORDERS_DATABASE_TIMESTAMP');
+      const requestBody = {
+        client_timestamp: storedTimestamp || null,
+      };
+
       const serverResponse = await fetchData(
         'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchOrdersCache',
-        {}
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        }
       );
+      console.log("ORDERS");
+      console.log(serverResponse);
 
       const serverData = typeof serverResponse === 'string' ? JSON.parse(serverResponse) : serverResponse;
 
-      const storedUID = localStorage.getItem('ORDERS_DATABASE_UID');
-      const serverUID = serverData.ORDERS_DATABASE_UID;
+      if (serverData.status === 'updated') {
+        // Update the local storage with new timestamp and orders data
+        localStorage.setItem('ORDERS_DATABASE_TIMESTAMP', serverData.timestamp);
+        localStorage.setItem('ORDERS_DATABASE', JSON.stringify(serverData.data));
 
-      if (storedUID !== serverUID) {
-        // Update the local storage with new UID and orders data
-        localStorage.setItem('ORDERS_DATABASE_UID', serverUID);
-        localStorage.setItem('ORDERS_DATABASE', JSON.stringify(serverData.ORDERS_DATABASE));
-
-        const ordersArray = Object.keys(serverData.ORDERS_DATABASE).map((key) => {
-          return JSON.parse(serverData.ORDERS_DATABASE[key].order_data);
-        });
-
-        const sortedOrders = ordersArray.sort((a, b) => {
-          const dateA = new Date(a.order_date?.S || a.order_date);
-          const dateB = new Date(b.order_date?.S || b.order_date);
+        // Directly use the array as it is
+        const sortedOrders = serverData.data.sort((a, b) => {
+          const dateA = new Date(a.order_date);
+          const dateB = new Date(b.order_date);
           return dateB - dateA;
         });
 
         setOrders(sortedOrders);
         updateOrderUserIdList(sortedOrders);
       } else {
-        const storedOrders = JSON.parse(localStorage.getItem('ORDERS_DATABASE') || '{}');
-        const ordersArray = Object.keys(storedOrders).map((key) => {
-          return JSON.parse(storedOrders[key].order_data);
-        });
+        const storedOrders = JSON.parse(localStorage.getItem('ORDERS_DATABASE') || '[]');
 
-        const sortedOrders = ordersArray.sort((a, b) => {
-          const dateA = new Date(a.order_date?.S || a.order_date);
-          const dateB = new Date(b.order_date?.S || b.order_date);
+        const sortedOrders = storedOrders.sort((a, b) => {
+          const dateA = new Date(a.order_date);
+          const dateB = new Date(b.order_date);
           return dateB - dateA;
         });
 
         setOrders(sortedOrders);
       }
     } catch (error) {
+      console.error("Failed to fetch orders. Please check the console for details:", error);
       setError("Failed to fetch orders. Please check the console for details.");
     } finally {
       setLoading(false);
@@ -66,8 +71,8 @@ const AdminOrders = () => {
     try {
       const storedOrderUserIdList = JSON.parse(localStorage.getItem('orderUserIdList')) || [];
       const newOrderUserIdList = orders.map(order => ({
-        orderId: order.orderId?.S || order.orderId,
-        userId: order.userId?.S || order.userId,
+        orderId: order.orderId,
+        userId: order.userId,
       }));
 
       const updatedList = [...storedOrderUserIdList];
@@ -102,7 +107,7 @@ const AdminOrders = () => {
   };
 
   const getStatusBullet = (status) => {
-    const statusString = typeof status === 'object' && status.S ? status.S.toLowerCase() : String(status).toLowerCase();
+    const statusString = String(status).toLowerCase();
 
     switch (statusString) {
       case 'unpaid':
@@ -152,16 +157,16 @@ const AdminOrders = () => {
             </thead>
             <tbody>
               {displayOrders.map((order, index) => (
-                <tr key={`${order.orderId?.S || order.orderId}-${index}`} onClick={() => handleRowClick(order.orderId?.S || order.orderId)} className="clickable-row">
+                <tr key={`${order.orderId}-${index}`} onClick={() => handleRowClick(order.orderId)} className="clickable-row">
                   <td>{orders.length - (currentPage * ordersPerPage + index)}</td>
-                  <td>{order.user_email?.S || 'N/A'}</td>
-                  <td>{order.orderId?.S || order.orderId}</td>
-                  <td>{`$${order.final_price?.S || order.total?.S || '0.00'}`}</td>
+                  <td>{order.user_email || 'N/A'}</td>
+                  <td>{order.orderId}</td>
+                  <td>{`$${order.final_price || '0.00'}`}</td>
                   <td className="status">
-                    {getStatusBullet(order.payment_status?.S || order.payment_status)}
+                    {getStatusBullet(order.payment_status)}
                   </td>
-                  <td>{order.payment_method?.S || 'Unknown'}</td>
-                  <td>{order.order_date?.S ? new Date(order.order_date.S).toLocaleString() : 'Invalid Date'}</td>
+                  <td>{order.payment_method || 'Unknown'}</td>
+                  <td>{order.order_date ? new Date(order.order_date).toLocaleString() : 'Invalid Date'}</td>
                 </tr>
               ))}
             </tbody>
