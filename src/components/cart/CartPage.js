@@ -202,15 +202,20 @@ const CartPage = () => {
 
       console.log('Order API response:', response);
 
-      if (!response.ok) {
-        throw new Error('Failed to create order');
+      const result_unprocessed = await response.json();
+      const result = JSON.parse(result_unprocessed.body);
+      
+      console.log('Parsed response:', result);
+
+      if (result_unprocessed.statusCode === 200) {
+        // Handle successful response
+        clearCart();
+        alert('Order created successfully! Order ID: ' + (result.order_id || 'undefined'));
+      } else {
+        // Handle error response
+        const errorMessage = result.error || 'Failed to create order';
+        alert(`Failed to create order! Error: ${errorMessage}`);
       }
-
-      const result = await response.json();
-      console.log('Order created successfully:', result);
-
-      clearCart();
-      alert('Order created successfully! Order ID: ' + result.order_id);
     } catch (error) {
       console.error('Checkout failed:', error);
       alert('Checkout failed. Please try again.');
