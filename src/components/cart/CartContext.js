@@ -37,12 +37,14 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
-  // New function to update the quantity of a specific cart item
+  // Updated function to update the quantity of a specific cart item
   const updateCartItem = (product_id, newQuantity) => {
     setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.product_id === product_id ? { ...item, quantity: newQuantity } : item
-      )
+      newQuantity > 0
+        ? prevItems.map((item) =>
+            item.product_id === product_id ? { ...item, quantity: newQuantity } : item
+          )
+        : prevItems.filter(item => item.product_id !== product_id) // Remove item if quantity is zero
     );
   };
 

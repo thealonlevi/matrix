@@ -107,7 +107,7 @@ const ProductList = () => {
       {products.length > 0 ? (
         products.map((product, index) => {
           // Check if the product has a product_group array
-          const isGroup = Array.isArray(product.product_group) && product.product_group.length > 0;
+          const isGroup = Array.isArray(product.product_group);
           console.log(`Rendering product at index ${index}:`, product);
           console.log('Is this product a group?', isGroup);
 

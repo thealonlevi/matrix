@@ -39,14 +39,14 @@ const CreateGroupForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title || !imageUrl || !productIds) {
-      setError('Title, image, and at least one product ID are required.');
+    if (!title || !imageUrl) {
+      setError('Title and image are required.');
       return;
     }
 
     setError(null);
 
-    const productIdsArray = productIds.split(',').map(id => id.trim());
+    const productIdsArray = productIds ? productIds.split(',').map(id => id.trim()) : [];
 
     try {
       const groupDetails = {
@@ -57,8 +57,9 @@ const CreateGroupForm = () => {
         product_ids: productIdsArray,
       };
       
-      const response = await createGroup(groupDetails); // Use createGroup from groupUtils
-      alert(`Group created successfully with ID: ${response.product_id}`);
+      const response_unprocessed = await createGroup(groupDetails); // Use createGroup from groupUtils
+      const response = JSON.parse(response_unprocessed.body);
+      alert(`${response}`);
       navigate('/admin/products'); 
     } catch (error) {
       setError(`Error: ${error.message}`);
@@ -90,7 +91,7 @@ const CreateGroupForm = () => {
           />
         </div>
         <div className="form-group">
-          <label>Product IDs (comma-separated):</label>
+          <label>Product IDs (comma-separated, optional):</label>
           <input
             type="text"
             value={productIds}

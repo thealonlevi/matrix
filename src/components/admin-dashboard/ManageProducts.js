@@ -127,7 +127,7 @@ const ManageProducts = () => {
               key={product.product_id}
               product={product}
               products={products} // Pass all products to filter out groups
-              isGroup={Array.isArray(product.product_group) && product.product_group.length > 0}
+              isGroup={Array.isArray(product.product_group)}
               isExpanded={expandedGroups.includes(product.product_id)}
               toggleGroupExpansion={toggleGroupExpansionHandler}
               handleDelete={handleDelete}
