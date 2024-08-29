@@ -28,6 +28,14 @@ const OrderDetails = () => {
 
       const titles = await fetchProductTitles(parsedData.order_contents?.L);
       setProductTitles(titles);
+
+      // Fetch titles for the fulfillment history
+      if (parsedData.fulfillment_history?.L) {
+        const fulfillmentTitles = await fetchProductTitles(parsedData.fulfillment_history?.L.map(item => ({
+          M: { product_id: item.M.product_id }
+        })));
+        setProductTitles(prevTitles => ({ ...prevTitles, ...fulfillmentTitles }));
+      }
     }
   };
 
@@ -108,7 +116,6 @@ const OrderDetails = () => {
       <h1 className="order-details-title">Order Details</h1>
       <div className="order-details-content">
         <p><strong>Order ID:</strong> {orderDetails.orderId?.S || 'N/A'}</p>
-        <p><strong>User ID:</strong> {orderDetails.userId?.S || 'N/A'}</p>
         <p><strong>Email:</strong> {orderDetails.user_email?.S || 'N/A'}</p>
         <p><strong>Total Price:</strong> ${orderDetails.total_price?.S || 'N/A'}</p>
         <p><strong>Discount:</strong> {discount > 0 ? `- $${discount.toFixed(2)}` : 'No discount applied'}</p>
@@ -136,13 +143,20 @@ const OrderDetails = () => {
           <>
             <p><strong>Fulfillment History:</strong></p>
             <ul>
-              {orderDetails.fulfillment_history.L.map((entry, index) => (
-                <li key={index}>
-                  <p><strong>Product ID:</strong> {entry.M.product_id?.S}</p>
-                  <p><strong>Stock:</strong> {entry.M.stock?.S}</p>
-                  <p><strong>Timestamp:</strong> {new Date(entry.M.timestamp?.S).toLocaleString()}</p>
-                </li>
-              ))}
+              {orderDetails.fulfillment_history.L.map((entry, index) => {
+                const productId = entry.M.product_id?.S;
+                const productTitle = productTitles[productId] || `Product ID: ${productId}`;
+                const stockEntries = entry.M.stock?.S.split('>').map((stockItem, i) => (
+                  <p key={i}>{stockItem.trim()}</p>
+                ));
+                return (
+                  <li key={index}>
+                    <p><strong>Product:</strong> {productTitle}</p>
+                    <p><strong>Stock:</strong> {stockEntries}</p>
+                    <p><strong>Timestamp:</strong> {new Date(entry.M.timestamp?.S).toLocaleString()}</p>
+                  </li>
+                );
+              })}
             </ul>
           </>
         )}

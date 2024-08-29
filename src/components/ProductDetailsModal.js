@@ -10,6 +10,13 @@ const ProductDetailsModal = ({ product, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const handleAddToCart = () => {
+    const availableStock = selectedOption.available_stock_count || 0;
+
+    if (quantity > availableStock) {
+      alert(`Only ${availableStock} items available in stock. Please reduce the quantity.`);
+      return;
+    }
+
     addToCart({
       product_id: selectedOption.product_id,
       group_id: product.product_group ? product.product_id : null, // Include group_id if the product belongs to a group
@@ -25,6 +32,19 @@ const ProductDetailsModal = ({ product, isOpen, onClose }) => {
     const selectedOptionId = parseFloat(e.target.value); // Convert the value to a float to match the product_id type
     const option = product.product_group.find(opt => opt.product_id === selectedOptionId);
     setSelectedOption(option);
+    setQuantity(1); // Reset quantity to 1 when changing options
+  };
+
+  const handleQuantityChange = (e) => {
+    const newQuantity = parseInt(e.target.value);
+    const availableStock = selectedOption.available_stock_count || 0;
+
+    if (newQuantity > availableStock) {
+      alert(`Only ${availableStock} items available in stock. Please reduce the quantity.`);
+      setQuantity(availableStock);
+    } else {
+      setQuantity(newQuantity);
+    }
   };
 
   const productPrice = parseFloat(selectedOption.product_price);
@@ -62,7 +82,7 @@ const ProductDetailsModal = ({ product, isOpen, onClose }) => {
                 id="quantity"
                 min="1"
                 value={quantity}
-                onChange={(e) => setQuantity(parseInt(e.target.value))}
+                onChange={handleQuantityChange}
               />
             </div>
             <div className="product-modal-total">

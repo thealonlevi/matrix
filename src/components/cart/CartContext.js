@@ -37,8 +37,17 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
+  // New function to update the quantity of a specific cart item
+  const updateCartItem = (product_id, newQuantity) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.product_id === product_id ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart, updateCartItem }}>
       {children}
     </CartContext.Provider>
   );

@@ -93,6 +93,15 @@ const ProductList = () => {
     return `$${minPrice} - $${maxPrice}`;
   };
 
+  // Function to calculate total stock for a product group
+  const getTotalStock = (group) => {
+    console.log('Calculating total stock for group:', group);
+    return group.reduce((total, product) => {
+      const stock = product.available_stock_count || 0; // Use stock count if available, else default to 0
+      return total + stock;
+    }, 0);
+  };
+
   return (
     <div className="product-list">
       {products.length > 0 ? (
@@ -109,8 +118,8 @@ const ProductList = () => {
                 : 'Price Unavailable');
 
           const stock = isGroup 
-            ? 'Varies' 
-            : (product.product_stock !== undefined ? product.product_stock : '0');
+            ? getTotalStock(product.product_group)
+            : (product.available_stock_count !== undefined ? product.available_stock_count : '0');
 
           console.log(`Final price for rendering:`, price);
           console.log(`Final stock for rendering:`, stock);

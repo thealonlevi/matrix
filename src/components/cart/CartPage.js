@@ -17,7 +17,7 @@ async function currentAuthenticatedUser() {
 }
 
 const CartPage = () => {
-  const { cartItems, removeFromCart, clearCart } = useCart();
+  const { cartItems, removeFromCart, clearCart, updateCartItem } = useCart();
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [userEmail, setUserEmail] = useState(''); // State to manage user's email
@@ -31,7 +31,14 @@ const CartPage = () => {
     }, 0).toFixed(2);
   };
 
-  const [finalTotal, setFinalTotal] = useState(calculateTotalPrice()); // Initialize after defining calculateTotalPrice
+  // Initialize the final total based on the calculated total price
+  const [finalTotal, setFinalTotal] = useState(calculateTotalPrice());
+
+  // Recalculate the final total whenever cart items or discount changes
+  useEffect(() => {
+    const newTotal = (calculateTotalPrice() * (1 - discount / 100)).toFixed(2);
+    setFinalTotal(newTotal);
+  }, [cartItems, discount]);
 
   useEffect(() => {
     const fetchUserEmail = async () => {
@@ -80,8 +87,6 @@ const CartPage = () => {
         
         if (!isNaN(discountValue)) {
           setDiscount(discountValue);
-          const newTotal = (calculateTotalPrice() * (1 - discountValue / 100)).toFixed(2);
-          setFinalTotal(newTotal);
           alert(`Coupon applied! You saved ${discountValue}% on your order.`);
         } else {
           alert('Invalid discount value received. Please try again.');
@@ -96,11 +101,73 @@ const CartPage = () => {
     }
   };
 
+  const validateStockBeforeCheckout = async () => {
+    try {
+      console.log('Starting stock validation...');
+
+      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_GetProductList');
+      console.log('Fetched product list response:', response);
+
+      const data = await response.json();
+      console.log('Parsed product list data:', data);
+
+      if (data && data.body) {
+        const productList = JSON.parse(data.body);
+        console.log('Product list parsed from JSON:', productList);
+
+        let stockUpdated = false;
+
+        for (const cartItem of cartItems) {
+          console.log('Checking stock for cart item:', cartItem);
+
+          // Find the product in the fetched product list
+          const product = productList.find((p) => p.product_id === cartItem.product_id);
+
+          // If the product is not found, log a warning and continue
+          if (!product) {
+            console.warn(`Product with ID ${cartItem.product_id} not found in the product list.`);
+            continue;
+          }
+
+          // Determine the available stock
+          const availableStock = product.available_stock_count !== undefined ? product.available_stock_count : 0;
+          console.log(`Available stock for product ${cartItem.product_title} (ID: ${cartItem.product_id}):`, availableStock);
+
+          if (cartItem.quantity > availableStock) {
+            // Notify the user and adjust the cart to the maximum available stock
+            console.log(`Insufficient stock for ${cartItem.product_title}. Only ${availableStock} items available, updating cart...`);
+            alert(`Insufficient stock for ${cartItem.product_title}. Only ${availableStock} items are available.`);
+            updateCartItem(cartItem.product_id, availableStock);
+            stockUpdated = true;
+          }
+        }
+
+        if (stockUpdated) {
+          alert('Your cart has been updated to reflect the maximum available stock. Please review and proceed.');
+          return false;
+        }
+      } else {
+        console.warn('No product list data body found in the response.');
+      }
+      return true;
+    } catch (error) {
+      console.error('Error validating stock:', error);
+      alert('Error validating stock. Please try again.');
+      return false;
+    }
+  };
+
   const handleCheckout = async () => {
     // Check if email is required for guests
     if (isGuest && !userEmail) {
       alert('Please enter your email to proceed with the order.');
       return;
+    }
+
+    // Validate stock before proceeding to checkout
+    const isStockValid = await validateStockBeforeCheckout();
+    if (!isStockValid) {
+      return; // Exit if stock is insufficient
     }
 
     const orderData = {
@@ -123,6 +190,8 @@ const CartPage = () => {
     };
 
     try {
+      console.log('Preparing to send order data:', orderData);
+
       const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_CreateOrder', {
         method: 'POST',
         headers: {
@@ -130,6 +199,8 @@ const CartPage = () => {
         },
         body: JSON.stringify(orderData),
       });
+
+      console.log('Order API response:', response);
 
       if (!response.ok) {
         throw new Error('Failed to create order');

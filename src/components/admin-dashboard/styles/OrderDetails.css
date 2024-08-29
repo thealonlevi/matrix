@@ -1,67 +1,111 @@
 .order-details-container {
-  padding: 20px;
-  background-color: #202433;
+  padding: 25px;
+  background-color: #1a1e30;
   color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-  max-width: 800px;
-  margin: 20px auto;
+  border-radius: 10px;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.4);
+  max-width: 900px;
+  margin: 30px auto;
 }
 
 .order-details-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 20px;
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 25px;
   color: #aad4ff;
+  text-align: center;
 }
 
 .order-details-content p {
-  margin: 10px 0;
+  margin: 12px 0;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .order-details-content ul {
   list-style: none;
   padding: 0;
-  margin: 20px 0;
+  margin: 25px 0;
 }
 
 .order-details-content li {
   background-color: #2b334a;
-  padding: 12px 18px;
-  margin-bottom: 10px;
-  border-radius: 4px;
+  padding: 15px 20px;
+  margin-bottom: 12px;
+  border-radius: 6px;
   font-size: 16px;
   font-weight: 500;
-  color: #aad4ff;
+  color: #ffffff;
   transition: background-color 0.3s ease;
+  display: flex;
+  flex-direction: column; /* Makes content stack vertically */
+  align-items: flex-start;
 }
 
 .order-details-content li:hover {
   background-color: #3a4461;
 }
 
+.order-details-content strong {
+  color: #aad4ff;
+}
+
+.fulfillment-entry {
+  margin-bottom: 8px;
+  padding: 10px;
+  background-color: #243045;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fulfillment-entry p {
+  margin: 4px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.mark-as-paid-button {
+  background-color: #aad4ff;
+  color: #1a1e30;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.mark-as-paid-button:hover {
+  background-color: #8abdfc;
+}
+
 .error {
-  color: red;
+  color: #ff4d4d;
   font-size: 18px;
   margin-top: 20px;
+  text-align: center;
 }
 
 @media (max-width: 600px) {
   .order-details-container {
-      padding: 15px;
+    padding: 15px;
   }
 
   .order-details-title {
-      font-size: 20px;
+    font-size: 22px;
   }
 
   .order-details-content p {
-      font-size: 14px;
+    font-size: 14px;
   }
 
   .order-details-content li {
-      font-size: 14px;
+    font-size: 14px;
+  }
+
+  .fulfillment-entry p {
+    font-size: 12px;
   }
 }
