@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+// src/App.js
+
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Banner from './components/Banner';
@@ -12,12 +14,19 @@ import CreateProductForm from './components/admin-dashboard/CreateProductForm';
 import ModifyProductForm from './components/admin-dashboard/ModifyProductForm';
 import ModifyStockForm from './components/admin-dashboard/ModifyStockForm'; 
 import CreateGroupForm from './components/admin-dashboard/CreateGroupForm';
-import AdminOrders from './components/admin-dashboard/AdminOrders'; // Import AdminOrders
+import AdminOrders from './components/admin-dashboard/AdminOrders';
 import OrderDetails from './components/admin-dashboard/OrderDetails';
 import CartPage from './components/cart/CartPage';
 import { CartProvider } from './components/cart/CartContext';
+import Notification, { showNotification } from './components/admin-dashboard/utils/Notification';
 import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
+
+// Create a context for managing notifications
+export const NotificationContext = createContext();
+
+// Hook to use notifications anywhere in the app
+export const useNotification = () => useContext(NotificationContext);
 
 async function currentAuthenticatedUser() {
   try {
@@ -34,6 +43,7 @@ async function currentAuthenticatedUser() {
 const AppContent = () => {
   const [user, setUser] = useState({ email: null, isGuest: true });
   const location = useLocation();
+  const { notification, setNotification } = useNotification(); // Access notification context
 
   useEffect(() => {
     async function checkUser() {
@@ -48,8 +58,10 @@ const AppContent = () => {
     try {
       await signOut();
       setUser({ email: null, isGuest: true });
+      showNotification('Logged out successfully', 'success'); // Set notification
     } catch (error) {
       console.log('Error signing out: ', error);
+      showNotification('Error signing out', 'error'); // Set notification
     }
   };
 
@@ -83,17 +95,22 @@ const AppContent = () => {
           <Route path="/admin/orders/:orderId" element={<OrderDetails />} />
         </Route>
       </Routes>
+      <Notification /> {/* Always render the Notification component */}
     </div>
   );
 };
 
 const App = () => {
+  const [notification, setNotification] = useState(null); // State for global notifications
+
   return (
-    <Router>
-      <CartProvider>
-        <AppContent />
-      </CartProvider>
-    </Router>
+    <NotificationContext.Provider value={{ notification, setNotification }}>
+      <Router>
+        <CartProvider>
+          <AppContent />
+        </CartProvider>
+      </Router>
+    </NotificationContext.Provider>
   );
 };
 

@@ -1,0 +1,57 @@
+/* src/components/utils/Notification.css */
+
+.matrix-custom-toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: #fff;
+    z-index: 1000; /* Ensure it appears on top */
+    font-size: 16px;
+    opacity: 0; /* Start with hidden */
+    animation: slideIn 0.3s forwards, slideOut 0.3s 2.7s forwards; /* Slide in and out */
+  }
+  
+  /* Success Type */
+  .matrix-custom-toast-notification-success {
+    background-color: #4caf50; /* Green */
+  }
+  
+  /* Error Type */
+  .matrix-custom-toast-notification-error {
+    background-color: #f44336; /* Red */
+  }
+  
+  /* Warning Type */
+  .matrix-custom-toast-notification-warning {
+    background-color: #ff9800; /* Orange */
+  }
+  
+  /* Info Type */
+  .matrix-custom-toast-notification-info {
+    background-color: #2196f3; /* Blue */
+  }
+  
+  @keyframes slideIn {
+    0% {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slideOut {
+    0% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
+  

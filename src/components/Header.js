@@ -8,9 +8,11 @@ import loginIcon from '../assets/icons/login.png';
 import starIcon from '../assets/icons/star.png';
 import logoutIcon from '../assets/icons/signout.png';
 import { fetchAndStoreProductList } from '../utils/utils';
+import Notification, { showNotification } from './admin-dashboard/utils/Notification'; // Import showNotification
 
 const Header = ({ user, handleLogout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notification, setNotification] = useState(null);  // State for notifications
 
   useEffect(() => {
     const initializeProductList = async () => {
@@ -23,10 +25,38 @@ const Header = ({ user, handleLogout }) => {
     };
 
     initializeProductList();
+
+    // Check for notifications periodically
+    const checkForNotifications = () => {
+      const storedNotification = JSON.parse(sessionStorage.getItem('notification'));
+      if (storedNotification) {
+        const { message, type, timestamp } = storedNotification;
+
+        // Check if notification is expired (30 seconds)
+        if (Date.now() - timestamp > 30000) { // 30 seconds
+          sessionStorage.removeItem('notification');
+          setNotification(null);
+        } else {
+          setNotification({ message, type });
+        }
+      }
+    };
+
+    checkForNotifications(); // Initial check
+    const intervalId = setInterval(checkForNotifications, 1000); // Check every second
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
+  };
+
+  // Example function using showNotification
+  const handleExampleAction = () => {
+    showNotification('This is a test notification', 'info'); // Set notification
+    setNotification({ message: 'This is a test notification', type: 'info' }); // Immediately update state
   };
 
   return (
@@ -75,6 +105,15 @@ const Header = ({ user, handleLogout }) => {
           Cart
         </Link>
       </nav>
+      
+      {/* Notification Display */}
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </header>
   );
 };
