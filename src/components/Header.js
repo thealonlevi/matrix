@@ -52,12 +52,6 @@ const Header = ({ user, handleLogout }) => {
     setMenuOpen(!menuOpen);
   };
 
-  // Example function using showNotification
-  const handleExampleAction = () => {
-    console.log('Triggering example action to show notification.');
-    showNotification('This is a test notification', 'info'); // Set notification in sessionStorage
-  };
-
   return (
     <header className="header">
       <div className="logo-container">
@@ -110,8 +104,7 @@ const Header = ({ user, handleLogout }) => {
         </Link>
       </nav>
 
-      {/* Example button to trigger a notification */}
-      <button onClick={handleExampleAction}>Trigger Notification</button>
+
     </header>
   );
 };

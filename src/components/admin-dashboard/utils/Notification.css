@@ -1,64 +1,64 @@
-/* src/components/utils/Notification.css */
+.matrix-toast-container {
+    position: fixed;
+    top: 80px; /* Increased value for more padding from the top */
+    right: 20px;
+    z-index: 1000; /* Ensure it appears on top */
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between notifications */
+    max-width: 300px; /* Set a max width to avoid stretching too far */
+}
 
+/* Notification Styling */
 .matrix-custom-toast-notification {
-    position: fixed !important;
-    top: 80px; /* Position it lower */
-    right: 20px; /* Adjust margin */
-    padding: 15px 25px; /* Add padding for better visibility */
-    border-radius: 8px;
-    color: #fff !important; /* Ensure text is white */
-    z-index: 9999; /* Ensure it appears on top */
+    padding: 12px 20px; /* Adjusted padding for better appearance */
+    border-radius: 8px; /* More rounded corners for modern look */
+    color: #fff;
     font-size: 16px;
-    opacity: 1; /* Set to visible */
-    animation: slideIn 0.3s forwards, slideOut 0.3s 2.7s forwards; /* Slide in and out */
-    max-width: 300px;
-    word-wrap: break-word;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Success Type */
-  .matrix-custom-toast-notification-success {
-    background-color: #28a745 !important; /* Green for success */
-    color: #fff !important; /* Ensure white text */
-  }
-  
-  /* Error Type */
-  .matrix-custom-toast-notification-error {
-    background-color: #f44336 !important; /* Red */
-    color: #fff !important; /* Ensure white text */
-  }
-  
-  /* Warning Type */
-  .matrix-custom-toast-notification-warning {
-    background-color: #ff9800 !important; /* Orange */
-    color: #fff !important; /* Ensure white text */
-  }
-  
-  /* Info Type */
-  .matrix-custom-toast-notification-info {
-    background-color: #2196f3 !important; /* Blue */
-    color: #fff !important; /* Ensure white text */
-  }
-  
-  @keyframes slideIn {
+    background-color: #2196f3; /* Default color */
+    opacity: 0; /* Start hidden */
+    animation: slideIn 0.3s forwards, slideOut 0.5s 2.7s forwards; /* Slide in and out */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* More shadow for depth */
+}
+
+/* Success Type */
+.matrix-custom-toast-notification-success {
+    background-color: #4caf50; /* Green */
+}
+
+/* Error Type */
+.matrix-custom-toast-notification-error {
+    background-color: #f44336; /* Red */
+}
+
+/* Warning Type */
+.matrix-custom-toast-notification-warning {
+    background-color: #ff9800; /* Orange */
+}
+
+/* Info Type */
+.matrix-custom-toast-notification-info {
+    background-color: #2196f3; /* Blue */
+}
+
+@keyframes slideIn {
     0% {
-      opacity: 0;
-      transform: translateX(100%);
+        opacity: 0;
+        transform: translateX(100%);
     }
     100% {
-      opacity: 1;
-      transform: translateX(0);
+        opacity: 1;
+        transform: translateX(0);
     }
-  }
-  
-  @keyframes slideOut {
+}
+
+@keyframes slideOut {
     0% {
-      opacity: 1;
-      transform: translateX(0);
+        opacity: 1;
+        transform: translateX(0);
     }
     100% {
-      opacity: 0;
-      transform: translateX(100%);
+        opacity: 0;
+        transform: translateX(100%);
     }
-  }
-  
+}
