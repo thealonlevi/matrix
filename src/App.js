@@ -18,15 +18,9 @@ import AdminOrders from './components/admin-dashboard/AdminOrders';
 import OrderDetails from './components/admin-dashboard/OrderDetails';
 import CartPage from './components/cart/CartPage';
 import { CartProvider } from './components/cart/CartContext';
-import Notification, { showNotification } from './components/admin-dashboard/utils/Notification';
+import { NotificationProvider, useNotification } from './components/admin-dashboard/utils/Notification';
 import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
-
-// Create a context for managing notifications
-export const NotificationContext = createContext();
-
-// Hook to use notifications anywhere in the app
-export const useNotification = () => useContext(NotificationContext);
 
 async function currentAuthenticatedUser() {
   try {
@@ -43,7 +37,7 @@ async function currentAuthenticatedUser() {
 const AppContent = () => {
   const [user, setUser] = useState({ email: null, isGuest: true });
   const location = useLocation();
-  const { notification, setNotification } = useNotification(); // Access notification context
+  const { showNotification } = useNotification(); // Access notification context
 
   useEffect(() => {
     async function checkUser() {
@@ -58,10 +52,10 @@ const AppContent = () => {
     try {
       await signOut();
       setUser({ email: null, isGuest: true });
-      showNotification('Logged out successfully', 'success'); // Set notification
+      showNotification('Logged out successfully', 'success'); // Show notification
     } catch (error) {
       console.log('Error signing out: ', error);
-      showNotification('Error signing out', 'error'); // Set notification
+      showNotification('Error signing out', 'error'); // Show notification
     }
   };
 
@@ -95,22 +89,19 @@ const AppContent = () => {
           <Route path="/admin/orders/:orderId" element={<OrderDetails />} />
         </Route>
       </Routes>
-      <Notification /> {/* Always render the Notification component */}
     </div>
   );
 };
 
 const App = () => {
-  const [notification, setNotification] = useState(null); // State for global notifications
-
   return (
-    <NotificationContext.Provider value={{ notification, setNotification }}>
+    <NotificationProvider> {/* Wrap the entire app with NotificationProvider */}
       <Router>
         <CartProvider>
           <AppContent />
         </CartProvider>
       </Router>
-    </NotificationContext.Provider>
+    </NotificationProvider>
   );
 };
 

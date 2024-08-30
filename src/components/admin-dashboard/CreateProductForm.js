@@ -5,7 +5,7 @@ import { checkAdminPermission } from './utils/checkAdminPermissions';
 import { useNavigate } from 'react-router-dom';
 import { fetchProducts } from './utils/api'; 
 import { appendProductToGroup } from './utils/groupUtils';
-import { showNotification } from './utils/Notification';  // Import the showNotification function
+import { useNotification } from './utils/Notification';
 
 const CreateProductForm = () => {
   const [title, setTitle] = useState('');
@@ -18,6 +18,7 @@ const CreateProductForm = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const { showNotification } = useNotification(); // Use the notification context
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,7 +46,7 @@ const CreateProductForm = () => {
     };
 
     verifyAccessAndFetchGroups();
-  }, [navigate]);
+  }, [navigate, showNotification]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

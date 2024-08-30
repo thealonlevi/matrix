@@ -8,15 +8,15 @@ import loginIcon from '../assets/icons/login.png';
 import starIcon from '../assets/icons/star.png';
 import logoutIcon from '../assets/icons/signout.png';
 import { fetchAndStoreProductList } from '../utils/utils';
-import Notification, { showNotification } from './admin-dashboard/utils/Notification'; // Import showNotification
+import { useNotification } from './admin-dashboard/utils/Notification'; // Use the hook to manage notifications
 
 const Header = ({ user, handleLogout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [notification, setNotification] = useState(null);  // State for notifications
+  const { showNotification } = useNotification(); // Get showNotification function from context
 
   useEffect(() => {
     console.log('Header component mounted.');
-    
+
     const initializeProductList = async () => {
       console.log('Initializing product list...');
       try {
@@ -24,44 +24,28 @@ const Header = ({ user, handleLogout }) => {
         console.log('Product list fetched and stored successfully.');
       } catch (error) {
         console.error('Failed to initialize product list:', error);
+        showNotification('Failed to initialize product list', 'error'); // Show error notification
       }
     };
 
     initializeProductList();
 
-    // Function to check and display notifications
+    // Function to check and display notifications only once
     const checkForNotifications = () => {
       console.log('Checking for notifications in sessionStorage...');
-      const storedNotification = JSON.parse(sessionStorage.getItem('notification'));
-      console.log('Stored Notification:', storedNotification);
+      const storedNotifications = JSON.parse(sessionStorage.getItem('notifications')) || [];
+      console.log('Stored Notifications:', storedNotifications);
 
-      if (storedNotification) {
-        const { message, type, timestamp } = storedNotification;
-        console.log('Notification data retrieved:', { message, type, timestamp });
+      // Display notifications from sessionStorage only once
+      storedNotifications.forEach(({ message, type }) => showNotification(message, type));
 
-        // Check if notification is expired (30 seconds)
-        if (Date.now() - timestamp > 30000) { // 30 seconds
-          console.log('Notification expired. Removing from sessionStorage.');
-          sessionStorage.removeItem('notification'); // Remove expired notification
-          setNotification(null);
-        } else {
-          console.log('Notification still valid. Setting notification state.');
-          setNotification({ message, type });
-        }
-      } else {
-        console.log('No notification found in sessionStorage.');
-      }
+      // Clear notifications from sessionStorage after displaying them once
+      sessionStorage.removeItem('notifications');
     };
 
     checkForNotifications(); // Initial check
-    const intervalId = setInterval(checkForNotifications, 1000); // Check every second
 
-    // Cleanup interval on component unmount
-    return () => {
-      console.log('Cleaning up interval on component unmount.');
-      clearInterval(intervalId);
-    };
-  }, []);
+  }, []); // Empty dependency array to run only once
 
   const toggleMenu = () => {
     console.log('Toggling menu. Current state:', menuOpen);
@@ -72,7 +56,6 @@ const Header = ({ user, handleLogout }) => {
   const handleExampleAction = () => {
     console.log('Triggering example action to show notification.');
     showNotification('This is a test notification', 'info'); // Set notification in sessionStorage
-    setNotification({ message: 'This is a test notification', type: 'info' }); // Immediately update state
   };
 
   return (
@@ -114,6 +97,7 @@ const Header = ({ user, handleLogout }) => {
               console.log('Logging out user.');
               handleLogout(); 
               toggleMenu(); 
+              showNotification('Logged out successfully', 'success'); // Show success notification
             }}>
               <img src={logoutIcon} alt="Logout" className="icon" />
               Logout
@@ -125,18 +109,9 @@ const Header = ({ user, handleLogout }) => {
           Cart
         </Link>
       </nav>
-      
-      {/* Notification Display */}
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={() => {
-            console.log('Notification closed by user.');
-            setNotification(null);
-          }}
-        />
-      )}
+
+      {/* Example button to trigger a notification */}
+      <button onClick={handleExampleAction}>Trigger Notification</button>
     </header>
   );
 };
