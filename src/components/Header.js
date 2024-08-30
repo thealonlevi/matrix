@@ -15,7 +15,10 @@ const Header = ({ user, handleLogout }) => {
   const [notification, setNotification] = useState(null);  // State for notifications
 
   useEffect(() => {
+    console.log('Header component mounted.');
+    
     const initializeProductList = async () => {
+      console.log('Initializing product list...');
       try {
         await fetchAndStoreProductList();
         console.log('Product list fetched and stored successfully.');
@@ -26,19 +29,27 @@ const Header = ({ user, handleLogout }) => {
 
     initializeProductList();
 
-    // Check for notifications periodically
+    // Function to check and display notifications
     const checkForNotifications = () => {
+      console.log('Checking for notifications in sessionStorage...');
       const storedNotification = JSON.parse(sessionStorage.getItem('notification'));
+      console.log('Stored Notification:', storedNotification);
+
       if (storedNotification) {
         const { message, type, timestamp } = storedNotification;
+        console.log('Notification data retrieved:', { message, type, timestamp });
 
         // Check if notification is expired (30 seconds)
         if (Date.now() - timestamp > 30000) { // 30 seconds
-          sessionStorage.removeItem('notification');
+          console.log('Notification expired. Removing from sessionStorage.');
+          sessionStorage.removeItem('notification'); // Remove expired notification
           setNotification(null);
         } else {
+          console.log('Notification still valid. Setting notification state.');
           setNotification({ message, type });
         }
+      } else {
+        console.log('No notification found in sessionStorage.');
       }
     };
 
@@ -46,16 +57,21 @@ const Header = ({ user, handleLogout }) => {
     const intervalId = setInterval(checkForNotifications, 1000); // Check every second
 
     // Cleanup interval on component unmount
-    return () => clearInterval(intervalId);
+    return () => {
+      console.log('Cleaning up interval on component unmount.');
+      clearInterval(intervalId);
+    };
   }, []);
 
   const toggleMenu = () => {
+    console.log('Toggling menu. Current state:', menuOpen);
     setMenuOpen(!menuOpen);
   };
 
   // Example function using showNotification
   const handleExampleAction = () => {
-    showNotification('This is a test notification', 'info'); // Set notification
+    console.log('Triggering example action to show notification.');
+    showNotification('This is a test notification', 'info'); // Set notification in sessionStorage
     setNotification({ message: 'This is a test notification', type: 'info' }); // Immediately update state
   };
 
@@ -94,7 +110,11 @@ const Header = ({ user, handleLogout }) => {
               <img src={homeIcon} alt="Admin" className="icon" />
               Admin
             </Link>
-            <button className="logout-button" onClick={() => { handleLogout(); toggleMenu(); }}>
+            <button className="logout-button" onClick={() => { 
+              console.log('Logging out user.');
+              handleLogout(); 
+              toggleMenu(); 
+            }}>
               <img src={logoutIcon} alt="Logout" className="icon" />
               Logout
             </button>
@@ -111,7 +131,10 @@ const Header = ({ user, handleLogout }) => {
         <Notification
           message={notification.message}
           type={notification.type}
-          onClose={() => setNotification(null)}
+          onClose={() => {
+            console.log('Notification closed by user.');
+            setNotification(null);
+          }}
         />
       )}
     </header>

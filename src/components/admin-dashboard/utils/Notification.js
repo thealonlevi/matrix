@@ -2,38 +2,33 @@
 import React, { useEffect, useState } from 'react';
 import './Notification.css';
 
-const Notification = () => {
-  const [notification, setNotification] = useState(null);
-
+const Notification = ({ message, type, onClose }) => {
   useEffect(() => {
-    // Retrieve the notification from sessionStorage
-    const storedNotification = JSON.parse(sessionStorage.getItem('notification'));
-    if (storedNotification) {
-      setNotification(storedNotification);
+    console.log(`Rendering Notification: ${message} - Type: ${type}`);
 
-      // Set a timer to clear the notification after it is shown
-      const timer = setTimeout(() => {
-        setNotification(null);
-        sessionStorage.removeItem('notification'); // Clear sessionStorage after the notification is hidden
-      }, 3000); // Notification disappears after 3 seconds
+    // Set a timer to clear the notification after it is shown
+    const timer = setTimeout(() => {
+      console.log('Clearing notification timer.');
+      onClose();
+    }, 30000); // Notification disappears after 30 seconds
 
-      return () => clearTimeout(timer); // Cleanup timer on component unmount
-    }
-  }, []);
+    return () => clearTimeout(timer); // Cleanup timer on component unmount
+  }, [onClose]);
 
-  if (!notification) return null; // Don't render if no notification
+  console.log(`Notification class applied: matrix-custom-toast-notification matrix-custom-toast-notification-${type}`);
 
   return (
-    <div className={`matrix-toast-notification matrix-toast-notification-${notification.type}`}>
-      {notification.message}
+    <div className={`matrix-custom-toast-notification matrix-custom-toast-notification-${type}`}>
+      {message}
     </div>
   );
 };
 
 // Utility function to show notifications
 export const showNotification = (message, type = 'success') => {
-    const notificationData = { message, type, timestamp: Date.now() }; // Include timestamp
-    sessionStorage.setItem('notification', JSON.stringify(notificationData)); // Store notification in sessionStorage
-  };
-  
+  const notificationData = { message, type, timestamp: Date.now() };
+  sessionStorage.setItem('notification', JSON.stringify(notificationData));
+  console.log('Notification stored in sessionStorage:', notificationData);
+};
+
 export default Notification;

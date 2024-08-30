@@ -5,7 +5,7 @@ import { checkAdminPermission } from './utils/checkAdminPermissions';
 import { useNavigate } from 'react-router-dom';
 import { fetchProducts } from './utils/api'; 
 import { appendProductToGroup } from './utils/groupUtils';
-import { useNotification } from '../../App';  // Import useNotification from App.js
+import { showNotification } from './utils/Notification';  // Import the showNotification function
 
 const CreateProductForm = () => {
   const [title, setTitle] = useState('');
@@ -17,45 +17,46 @@ const CreateProductForm = () => {
   const [groups, setGroups] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  
-  const { setNotification } = useNotification();  // Use the notification context
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const verifyAccessAndFetchGroups = async () => {
       try {
         const hasPermission = await checkAdminPermission();
+        console.log('Admin permission check:', hasPermission);
 
         if (!hasPermission) {
-          setNotification({ message: 'Access denied. Redirecting...', type: 'error' });
+          showNotification('Access denied. Redirecting...', 'error');
           setTimeout(() => {
             navigate('/');
           }, 2000);
         } else {
           setLoading(false);
-
-          // Fetch all products to find groups
           const products = await fetchProducts();
           const groupProducts = products.filter(product => Array.isArray(product.product_group));
           setGroups(groupProducts);
+          console.log('Groups fetched:', groupProducts);
         }
       } catch (error) {
-        setNotification({ message: 'An error occurred during permission verification or fetching groups.', type: 'error' });
+        console.error('Error fetching groups or checking permission:', error);
+        showNotification('An error occurred during permission verification or fetching groups.', 'error');
       }
     };
 
     verifyAccessAndFetchGroups();
-  }, [navigate, setNotification]);
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!title || !price) {
-      setNotification({ message: 'Title and Price are required.', type: 'error' });
+      showNotification('Title and Price are required.', 'error');
       return;
     }
 
     setError(null);
+    console.log('Creating product with title:', title, 'and price:', price);
 
     try {
       const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_CreateProduct', {
@@ -74,23 +75,28 @@ const CreateProductForm = () => {
 
       if (response.ok) {
         const data = JSON.parse((await response.json()).body);
-        setNotification({ message: `Product created successfully with ID: ${data.product_id}`, type: 'success' });
+        console.log('Product created successfully:', data.product_id);
+        showNotification(`Product created successfully with ID: ${data.product_id}`, 'success');
 
         // Check if a group ID is selected and append the product to the group
         if (groupId) {
           try {
             await appendProductToGroup(groupId, data.product_id);
-            setNotification({ message: `Product successfully assigned to group with ID: ${groupId}`, type: 'success' });
+            console.log('Product assigned to group with ID:', groupId);
+            showNotification(`Product successfully assigned to group with ID: ${groupId}`, 'success');
           } catch (error) {
-            setNotification({ message: `Error assigning product to group: ${error.message}`, type: 'error' });
+            console.error('Error assigning product to group:', error);
+            showNotification(`Error assigning product to group: ${error.message}`, 'error');
           }
         }
       } else {
         const errorData = await response.json();
-        setNotification({ message: errorData.error || 'Failed to create product', type: 'error' });
+        console.error('Failed to create product:', errorData.error);
+        showNotification(errorData.error || 'Failed to create product', 'error');
       }
     } catch (error) {
-      setNotification({ message: `Error: ${error.message}`, type: 'error' });
+      console.error('Error during product creation:', error);
+      showNotification(`Error: ${error.message}`, 'error');
     }
     navigate('/admin/products'); 
   };
