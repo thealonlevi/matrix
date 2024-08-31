@@ -10,7 +10,7 @@ const ProductDetailsModal = ({ product, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const handleAddToCart = () => {
-    const availableStock = selectedOption.available_stock_count || 0;
+    const availableStock = selectedOption.available_stock_count || 0; // Default to 0 if undefined
 
     if (quantity > availableStock) {
       alert(`Only ${availableStock} items available in stock. Please reduce the quantity.`);
@@ -37,7 +37,7 @@ const ProductDetailsModal = ({ product, isOpen, onClose }) => {
 
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value);
-    const availableStock = selectedOption.available_stock_count || 0;
+    const availableStock = selectedOption.available_stock_count || 0; // Default to 0 if undefined
 
     if (newQuantity > availableStock) {
       alert(`Only ${availableStock} items available in stock. Please reduce the quantity.`);
@@ -68,7 +68,7 @@ const ProductDetailsModal = ({ product, isOpen, onClose }) => {
                   <select className="product-modal-select" onChange={handleOptionChange}>
                     {product.product_group.map(option => (
                       <option key={option.product_id} value={option.product_id}>
-                        {option.product_title} - ${option.product_price}
+                        {`${option.product_title} - $${option.product_price} - ${option.available_stock_count || 0} In stock`}
                       </option>
                     ))}
                   </select>
