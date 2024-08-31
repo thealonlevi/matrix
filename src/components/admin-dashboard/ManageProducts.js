@@ -10,6 +10,7 @@ import {
   handleToggleProductVisibility,
 } from './utils/productutils';
 import { appendProductToGroup, detachProductFromGroup } from './utils/groupUtils';
+import { useNotification } from './utils/Notification'; // Import useNotification hook
 
 const ManageProducts = () => {
   const [products, setProducts] = useState([]);
@@ -17,6 +18,7 @@ const ManageProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { showNotification } = useNotification(); // Destructure the showNotification function from the hook
 
   useEffect(() => {
     const verifyAccessAndFetchProducts = async () => {
@@ -24,6 +26,7 @@ const ManageProducts = () => {
 
       if (!hasPermission) {
         setError('Page not found.');
+        showNotification('Access denied. Redirecting...', 'error');
         setTimeout(() => {
           navigate('/');
         }, 2000);
@@ -33,6 +36,7 @@ const ManageProducts = () => {
           setProducts(sortedProducts);
         } catch (error) {
           setError(error.message);
+          showNotification(`Error fetching products: ${error.message}`, 'error');
         } finally {
           setLoading(false);
         }
@@ -40,50 +44,54 @@ const ManageProducts = () => {
     };
 
     verifyAccessAndFetchProducts();
-  }, [navigate]);
+  }, [navigate, showNotification]);
 
   const handleDelete = useCallback(
     async (productId) => {
       await handleDeleteProduct(productId, products, setProducts, setError, deleteProduct);
+      showNotification(`Product with ID ${productId} deleted successfully.`, 'success');
     },
-    [products]
+    [products, showNotification]
   );
 
   const handleToggleVisibility = useCallback(
     async (productId) => {
       await handleToggleProductVisibility(productId, products, setProducts, setError, toggleProductVisibility);
+      showNotification(`Product visibility toggled for ID ${productId}.`, 'info');
     },
-    [products]
+    [products, showNotification]
   );
 
   const handleAppendProduct = useCallback(
     async (groupId, productId) => {
       try {
         const response = await appendProductToGroup(groupId, productId);
-        alert(`Product with ID ${productId} added to group ${groupId} successfully.`);
+        showNotification(`Product with ID ${productId} added to group ${groupId} successfully.`, 'success');
         // Refresh the product list after appending the product
         const sortedProducts = await fetchProducts();
         setProducts(sortedProducts);
       } catch (error) {
         setError(`Error adding product: ${error.message}`);
+        showNotification(`Error adding product: ${error.message}`, 'error');
       }
     },
-    []
+    [showNotification]
   );
 
   const handleDetachProduct = useCallback(
     async (groupId, productId) => {
       try {
         const response = await detachProductFromGroup(groupId, productId);
-        alert(`Product with ID ${productId} detached from group ${groupId} successfully.`);
+        showNotification(`Product with ID ${productId} detached from group ${groupId} successfully.`, 'success');
         // Refresh the product list after detaching the product
         const sortedProducts = await fetchProducts();
         setProducts(sortedProducts);
       } catch (error) {
         setError(`Error detaching product: ${error.message}`);
+        showNotification(`Error detaching product: ${error.message}`, 'error');
       }
     },
-    []
+    [showNotification]
   );
 
   const toggleGroupExpansionHandler = (groupId) => {
