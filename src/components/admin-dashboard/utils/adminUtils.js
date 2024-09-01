@@ -74,8 +74,6 @@ export const getProductTitleById = (productId) => {
 
   let offlineProductList = localStorage.getItem('offlineProductList');
 
-  console.log(offlineProductList);
-
   // Parse the JSON string into an array
   try {
     offlineProductList = JSON.parse(offlineProductList);
@@ -83,45 +81,6 @@ export const getProductTitleById = (productId) => {
     console.error('Failed to parse offlineProductList:', error);
   }
 
-  // Check if offlineProductList is a string
-  if (typeof offlineProductList === 'string') {
-    try {
-      // Parse the string into a JSON array
-      offlineProductList = JSON.parse(offlineProductList);
-    } catch (error) {
-      console.error('Failed to parse offlineProductList as JSON:', error);
-      return `Product ID: ${productId}`;
-    }
-  }
-
-  if (typeof offlineProductList === 'string') {
-    try {
-      // Parse the string into a JSON array
-      offlineProductList = JSON.parse(offlineProductList);
-    } catch (error) {
-      console.error('Failed to parse offlineProductList as JSON:', error);
-      return `Product ID: ${productId}`;
-    }
-  }
-
-  if (typeof offlineProductList === 'string') {
-    try {
-      // Parse the string into a JSON array
-      offlineProductList = JSON.parse(offlineProductList);
-    } catch (error) {
-      console.error('Failed to parse offlineProductList as JSON:', error);
-      return `Product ID: ${productId}`;
-    }
-  }
-
-  // Now offlineProductList should be an array of objects
-  if (Array.isArray(offlineProductList)) {
-    console.log('Successfully parsed offlineProductList:', offlineProductList);
-  } else {
-    console.error('offlineProductList is not an array after parsing:', offlineProductList);
-  }
-
-  // Check if the result is an array
   if (!Array.isArray(offlineProductList)) {
     console.error('offlineProductList is not an array:', offlineProductList);
     return `Product ID: ${productId}`;
@@ -139,7 +98,7 @@ export const getProductTitleById = (productId) => {
       const product = group.product_group.find(product => product.product_id.toString() === subProductId.toString());
       if (product) {
         console.log(`Found product in group: ${product.product_title}`);
-        return product.product_title;
+        return `${group.product_title} - ${product.product_title}`;  // Return combined title
       } else {
         console.warn(`Sub Product with ID: ${subProductId} not found in group with ID: ${groupId}.`);
         return `Product ID: ${productId}`;
@@ -158,5 +117,19 @@ export const getProductTitleById = (productId) => {
       console.warn(`Product with ID: ${productId} not found in offlineProductList.`);
       return `Product ID: ${productId}`;
     }
+  }
+};
+
+// Add a function to get group titles
+export const getGroupTitleById = async (groupId) => {
+  // This is a placeholder. Replace with an actual API call if needed.
+  let offlineProductList = JSON.parse(localStorage.getItem('offlineProductList')) || [];
+
+  const group = offlineProductList.find(item => item.product_id.toString() === groupId.toString());
+  if (group) {
+    return group.product_title;
+  } else {
+    console.warn(`Group with ID: ${groupId} not found.`);
+    return `Group ID: ${groupId}`;
   }
 };

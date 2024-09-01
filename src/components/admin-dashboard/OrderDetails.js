@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import './styles/OrderDetails.css';
-import { checkPermissionAndFetchData, fetchData, getUserIdForOrder, getProductTitleById } from './utils/adminUtils';
+import { checkPermissionAndFetchData, fetchData, getUserIdForOrder, getProductTitleById, getGroupTitleById } from './utils/adminUtils';
 
 const OrderDetails = () => {
   const { orderId } = useParams();
@@ -46,7 +46,18 @@ const OrderDetails = () => {
     const titles = {};
     for (const item of orderContents) {
       const productId = item.M.product_id?.S || item.M.product_id?.N;
-      const productTitle = await getProductTitleById(productId);
+      let productTitle = await getProductTitleById(productId);
+
+      // Check if the product is under a group
+      if (productId.includes('/')) {
+        const [groupId, productIdOnly] = productId.split('/');
+        const groupTitle = await getGroupTitleById(groupId);
+        if (groupTitle && !productTitle.includes(groupTitle)) {
+          // Concatenate group title and product title only if productTitle doesn't already contain groupTitle
+          productTitle = `${groupTitle} - ${productTitle}`;
+        }
+      }
+
       titles[productId] = productTitle;
     }
     return titles;
