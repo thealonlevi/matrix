@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import './styles/OrderDetails.css';
 import { checkPermissionAndFetchData, fetchData, getUserIdForOrder, getProductTitleById } from './utils/adminUtils';
@@ -10,6 +10,9 @@ const OrderDetails = () => {
   const [error, setError] = useState('');
   const [productTitles, setProductTitles] = useState({});
   const [isMarkingPaid, setIsMarkingPaid] = useState(false);
+
+  // Use ref to track marking paid state
+  const isMarkingPaidRef = useRef(false);
 
   const fetchOrderDetails = async () => {
     const userId = getUserIdForOrder(orderId);
@@ -50,7 +53,13 @@ const OrderDetails = () => {
   };
 
   const markAsPaid = async () => {
+    // Prevent further actions if already marking as paid
+    if (isMarkingPaidRef.current) return;
+
+    // Update the ref to prevent further clicks
+    isMarkingPaidRef.current = true;
     setIsMarkingPaid(true);
+
     try {
       const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ModifyOrderStatus', {
         method: 'POST',
@@ -77,6 +86,8 @@ const OrderDetails = () => {
     } catch (err) {
       alert(`Error updating order status: ${err.message}`);
     } finally {
+      // Reset ref and state after the request is complete
+      isMarkingPaidRef.current = false;
       setIsMarkingPaid(false);
     }
   };
