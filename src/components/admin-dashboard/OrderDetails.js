@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import './styles/OrderDetails.css';
 import { checkPermissionAndFetchData, fetchData, getUserIdForOrder, getProductTitleById, getGroupTitleById } from './utils/adminUtils';
+import { useNotification } from './utils/Notification';
 
 const OrderDetails = () => {
   const { orderId } = useParams();
@@ -10,6 +11,9 @@ const OrderDetails = () => {
   const [error, setError] = useState('');
   const [productTitles, setProductTitles] = useState({});
   const [isMarkingPaid, setIsMarkingPaid] = useState(false);
+  
+  // Notification hook
+  const { showNotification } = useNotification();
 
   // Use ref to track marking paid state
   const isMarkingPaidRef = useRef(false);
@@ -89,13 +93,13 @@ const OrderDetails = () => {
           ...prevDetails,
           payment_status: { S: 'paid' },
         }));
-        alert('Order status updated to Paid successfully.');
+        showNotification('Order status updated to Paid successfully.', 'success'); // Show success notification
       } else {
         const errorResponse = await response.json();
-        alert(`Failed to update order status: ${errorResponse.error}`);
+        showNotification(`Failed to update order status: ${errorResponse.error}`, 'error'); // Show error notification
       }
     } catch (err) {
-      alert(`Error updating order status: ${err.message}`);
+      showNotification(`Error updating order status: ${err.message}`, 'error'); // Show error notification
     } finally {
       // Reset ref and state after the request is complete
       isMarkingPaidRef.current = false;
