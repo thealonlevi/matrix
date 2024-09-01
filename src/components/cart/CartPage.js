@@ -23,6 +23,26 @@ const CartPage = () => {
   const [userEmail, setUserEmail] = useState(''); // State to manage user's email
   const [isGuest, setIsGuest] = useState(true); // State to check if the user is a guest
   const [clientIp, setClientIp] = useState(''); // State to manage the client's IP address
+  const [productInfo, setProductInfo] = useState([]); // State to hold all product information
+
+  // Fetch all product info from the productinfo database
+  useEffect(() => {
+    const fetchProductInfo = async () => {
+      try {
+        const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_GetProductList');
+        const data = await response.json();
+        if (data && data.body) {
+          const productList = JSON.parse(data.body);
+          setProductInfo(productList);
+          console.log('Product information fetched:', productList);
+        }
+      } catch (error) {
+        console.error('Error fetching product info:', error);
+      }
+    };
+
+    fetchProductInfo();
+  }, []);
 
   // Calculate the total price
   const calculateTotalPrice = () => {
@@ -222,22 +242,47 @@ const CartPage = () => {
     }
   };
 
+  // Function to get the group title and image for a product
+  const getGroupDetailsForProduct = (productId) => {
+    // Check if the product is in the product info list directly
+    const standaloneProduct = productInfo.find((product) => product.product_id === productId);
+
+    if (standaloneProduct) {
+      return { title: '', imageUrl: standaloneProduct.product_img_url }; // Product is standalone, no group title needed
+    }
+
+    // If not found, check if it belongs to a group
+    for (const group of productInfo) {
+      if (group.product_group) {
+        const groupProduct = group.product_group.find((item) => item.product_id === productId);
+        if (groupProduct) {
+          return { title: group.product_title, imageUrl: group.product_img_url }; // Return the group title and image if found
+        }
+      }
+    }
+
+    return { title: '', imageUrl: '' }; // Return empty if no group title found
+  };
+
   return (
     <div className="cart-page">
       <h2>Your Cart</h2>
       {cartItems.length > 0 ? (
         <div className="cart-items">
-          {cartItems.map((item) => (
-            <div key={item.product_id} className="cart-item">
-              <img src={item.product_img_url} alt={item.product_title} className="cart-item-image" />
-              <div className="cart-item-details">
-                <h3>{item.product_title}</h3>
-                <p>Price per item: ${item.product_price.toFixed(2)}</p>
-                <p>Quantity: {item.quantity}x</p>
-                <button className="remove-button" onClick={() => removeFromCart(item.product_id)}>Remove</button>
+          {cartItems.map((item) => {
+            const { title: groupTitle, imageUrl: groupImageUrl } = getGroupDetailsForProduct(item.product_id); // Get the group title and image if exists
+            return (
+              <div key={item.product_id} className="cart-item">
+                <img src={groupTitle ? groupImageUrl : item.product_img_url} alt={item.product_title} className="cart-item-image" /> {/* Use group's image if available */}
+                <div className="cart-item-details">
+                  <h3>{item.product_title}{groupTitle ? ` - ${groupTitle}` : ''}</h3> {/* Display product and group title if group exists */}
+                  <p>Price per item: ${item.product_price.toFixed(2)}</p>
+                  <p>Quantity: {item.quantity}x</p>
+                  <button className="remove-button" onClick={() => removeFromCart(item.product_id)}>Remove</button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           <div className="cart-total">
             <h3>Total Price: ${calculateTotalPrice()}</h3>
             <h3>Final Price after discount: ${finalTotal}</h3>
