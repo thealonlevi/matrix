@@ -268,50 +268,55 @@ const CartPage = () => {
     <div className="cart-page">
       <h2>Your Cart</h2>
       {cartItems.length > 0 ? (
-        <div className="cart-items">
-          {cartItems.map((item) => {
-            const { title: groupTitle, imageUrl: groupImageUrl } = getGroupDetailsForProduct(item.product_id); // Get the group title and image if exists
-            return (
-              <div key={item.product_id} className="cart-item">
-                <img src={groupTitle ? groupImageUrl : item.product_img_url} alt={item.product_title} className="cart-item-image" /> {/* Use group's image if available */}
-                <div className="cart-item-details">
-                  <h3>{item.product_title}{groupTitle ? ` - ${groupTitle}` : ''}</h3> {/* Display product and group title if group exists */}
-                  <p>Price per item: ${item.product_price.toFixed(2)}</p>
-                  <p>Quantity: {item.quantity}x</p>
-                  <button className="remove-button" onClick={() => removeFromCart(item.product_id)}>Remove</button>
+        <div className="cart-container">
+          <div className="cart-items">
+            {cartItems.map((item) => {
+              const { title: groupTitle, imageUrl: groupImageUrl } = getGroupDetailsForProduct(item.product_id); // Get the group title and image if exists
+              return (
+                <div key={item.product_id} className="cart-item">
+                  <img src={groupTitle ? groupImageUrl : item.product_img_url} alt={item.product_title} className="cart-item-image" /> {/* Use group's image if available */}
+                  <div className="cart-item-details">
+                    <h3>{item.product_title}{groupTitle ? ` - ${groupTitle}` : ''}</h3> {/* Display product and group title if group exists */}
+                    <p>Price per item: ${item.product_price.toFixed(2)}</p>
+                    <p>Quantity: {item.quantity}x</p>
+                    <button className="remove-button" onClick={() => removeFromCart(item.product_id)}>Remove</button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-          <div className="cart-total">
-            <h3>Total Price: ${calculateTotalPrice()}</h3>
-            <h3>Final Price after discount: ${finalTotal}</h3>
+              );
+            })}
           </div>
-          <div className="coupon-section">
-            <input
-              type="text"
-              placeholder="Enter coupon code"
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value)}
-            />
-            <button className="apply-coupon-button" onClick={handleApplyCoupon}>
-              Apply Coupon
-            </button>
-          </div>
-          {isGuest && (
-            <div className="email-section">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={userEmail}
-                onChange={(e) => setUserEmail(e.target.value)}
-                required
-              />
+          <div className="cart-summary">
+            <h3>Order Summary</h3>
+            <div className="cart-total">
+              <p>Original Price: ${calculateTotalPrice()}</p>
+              <p>Total after Discount: ${finalTotal}</p>
             </div>
-          )}
-          <div className="cart-actions">
-            <button className="clear-cart-button" onClick={clearCart}>Clear Cart</button>
-            <button className="checkout-button" onClick={handleCheckout}>Checkout</button>
+            <div className="coupon-section">
+              <input
+                type="text"
+                placeholder="Enter coupon code"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+              />
+              <button className="apply-coupon-button" onClick={handleApplyCoupon}>
+                Apply Coupon
+              </button>
+            </div>
+            {isGuest && (
+              <div className="email-section">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={userEmail}
+                  onChange={(e) => setUserEmail(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+            <div className="cart-actions">
+              <button className="clear-cart-button" onClick={clearCart}>Clear Cart</button>
+              <button className="checkout-button" onClick={handleCheckout}>Proceed to Checkout</button>
+            </div>
           </div>
         </div>
       ) : (

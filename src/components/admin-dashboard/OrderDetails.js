@@ -70,23 +70,28 @@ const OrderDetails = () => {
   const markAsPaid = async () => {
     // Prevent further actions if already marking as paid
     if (isMarkingPaidRef.current) return;
-
+  
     // Update the ref to prevent further clicks
     isMarkingPaidRef.current = true;
     setIsMarkingPaid(true);
-
+  
     try {
-      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ModifyOrderStatus', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      // Prepare the request payload in the required format
+      const requestBody = {
         body: JSON.stringify({
           order_id: orderDetails.orderId?.S,
           requested_status: 'paid',
         }),
+      };
+  
+      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ModifyOrderStatusSQS', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),  // Convert the request payload to JSON string
       });
-
+  
       if (response.ok) {
         // Update the order status in the UI
         setOrderDetails((prevDetails) => ({
@@ -106,6 +111,7 @@ const OrderDetails = () => {
       setIsMarkingPaid(false);
     }
   };
+  
 
   useEffect(() => {
     const init = async () => {
