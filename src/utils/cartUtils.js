@@ -1,5 +1,3 @@
-// cartUtils.js
-
 import { fetchUserAttributes } from 'aws-amplify/auth';
 
 // Fetch the authenticated user's email or determine if they are a guest
@@ -80,39 +78,25 @@ export async function applyCoupon(couponCode) {
 }
 
 // Validate stock before checkout
-export async function validateStockBeforeCheckout(cartItems, updateCartItem) {
+export async function validateStockBeforeCheckout(cartItems, updateCartItem, productInfo) {
   try {
     console.log('Starting stock validation...');
 
-    const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_GetProductList');
-    const data = await response.json();
+    let stockUpdated = false;
 
-    if (data && data.body) {
-      const productList = JSON.parse(data.body);
-      let stockUpdated = false;
+    for (const cartItem of cartItems) {
+      const { availableStock } = getProductDetails(cartItem.product_id, productInfo);
 
-      for (const cartItem of cartItems) {
-        const product = productList.find((p) => p.product_id === cartItem.product_id);
-
-        if (!product) {
-          console.warn(`Product with ID ${cartItem.product_id} not found in the product list.`);
-          continue;
-        }
-
-        const availableStock = product.available_stock_count !== undefined ? product.available_stock_count : 0;
-        if (cartItem.quantity > availableStock) {
-          alert(`Insufficient stock for ${cartItem.product_title}. Only ${availableStock} items are available.`);
-          updateCartItem(cartItem.product_id, availableStock);
-          stockUpdated = true;
-        }
+      if (availableStock !== undefined && cartItem.quantity > availableStock) {
+        alert(`Insufficient stock for ${cartItem.product_title}. Only ${availableStock} items are available.`);
+        updateCartItem(cartItem.product_id, availableStock);
+        stockUpdated = true;
       }
+    }
 
-      if (stockUpdated) {
-        alert('Your cart has been updated to reflect the maximum available stock. Please review and proceed.');
-        return false;
-      }
-    } else {
-      console.warn('No product list data body found in the response.');
+    if (stockUpdated) {
+      alert('Your cart has been updated to reflect the maximum available stock. Please review and proceed.');
+      return false;
     }
     return true;
   } catch (error) {
@@ -153,22 +137,32 @@ export async function createOrder(orderData, clearCart) {
   }
 }
 
-// Function to get the group title and image for a product
-export function getGroupDetailsForProduct(productId, productInfo) {
+// Function to get the product details like group title, image, and stock for a product
+export function getProductDetails(productId, productInfo) {
+  // Check if the product is in the product info list directly
   const standaloneProduct = productInfo.find((product) => product.product_id === productId);
 
   if (standaloneProduct) {
-    return { title: '', imageUrl: standaloneProduct.product_img_url };
+    return { 
+      title: '', 
+      imageUrl: standaloneProduct.product_img_url,
+      availableStock: standaloneProduct.available_stock_count || 0 
+    }; 
   }
 
+  // If not found, check if it belongs to a group
   for (const group of productInfo) {
     if (group.product_group) {
       const groupProduct = group.product_group.find((item) => item.product_id === productId);
       if (groupProduct) {
-        return { title: group.product_title, imageUrl: group.product_img_url };
+        return { 
+          title: group.product_title, 
+          imageUrl: group.product_img_url,
+          availableStock: groupProduct.available_stock_count || 0
+        };
       }
     }
   }
 
-  return { title: '', imageUrl: '' };
+  return { title: '', imageUrl: '', availableStock: 0 }; // Return empty if no group title found
 }

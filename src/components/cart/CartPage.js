@@ -8,7 +8,7 @@ import {
   applyCoupon, 
   validateStockBeforeCheckout, 
   createOrder, 
-  getGroupDetailsForProduct 
+  getProductDetails 
 } from '../../utils/cartUtils';
 
 const CartPage = () => {
@@ -60,7 +60,7 @@ const CartPage = () => {
       return;
     }
 
-    const isStockValid = await validateStockBeforeCheckout(cartItems, updateCartItem);
+    const isStockValid = await validateStockBeforeCheckout(cartItems, updateCartItem, productInfo);
     if (!isStockValid) return;
 
     const orderData = {
@@ -80,7 +80,12 @@ const CartPage = () => {
   };
 
   const handleQuantityChange = (product_id, newQuantity) => {
-    if (newQuantity >= 0) {
+    const { availableStock } = getProductDetails(product_id, productInfo); // Fetch the correct stock count from productInfo
+
+    if (newQuantity > availableStock) {
+      alert(`Only ${availableStock} items available in stock. Please reduce the quantity.`);
+      updateCartItem(product_id, availableStock);
+    } else if (newQuantity >= 0) {
       updateCartItem(product_id, newQuantity);
     }
   };
@@ -92,7 +97,7 @@ const CartPage = () => {
         <div className="cart-container">
           <div className="cart-items">
             {cartItems.map((item) => {
-              const { title: groupTitle, imageUrl: groupImageUrl } = getGroupDetailsForProduct(item.product_id, productInfo);
+              const { title: groupTitle, imageUrl: groupImageUrl } = getProductDetails(item.product_id, productInfo);
               return (
                 <div key={item.product_id} className="cart-item">
                   <img src={groupTitle ? groupImageUrl : item.product_img_url} alt={item.product_title} className="cart-item-image" />
