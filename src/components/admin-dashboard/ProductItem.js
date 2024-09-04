@@ -18,6 +18,7 @@ const ProductItem = ({
   expandedGroups,
   products,
 }) => {
+    
   const [productIdToAdd, setProductIdToAdd] = useState('');
 
   const groupProducts = product.product_group || [];
@@ -30,6 +31,11 @@ const ProductItem = ({
     } else {
       alert('Please select a product to add.');
     }
+  };
+
+  // Render available stock for both standalone and group products
+  const renderStockInfo = (product) => {
+    return product.available_stock_count !== undefined ? product.available_stock_count : 'N/A';
   };
 
   return (
@@ -45,6 +51,7 @@ const ProductItem = ({
         </p>
         <p>{product.product_category}</p>
         <p>{isGroup ? '' : `$${product.product_price}`}</p>
+        <p>{renderStockInfo(product)}</p> {/* Display stock info for standalone products */}
         <p>
           <a
             href={product.product_img_url}
@@ -113,6 +120,7 @@ const ProductItem = ({
               <p>{groupProduct.product_title}</p>
               <p>{groupProduct.product_category}</p>
               <p>${groupProduct.product_price}</p>
+              <p>{renderStockInfo(groupProduct)}</p> {/* Display stock info for group products */}
               <p>
                 <a
                   href={groupProduct.product_img_url}

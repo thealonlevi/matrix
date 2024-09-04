@@ -10,7 +10,7 @@ import {
   handleToggleProductVisibility,
 } from './utils/productutils';
 import { appendProductToGroup, detachProductFromGroup } from './utils/groupUtils';
-import { useNotification } from './utils/Notification'; // Import useNotification hook
+import { useNotification } from './utils/Notification';
 
 const ManageProducts = () => {
   const [products, setProducts] = useState([]);
@@ -18,7 +18,7 @@ const ManageProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { showNotification } = useNotification(); // Destructure the showNotification function from the hook
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     const verifyAccessAndFetchProducts = async () => {
@@ -67,7 +67,6 @@ const ManageProducts = () => {
       try {
         const response = await appendProductToGroup(groupId, productId);
         showNotification(`Product with ID ${productId} added to group ${groupId} successfully.`, 'success');
-        // Refresh the product list after appending the product
         const sortedProducts = await fetchProducts();
         setProducts(sortedProducts);
       } catch (error) {
@@ -83,7 +82,6 @@ const ManageProducts = () => {
       try {
         const response = await detachProductFromGroup(groupId, productId);
         showNotification(`Product with ID ${productId} detached from group ${groupId} successfully.`, 'success');
-        // Refresh the product list after detaching the product
         const sortedProducts = await fetchProducts();
         setProducts(sortedProducts);
       } catch (error) {
@@ -125,6 +123,7 @@ const ManageProducts = () => {
           <p>Title</p>
           <p>Category</p>
           <p>Price</p>
+          <p>Stock</p> {/* Added Stock column */}
           <p>Image URL</p>
           <p>Visibility</p>
           <p>Actions</p>
@@ -134,14 +133,14 @@ const ManageProducts = () => {
             <ProductItem
               key={product.product_id}
               product={product}
-              products={products} // Pass all products to filter out groups
+              products={products} 
               isGroup={Array.isArray(product.product_group)}
               isExpanded={expandedGroups.includes(product.product_id)}
               toggleGroupExpansion={toggleGroupExpansionHandler}
               handleDelete={handleDelete}
               handleToggleVisibility={handleToggleVisibility}
               handleAppendProduct={handleAppendProduct}
-              handleDetachProduct={handleDetachProduct} // Pass detach handler
+              handleDetachProduct={handleDetachProduct} 
               expandedGroups={expandedGroups}
             />
           ))
