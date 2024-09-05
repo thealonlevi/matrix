@@ -11,7 +11,9 @@ const OrderDetails = () => {
   const [error, setError] = useState('');
   const [productTitles, setProductTitles] = useState({});
   const [isMarkingPaid, setIsMarkingPaid] = useState(false);
-  
+  const [fulfillmentLoading, setFulfillmentLoading] = useState(false);
+  const [expandedItems, setExpandedItems] = useState([]); // State for expanded fulfillment entries
+
   // Notification hook
   const { showNotification } = useNotification();
 
@@ -111,7 +113,51 @@ const OrderDetails = () => {
       setIsMarkingPaid(false);
     }
   };
-  
+
+  const handleFulfillment = async (productId) => {
+    const quantity = prompt(`Enter the quantity to fulfill for product ID: ${productId}`);
+    if (!quantity || isNaN(quantity) || quantity <= 0) {
+      showNotification('Please enter a valid quantity.', 'error');
+      return;
+    }
+
+    setFulfillmentLoading(true);
+    try {
+      const requestBody = {
+        order_id: orderId,
+        product_id: productId,
+        quantity: parseInt(quantity, 10)
+      };
+
+      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FulfillOrder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        showNotification('Product fulfilled successfully.', 'success');
+        // Refetch order details to update the UI
+        await fetchOrderDetails();
+      } else {
+        const errorResponse = await response.json();
+        showNotification(`Failed to fulfill product: ${errorResponse.error}`, 'error');
+      }
+    } catch (err) {
+      showNotification(`Error fulfilling product: ${err.message}`, 'error');
+    } finally {
+      setFulfillmentLoading(false);
+    }
+  };
+
+  // Function to toggle expand/collapse for stock entries
+  const toggleExpand = (index) => {
+    setExpandedItems((prevState) =>
+      prevState.includes(index) ? prevState.filter((i) => i !== index) : [...prevState, index]
+    );
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -166,6 +212,13 @@ const OrderDetails = () => {
             return (
               <li key={index}>
                 {quantity}x {productTitle}
+                <button
+                  onClick={() => handleFulfillment(productId)}
+                  disabled={fulfillmentLoading}
+                  className="fulfill-button"
+                >
+                  Fulfill
+                </button>
               </li>
             );
           })}
@@ -181,11 +234,25 @@ const OrderDetails = () => {
                 const stockEntries = entry.M.stock?.S.split('>').map((stockItem, i) => (
                   <p key={i}>{stockItem.trim()}</p>
                 ));
+                const isLongStock = entry.M.stock?.S.length > 100; // Condition to check if stock is long
                 return (
-                  <li key={index}>
-                    <p><strong>Product:</strong> {productTitle}</p>
-                    <p><strong>Stock:</strong> {stockEntries}</p>
-                    <p><strong>Timestamp:</strong> {new Date(entry.M.timestamp?.S).toLocaleString()}</p>
+                  <li key={index} className="fulfillment-entry">
+                    <div className="fulfillment-item">
+                      <span className="fulfillment-label">Product:</span>
+                      <span className="fulfillment-content">{productTitle}</span>
+                    </div>
+                    <div className="fulfillment-item">
+                      <span className="fulfillment-label">Stock:</span>
+                      <div className={`fulfillment-content fulfillment-stock ${expandedItems.includes(index) ? 'expanded' : ''}`}>
+                        {stockEntries}
+                        {isLongStock && (
+                          <button className="toggle-expand" onClick={() => toggleExpand(index)}>
+                            {expandedItems.includes(index) ? 'Show Less' : 'Show More'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    <p className="timestamp">Timestamp: {new Date(entry.M.timestamp?.S).toLocaleString()}</p>
                   </li>
                 );
               })}

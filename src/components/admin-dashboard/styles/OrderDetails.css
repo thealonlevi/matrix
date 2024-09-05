@@ -38,7 +38,7 @@
   color: #ffffff;
   transition: background-color 0.3s ease;
   display: flex;
-  flex-direction: column; /* Makes content stack vertically */
+  flex-direction: column;
   align-items: flex-start;
 }
 
@@ -51,18 +51,105 @@
 }
 
 .fulfillment-entry {
-  margin-bottom: 8px;
-  padding: 10px;
-  background-color: #243045;
-  border-radius: 5px;
-  width: 100%;
-  box-sizing: border-box;
+  margin-bottom: 20px; /* Increased vertical spacing */
+  padding: 15px;
+  background-color: #2b334a;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start; /* Ensure alignment to the left */
 }
 
 .fulfillment-entry p {
-  margin: 4px 0;
-  font-size: 14px;
+  margin: 0;
+  font-size: 15px;
   line-height: 1.5;
+  color: #cfd8e3;
+}
+
+.fulfillment-entry .fulfillment-item {
+  display: flex;
+  justify-content: flex-start; /* Align to the left */
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.fulfillment-entry .fulfillment-label {
+  font-weight: bold;
+  color: #aad4ff;
+  margin-right: 10px;
+  min-width: 80px;
+}
+
+.fulfillment-entry .fulfillment-content {
+  flex: 1;
+  word-break: break-word;
+  background-color: #1a1e30;
+  padding: 8px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: #e0e6ed;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for better visual hierarchy */
+}
+
+.fulfillment-entry .fulfillment-stock {
+  max-height: 40px;
+  overflow: hidden;
+  position: relative;
+  padding-right: 80px; /* Increase padding to prevent overlap with button */
+  margin-bottom: 10px; /* Add space below */
+}
+
+.fulfillment-entry .fulfillment-stock.expanded {
+  max-height: none;
+}
+
+.fulfillment-entry .toggle-expand {
+  background: #2b334a;
+  border: 1px solid #aad4ff;
+  color: #aad4ff;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  right: 10px; /* Adjust positioning */
+  transform: translateY(-50%);
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.fulfillment-entry .toggle-expand:hover {
+  background-color: #3a4461; /* Hover effect for better contrast */
+}
+
+.fulfillment-entry .timestamp {
+  font-size: 14px;
+  color: #a9b7c6;
+  margin-top: 5px;
+  background-color: #1a1e30;
+  padding: 6px;
+  border-radius: 4px;
+  display: inline-block;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.fulfill-button {
+  background-color: #aad4ff;
+  color: #1a1e30;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: auto; /* Moves the button to the right */
+}
+
+.fulfill-button:hover {
+  background-color: #8abdfc;
 }
 
 .mark-as-paid-button {
@@ -108,4 +195,46 @@
   .fulfillment-entry p {
     font-size: 12px;
   }
+
+  .fulfillment-entry .fulfillment-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fulfillment-entry .toggle-expand {
+    right: 10px;
+  }
+}
+
+
+.fulfillment-entry .fulfillment-stock {
+  max-height: 40px; /* Set initial max height */
+  overflow: hidden; /* Hide overflow */
+  position: relative;
+  padding-right: 80px; /* Increase padding to prevent overlap with button */
+  margin-bottom: 10px; /* Add space below */
+  transition: max-height 0.3s ease; /* Smooth transition */
+}
+
+.fulfillment-entry .fulfillment-stock.expanded {
+  max-height: none; /* Remove height limit when expanded */
+}
+
+.fulfillment-entry .toggle-expand {
+  background: #2b334a;
+  border: 1px solid #aad4ff;
+  color: #aad4ff;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  right: 10px; /* Adjust positioning */
+  transform: translateY(-50%);
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.fulfillment-entry .toggle-expand:hover {
+  background-color: #3a4461; /* Hover effect for better contrast */
 }
