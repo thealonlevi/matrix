@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './styles/ModifyStockForm.css';
-import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import the utility function
+import { checkAdminPermission, logRequest, fetchProductStock, modifyProductStock } from '../../utils/api'; // Import API functions from api.js
 import { useNotification } from './utils/Notification';
 
 const ModifyStockForm = () => {
@@ -20,53 +20,21 @@ const ModifyStockForm = () => {
   const didFetchRef = useRef(false); // Ref to ensure we only run once
 
   useEffect(() => {
-    const logRequest = async () => {
+    const fetchStockData = async () => {
       try {
-        const logResponse = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_Logging', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ product_id: productId, function_name: 'Matrix_FetchStock' }),
-        });
-
-        if (logResponse.status === 200) {
-          showNotification('Request logged successfully.', 'success'); // Show success notification
-          return true;
-        } else {
-          setError('Failed to log the request');
-          showNotification('Failed to log the request.', 'error'); // Show error notification
-          return false;
-        }
-      } catch (error) {
-        setError('Error logging the request');
-        showNotification('Error logging the request.', 'error'); // Show error notification
-        return false;
-      }
-    };
-
-    const fetchStock = async () => {
-      try {
-        const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchStock', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ product_id: productId }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setStock(data.body);
+        const stockData = await fetchProductStock(productId); // Use api.js function to fetch product stock
+        
+        // Handle the stock data directly as a string
+        if (stockData) {
+          setStock(stockData); // Set stock if data is successfully fetched
           setError(null); // Clear any previous errors if the fetch is successful
           showNotification('Stock fetched successfully.', 'success'); // Show success notification
         } else {
-          setError('Failed to fetch stock');
-          showNotification('Failed to fetch stock.', 'error'); // Show error notification
+          throw new Error('Failed to fetch product stock.'); // Explicit error if stockData is not returned correctly
         }
       } catch (error) {
-        setError('Error fetching stock');
-        showNotification('Error fetching stock.', 'error'); // Show error notification
+        setError('Failed to fetch product stock. Please try again later.');
+        showNotification('Failed to fetch product stock. Please try again later.', 'error'); // Show error notification
       } finally {
         setLoading(false);
         isFetchingRef.current = false; // Reset fetching state
@@ -79,18 +47,21 @@ const ModifyStockForm = () => {
       didFetchRef.current = true; // Ensure this block only runs once
 
       try {
-        const hasPermission = await checkAdminPermission();
+        const hasPermission = await checkAdminPermission(); // Use api.js function to check admin permission
 
         if (!hasPermission) {
-          setError('Page not found.');
+          setError('Access denied: Admin permissions required.');
           showNotification('Access denied: Admin permissions required.', 'error'); // Show error notification
           setTimeout(() => {
             navigate('/');  // Redirect to the home page after 2 seconds
           }, 2000);
         } else {
-          const isLogged = await logRequest();
+          const isLogged = await logRequest('Matrix_FetchStock', productId); // Use api.js function to log the request
           if (isLogged) {
-            await fetchStock();
+            await fetchStockData();  // Fetch the stock only after the request is logged
+          } else {
+            setError('Failed to log the request.');
+            showNotification('Failed to log the request.', 'error'); // Show error notification
           }
         }
       } catch (error) {
@@ -109,24 +80,9 @@ const ModifyStockForm = () => {
     setIsProcessing(true); // Set processing to true to indicate request is in progress
 
     try {
-      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/ModifyStock', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          product_id: productId,
-          product_stock: stock,
-        }),
-      });
-
-      if (response.ok) {
-        showNotification('Stock updated successfully.', 'success'); // Show success notification
-        navigate('/admin/products');
-      } else {
-        setError('Failed to update stock');
-        showNotification('Failed to update stock.', 'error'); // Show error notification
-      }
+      await modifyProductStock(productId, stock); // Use api.js function to modify product stock
+      showNotification('Stock updated successfully.', 'success'); // Show success notification
+      navigate('/admin/products');
     } catch (error) {
       setError('Error updating stock');
       showNotification('Error updating stock.', 'error'); // Show error notification

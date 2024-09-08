@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ImageUpload from './ImageUpload';
 import './styles/CreateGroupForm.css'; 
 import { checkAdminPermission } from './utils/checkAdminPermissions'; 
-import { createGroup } from './utils/groupUtils'; // Import createGroup utility
+import { createProductGroup } from '../../utils/api'; // Utilize direct API call
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from './utils/Notification'; // Import useNotification hook
 
@@ -43,31 +43,41 @@ const CreateGroupForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     if (!title || !imageUrl) {
       showNotification('Title and image are required.', 'error');
       return;
     }
-
+    
     setError(null);
     console.log('Creating group with title:', title);
-
+    console.log('Using image URL:', imageUrl); // Debugging: Output the image URL being sent
+    
     const productIdsArray = productIds ? productIds.split(',').map(id => id.trim()) : [];
-
+    
     try {
-      const groupDetails = {
+      console.log('Sending group details to API:', {
         title,
         category,
-        description,
-        image_url: imageUrl,
+        image_url: imageUrl, 
         product_ids: productIdsArray,
-      };
-      
-      const response_unprocessed = await createGroup(groupDetails); // Use createGroup from groupUtils
-      const response = JSON.parse(response_unprocessed.body);
+      }); // Debugging: Output the details being sent
+    
+      const response = await createProductGroup(title, category, imageUrl, productIdsArray); // Directly using the API function
+
+      console.log('API Response:', response); // Debugging: Log the response
+
+      // If response is not in expected format
+      if (typeof response !== 'string') {
+        showNotification('Unexpected response format. Please try again.', 'error');
+        console.error('Unexpected response format:', response);
+        return;
+      }
+
       console.log('Group created successfully:', response);
-      showNotification(`${response}`, 'success');
+      showNotification(`Group created successfully: ${response}`, 'success');
       navigate('/admin/products'); 
+      
     } catch (error) {
       console.error('Error creating group:', error);
       showNotification(`Error creating group: ${error.message}`, 'error');

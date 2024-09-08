@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './styles/AdminOrders.css';
 import { useNavigate } from 'react-router-dom';
-import { checkPermissionAndFetchData, fetchData } from './utils/adminUtils';
+import { fetchOrdersCache } from '../../utils/api'; // Import fetchOrdersCache from api.js
+import { checkPermissionAndFetchData } from './utils/adminUtils'; // Import checkPermissionAndFetchData if it is used from adminUtils
 import ReactPaginate from 'react-paginate';
 
 const AdminOrders = () => {
@@ -15,32 +16,20 @@ const AdminOrders = () => {
   const fetchOrders = async () => {
     try {
       const storedTimestamp = localStorage.getItem('ORDERS_DATABASE_TIMESTAMP');
-      const requestBody = {
-        client_timestamp: storedTimestamp || null,
-      };
+      const requestBody = storedTimestamp || null;
 
-      const serverResponse = await fetchData(
-        'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchOrdersCache',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+      // Use the fetchOrdersCache function from api.js
+      const serverResponse = await fetchOrdersCache(requestBody);
       console.log("ORDERS");
       console.log(serverResponse);
 
-      const serverData = typeof serverResponse === 'string' ? JSON.parse(serverResponse) : serverResponse;
-
-      if (serverData.status === 'updated') {
+      if (serverResponse.status === 'updated') {
         // Update the local storage with new timestamp and orders data
-        localStorage.setItem('ORDERS_DATABASE_TIMESTAMP', serverData.timestamp);
-        localStorage.setItem('ORDERS_DATABASE', JSON.stringify(serverData.data));
+        localStorage.setItem('ORDERS_DATABASE_TIMESTAMP', serverResponse.timestamp);
+        localStorage.setItem('ORDERS_DATABASE', JSON.stringify(serverResponse.data));
 
         // Directly use the array as it is
-        const sortedOrders = serverData.data.sort((a, b) => {
+        const sortedOrders = serverResponse.data.sort((a, b) => {
           const dateA = new Date(a.order_date);
           const dateB = new Date(b.order_date);
           return dateB - dateA;

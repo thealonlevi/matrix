@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ImageUpload from './ImageUpload';
 import './styles/CreateProductForm.css'; 
-import { checkAdminPermission } from './utils/checkAdminPermissions'; 
+import { checkAdminPermission, createProduct, getProductList as fetchProductList} from '../../utils/api';  // Import the necessary API functions
 import { useNavigate } from 'react-router-dom';
-import { fetchProducts } from './utils/api'; 
 import { appendProductToGroup } from './utils/groupUtils';
 import { useNotification } from './utils/Notification';
 
@@ -12,7 +11,7 @@ const CreateProductForm = () => {
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
-  const [imageUrl, setImageUrl] = useState(null);
+  const [imageUrl, setImageUrl] = useState('');  // Initialize as an empty string
   const [groupId, setGroupId] = useState('');
   const [groups, setGroups] = useState([]);
   const [error, setError] = useState(null);
@@ -34,7 +33,7 @@ const CreateProductForm = () => {
           }, 2000);
         } else {
           setLoading(false);
-          const products = await fetchProducts();
+          const products = await fetchProductList();  // Use the API function to fetch products
           const groupProducts = products.filter(product => Array.isArray(product.product_group));
           setGroups(groupProducts);
           console.log('Groups fetched:', groupProducts);
@@ -60,46 +59,28 @@ const CreateProductForm = () => {
     console.log('Creating product with title:', title, 'and price:', price);
 
     try {
-      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_CreateProduct', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          product_category: category, 
-          product_img_url: imageUrl || '', 
-          product_price: parseFloat(price),
-          product_title: title,
-          product_description: description,  
-        }),
-      });
+      // Ensure imageUrl is a string, even if not provided
+      const productId = await createProduct(title, parseFloat(price), category, imageUrl || '', description);
+      showNotification(`Product created successfully with ID: ${productId}`, 'success');
 
-      if (response.ok) {
-        const data = JSON.parse((await response.json()).body);
-        console.log('Product created successfully:', data.product_id);
-        showNotification(`Product created successfully with ID: ${data.product_id}`, 'success');
-
-        // Check if a group ID is selected and append the product to the group
-        if (groupId) {
-          try {
-            await appendProductToGroup(groupId, data.product_id);
-            console.log('Product assigned to group with ID:', groupId);
-            showNotification(`Product successfully assigned to group with ID: ${groupId}`, 'success');
-          } catch (error) {
-            console.error('Error assigning product to group:', error);
-            showNotification(`Error assigning product to group: ${error.message}`, 'error');
-          }
+      // Check if a group ID is selected and append the product to the group
+      if (groupId) {
+        try {
+          await appendProductToGroup(groupId, productId);  // Use the function to append the product to a group
+          console.log('Product assigned to group with ID:', groupId);
+          showNotification(`Product successfully assigned to group with ID: ${groupId}`, 'success');
+        } catch (error) {
+          console.error('Error assigning product to group:', error);
+          showNotification(`Error assigning product to group: ${error.message}`, 'error');
         }
-      } else {
-        const errorData = await response.json();
-        console.error('Failed to create product:', errorData.error);
-        showNotification(errorData.error || 'Failed to create product', 'error');
       }
+
+      navigate('/admin/products');  // Redirect after successful creation
+
     } catch (error) {
       console.error('Error during product creation:', error);
       showNotification(`Error: ${error.message}`, 'error');
     }
-    navigate('/admin/products'); 
   };
 
   if (loading) {

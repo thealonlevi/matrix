@@ -4,6 +4,7 @@ import ShoppingCartIcon from '../assets/icons/white_shopping_cart.png';
 import RedEyeIcon from '../assets/icons/red_eye.png';
 import BlueEyeIcon from '../assets/icons/blue_eye.png';
 import ProductDetailsModal from './ProductDetailsModal'; // Import the modal component
+import { getProductList } from '../utils/api'; // Import the API utility function
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -15,18 +16,12 @@ const ProductList = () => {
 
     const fetchProducts = async () => {
       try {
-        const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_GetProductList');
-        console.log('API response received:', response);
+        const data = await getProductList(); // Use API utility function to fetch product list
+        console.log('Fetched product list:', data);
 
-        const data = await response.json();
-        console.log('Parsed JSON data:', data);
-
-        if (data && data.body) {
-          const parsedData = JSON.parse(data.body);
-          console.log('Parsed product list:', parsedData);
-
+        if (data) {
           // Ensure that every product has a product_description, even if it's just an empty string
-          const productsWithDescriptions = parsedData.map((product, index) => {
+          const productsWithDescriptions = data.map((product, index) => {
             console.log(`Processing product at index ${index}:`, product);
 
             // Log the full structure of the product for debugging
@@ -56,7 +51,7 @@ const ProductList = () => {
           localStorage.setItem('product_titles', JSON.stringify(productTitles));
           console.log('Product titles saved to local storage.');
         } else {
-          console.warn('No data body found in the response.');
+          console.warn('No data found in the response.');
         }
       } catch (error) {
         console.error('Error fetching products:', error);

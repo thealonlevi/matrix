@@ -1,4 +1,5 @@
 import { fetchUserAttributes } from 'aws-amplify/auth';
+import { getProductList, checkCouponCode, createOrder as createOrderApi} from './api';
 
 // Fetch the authenticated user's email or determine if they are a guest
 export async function currentAuthenticatedUser() {
@@ -16,13 +17,8 @@ export async function currentAuthenticatedUser() {
 // Fetch all product info from the product info database
 export async function fetchProductInfo() {
   try {
-    const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_GetProductList');
-    const data = await response.json();
-    if (data && data.body) {
-      const productList = JSON.parse(data.body);
-      console.log('Product information fetched:', productList);
-      return productList;
-    }
+    const productList = await getProductList();
+    return productList;
   } catch (error) {
     console.error('Error fetching product info:', error);
   }
@@ -47,28 +43,13 @@ export async function applyCoupon(couponCode) {
   try {
     console.log('Sending coupon code:', couponCode);
 
-    const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_CouponChecker', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ coupon_code: couponCode.trim() }),
-    });
+    const discountValue = await checkCouponCode(couponCode);
+    console.log("discountValue: ", discountValue)
 
-    const result = await response.json();
-    console.log('Response data:', result);
-
-    if (response.ok && result.body) {
-      const responseBody = JSON.parse(result.body);
-      const discountValue = parseFloat(responseBody.discount);
-
-      if (!isNaN(discountValue)) {
-        return discountValue;
-      } else {
-        alert('Invalid discount value received. Please try again.');
-      }
+    if (!isNaN(discountValue)) {
+      return discountValue;
     } else {
-      alert('Invalid coupon code. Please try again.');
+      alert('Invalid discount value received. Please try again.');
     }
   } catch (error) {
     console.error('Error applying coupon:', error);
@@ -111,28 +92,36 @@ export async function createOrder(orderData, clearCart) {
   try {
     console.log('Preparing to send order data:', orderData);
 
-    const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_CreateOrder', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(orderData),
-    });
+    // Call the API function from api.js
+    const result = await createOrderApi(
+      orderData.user_email,
+      orderData.order_contents,
+      'GUEST',  // Assuming user is a guest for this example; adjust as necessary
+      orderData.payment_method,
+      orderData.coupon_code,
+      orderData.ip_address,
+      orderData.user_agent,
+      orderData.device_type
+    );
+    console.log(result)
 
-    const result_unprocessed = await response.json();
-    const result = JSON.parse(result_unprocessed.body);
-
+    // Debugging: Log the full response from the API
     console.log('Parsed response:', result);
 
-    if (result_unprocessed.statusCode === 200) {
+    // Check if the result contains orderId and handle accordingly
+    if (result && result.orderId) {
       clearCart();
-      alert('Order created successfully! Order ID: ' + (result.order_id || 'undefined'));
+      alert('Order created successfully! Order ID: ' + (result.orderId || 'undefined'));
     } else {
+      // If the response does not have orderId, log the full result to understand the issue
+      console.error('Unexpected result:', result);
       const errorMessage = result.error || 'Failed to create order';
       alert(`Failed to create order! Error: ${errorMessage}`);
     }
   } catch (error) {
-    console.error('Checkout failed:', error);
+    // More specific error handling for debugging purposes
+    console.error('Checkout failed:', error.message);
+    console.error('Full error object:', error);
     alert('Checkout failed. Please try again.');
   }
 }

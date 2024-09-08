@@ -1,48 +1,31 @@
 import { checkAdminPermission } from './checkAdminPermissions'; // Import the permission utility
+import { logRequest as logRequestApi, fetchProductDetails, modifyOrderStatusSQS, fetchOrderDetails, fetchOrdersCache, getProductList } from '../../../utils/api'; // Import necessary API functions
 
+// Log a request using the API utility
 export const logRequest = async (functionName, productId) => {
   try {
-    const logResponse = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_Logging', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ function_name: functionName, product_id: productId }),
-    });
+    const response = await logRequestApi(functionName, productId); // Use the logRequest function from api.js
 
-    if (logResponse.status === 200) {
-      return true;
-    } else {
-      throw new Error('Failed to log the request');
-    }
+    return true;
   } catch (error) {
     console.error('Error logging the request:', error);
     return false;
   }
 };
 
+// Fetch data using the API utility
 export const fetchData = async (apiEndpoint, requestBody) => {
   try {
-    const response = await fetch(apiEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      return data.body;
-    } else {
-      throw new Error('Failed to fetch data from API');
-    }
+    // Use fetchProductDetails, fetchOrderDetails, etc., as needed
+    const data = await fetchOrderDetails(requestBody); // Example: replace with the appropriate function
+    return data;
   } catch (error) {
     console.error('Error fetching data:', error);
     return null;
   }
 };
 
+// Retrieve user ID for a given order ID from localStorage
 export const getUserIdForOrder = (orderId) => {
   const orderUserIdList = JSON.parse(localStorage.getItem('orderUserIdList')) || [];
   const orderUserMap = orderUserIdList.find(item => item.orderId === orderId);
@@ -55,6 +38,7 @@ export const getUserIdForOrder = (orderId) => {
   }
 };
 
+// Check permissions and fetch data securely
 export const checkPermissionAndFetchData = async (fetchCallback, logFunctionName, logProductId) => {
   const hasPermission = await checkAdminPermission();
   if (!hasPermission) {
@@ -69,6 +53,7 @@ export const checkPermissionAndFetchData = async (fetchCallback, logFunctionName
   return await fetchCallback();
 };
 
+// Fetch product title by product ID, including group handling
 export const getProductTitleById = (productId) => {
   console.log(`\n--- Fetching product title for Product ID: ${productId} ---`);
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './styles/ImageUpload.css'; // Ensure the CSS is imported
+import { uploadPublicImage } from '../../utils/api'; // Import the API function
 
 const ImageUpload = ({ onUploadSuccess }) => {
   const [file, setFile] = useState(null);
@@ -32,29 +33,16 @@ const ImageUpload = ({ onUploadSuccess }) => {
       const reader = new FileReader();
       reader.readAsDataURL(fileToUpload);
       reader.onload = async () => {
-        const base64Data = reader.result.split(',')[1];
+        const base64Data = reader.result.split(',')[1]; // Get the base64 encoded string part
 
-        // Send the POST request to the API Gateway
-        const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_PublicImageUpload', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ body: base64Data }),
-        });
+        // Use the `uploadPublicImage` function from `api.js`
+        const imageUrl = await uploadPublicImage(base64Data); // Pass base64 data instead of the file object
+        
+        console.log("Image URL received from API:", imageUrl); // Debugging: Log the URL received from the API
 
-        if (response.ok) {
-          const responseData = await response.json();
-          const parsedBody = JSON.parse(responseData.body);
-          const imageUrl = parsedBody.imageUrl;
-          setImageUrl(imageUrl);
-          onUploadSuccess(imageUrl); // Pass the URL to the parent component
-          console.log("Image URL:", imageUrl);
-        } else {
-          const errorData = await response.json();
-          setError(errorData.error || 'Failed to upload image');
-        }
-        setUploading(false);
+        setImageUrl(imageUrl);
+        onUploadSuccess(imageUrl); // Pass the URL to the parent component
+        console.log("Image URL passed to parent component:", imageUrl); // Debugging: Confirm the URL passed to parent
       };
       reader.onerror = (error) => {
         setError('Error reading file: ' + error.message);
@@ -62,6 +50,7 @@ const ImageUpload = ({ onUploadSuccess }) => {
       };
     } catch (error) {
       setError('Error uploading file: ' + error.message);
+    } finally {
       setUploading(false);
     }
   };

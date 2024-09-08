@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './styles/ModifyProductForm.css';
-import { checkAdminPermission } from './utils/checkAdminPermissions';
+import { checkAdminPermission, fetchProductDetails, modifyProductDetails, uploadPublicImage } from '../../utils/api'; // Import API functions from api.js
 
 const ModifyProductForm = () => {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ const ModifyProductForm = () => {
             navigate('/');
           }, 2000);
         } else if (productId) {
-          fetchProductDetails(productId);
+          await fetchProductDetailsHandler(productId);
         }
       } catch (error) {
         setError('An error occurred during permission verification.');
@@ -39,65 +39,47 @@ const ModifyProductForm = () => {
     verifyAccessAndFetchProduct();
   }, [productId, navigate]);
 
-  const fetchProductDetails = async (id) => {
+  const fetchProductDetailsHandler = async (id) => {
     try {
-      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchProductDetails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ product_id: id }),
-      });
+      const data = await fetchProductDetails(id); // Use API function to fetch product details
 
-      if (response.ok) {
-        const data = await response.json();
-        const parsedBody = JSON.parse(data.body);
-
-        setProduct(parsedBody);
-        setCategory(parsedBody.product_category);
-        setPrice(parsedBody.product_price);
-        setTitle(parsedBody.product_title);
-        setDescription(parsedBody.product_description || '');
-        setImgUrl(parsedBody.product_img_url);
-      } else {
-        setError('Failed to fetch product details');
-      }
+      setProduct(data);
+      setCategory(data.product_category);
+      setPrice(data.product_price);
+      setTitle(data.product_title);
+      setDescription(data.product_description || '');
+      setImgUrl(data.product_img_url);
     } catch (error) {
       setError('Error fetching product details: ' + error.message);
     }
   };
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     setImageFile(file);
 
-    const simulatedImageUrl = URL.createObjectURL(file);
-    setImgUrl(simulatedImageUrl);
+    try {
+      // Upload the image using the API function and get the URL
+      const imageUrl = await uploadPublicImage(file);
+      setImgUrl(imageUrl); // Set the new image URL
+    } catch (error) {
+      setError('Error uploading image: ' + error.message);
+    }
   };
 
   const handleSave = async () => {
     try {
-      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ModifyProductDetails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          product_id: productId,
-          product_category: category,
-          product_price: price,
-          product_title: title,
-          product_description: description,
-          product_img_url: imgUrl,
-        }),
+      // Use API function to modify product details
+      await modifyProductDetails(productId, {
+        product_category: category,
+        product_price: price,
+        product_title: title,
+        product_description: description,
+        product_img_url: imgUrl,
       });
 
-      if (response.ok) {
-        alert(`Product updated successfully`);
-        navigate('/admin/products');
-      } else {
-        setError('Failed to update product');
-      }
+      alert(`Product updated successfully`);
+      navigate('/admin/products');
     } catch (error) {
       setError('Error updating product: ' + error.message);
     }

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import './styles/OrderDetails.css';
-import { checkPermissionAndFetchData, fetchData, getUserIdForOrder, getProductTitleById, getGroupTitleById } from './utils/adminUtils';
+import { checkPermissionAndFetchData, getUserIdForOrder, getProductTitleById, getGroupTitleById } from './utils/adminUtils';
 import { useNotification } from './utils/Notification';
+import { fetchOrderDetails, modifyOrderStatusSQS, fulfillOrder } from '../../utils/api';  // Importing the relevant API functions
 
 const OrderDetails = () => {
   const { orderId } = useParams();
@@ -20,31 +21,32 @@ const OrderDetails = () => {
   // Use ref to track marking paid state
   const isMarkingPaidRef = useRef(false);
 
-  const fetchOrderDetails = async () => {
+  const fetchOrderDetailsHandler = async () => {
     const userId = getUserIdForOrder(orderId);
     if (!userId) {
       throw new Error('User ID not found for this order.');
     }
 
-    const data = await fetchData(
-      'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchOrderDetails',
-      { orderId, userId }
-    );
+    try {
+      const data = await fetchOrderDetails(orderId);
+      if (data) {
+        const parsedData = JSON.parse(data.body); // Assuming the response is inside a 'body' field
+        setOrderDetails(parsedData);
 
-    if (data) {
-      const parsedData = JSON.parse(data);
-      setOrderDetails(parsedData);
+        const titles = await fetchProductTitles(parsedData.order_contents?.L);
+        setProductTitles(titles);
 
-      const titles = await fetchProductTitles(parsedData.order_contents?.L);
-      setProductTitles(titles);
-
-      // Fetch titles for the fulfillment history
-      if (parsedData.fulfillment_history?.L) {
-        const fulfillmentTitles = await fetchProductTitles(parsedData.fulfillment_history?.L.map(item => ({
-          M: { product_id: item.M.product_id }
-        })));
-        setProductTitles(prevTitles => ({ ...prevTitles, ...fulfillmentTitles }));
+        // Fetch titles for the fulfillment history
+        if (parsedData.fulfillment_history?.L) {
+          const fulfillmentTitles = await fetchProductTitles(parsedData.fulfillment_history?.L.map(item => ({
+            M: { product_id: item.M.product_id }
+          })));
+          setProductTitles(prevTitles => ({ ...prevTitles, ...fulfillmentTitles }));
+        }
       }
+    } catch (error) {
+      console.error('Error fetching order details:', error);
+      showNotification('Failed to fetch order details. Please try again later.', 'error');
     }
   };
 
@@ -78,32 +80,15 @@ const OrderDetails = () => {
     setIsMarkingPaid(true);
   
     try {
-      // Prepare the request payload in the required format
-      const requestBody = {
-        body: JSON.stringify({
-          order_id: orderDetails.orderId?.S,
-          requested_status: 'paid',
-        }),
-      };
-  
-      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ModifyOrderStatusSQS', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),  // Convert the request payload to JSON string
-      });
-  
-      if (response.ok) {
+      const responseMessage = await modifyOrderStatusSQS(orderDetails.orderId?.S, 'paid');  // Using the imported function
+
+      if (responseMessage) {
         // Update the order status in the UI
         setOrderDetails((prevDetails) => ({
           ...prevDetails,
           payment_status: { S: 'paid' },
         }));
         showNotification('Order status updated to Paid successfully.', 'success'); // Show success notification
-      } else {
-        const errorResponse = await response.json();
-        showNotification(`Failed to update order status: ${errorResponse.error}`, 'error'); // Show error notification
       }
     } catch (err) {
       showNotification(`Error updating order status: ${err.message}`, 'error'); // Show error notification
@@ -123,27 +108,12 @@ const OrderDetails = () => {
 
     setFulfillmentLoading(true);
     try {
-      const requestBody = {
-        order_id: orderId,
-        product_id: productId,
-        quantity: parseInt(quantity, 10)
-      };
+      const responseMessage = await fulfillOrder(orderId, productId, parseInt(quantity, 10));  // Using the imported function
 
-      const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FulfillOrder', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (response.ok) {
+      if (responseMessage) {
         showNotification('Product fulfilled successfully.', 'success');
         // Refetch order details to update the UI
-        await fetchOrderDetails();
-      } else {
-        const errorResponse = await response.json();
-        showNotification(`Failed to fulfill product: ${errorResponse.error}`, 'error');
+        await fetchOrderDetailsHandler();
       }
     } catch (err) {
       showNotification(`Error fulfilling product: ${err.message}`, 'error');
@@ -162,7 +132,7 @@ const OrderDetails = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        await checkPermissionAndFetchData(fetchOrderDetails, 'Matrix_FetchOrderDetails', '99990');
+        await checkPermissionAndFetchData(fetchOrderDetailsHandler, 'Matrix_FetchOrderDetails', '99990');
         setLoading(false);
       } catch (err) {
         setError(err.message);

@@ -78,6 +78,7 @@ const COUPON_CHECKER_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazona
  */
 export const checkCouponCode = async (couponCode) => {
   try {
+    console.log("Checking ", couponCode)
     const response = await fetch(COUPON_CHECKER_API_URL, {
       method: 'POST',
       headers: {
@@ -92,9 +93,11 @@ export const checkCouponCode = async (couponCode) => {
       throw new Error('Unexpected response from the server.');
     }
 
-    const data = await response.json();
+    const data = JSON.parse((await response.json()).body);
+    console.log(data.discount);
 
     if (data.discount !== undefined) {
+        console.log(data.discount);
       return data.discount;  // Return the discount percentage
     } else {
       throw new Error(data.body);  // Return the error message if coupon code not found
@@ -171,6 +174,9 @@ export const createOrder = async (
   deviceType = 'Unknown'
 ) => {
   try {
+    console.log(userEmail);
+    console.log(orderContents);
+    console.log(userId);
     const response = await fetch(CREATE_ORDER_API_URL, {
       method: 'POST',
       headers: {
@@ -187,14 +193,16 @@ export const createOrder = async (
         device_type: deviceType,
       }),
     });
+    console.log(response)
 
     if (!response.ok) {
       throw new Error('Unexpected response from the server.');
     }
 
-    const data = await response.json();
-
+    const data = JSON.parse((await response.json()).body);
+    console.log(data)
     if (data.order_id) {
+        console.log("True")
       return {
         message: data.message,
         orderId: data.order_id,
@@ -209,7 +217,7 @@ export const createOrder = async (
   }
 };
 
-// API URL
+// Corrected `createProduct` function
 const CREATE_PRODUCT_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_CreateProduct';
 
 /**
@@ -244,15 +252,19 @@ export const createProduct = async (
     });
 
     if (!response.ok) {
-      throw new Error('Unexpected response from the server.');
+      // Handle non-200 responses
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Unexpected response from the server.');
     }
 
+    // Correctly parse the response body
     const data = await response.json();
+    const parsedData = JSON.parse(data.body); // Correctly parse the 'body' field from the response
 
-    if (data.product_id !== undefined) {
-      return data.product_id;  // Return the new product ID
+    if (parsedData && parsedData.product_id !== undefined) {
+      return parsedData.product_id; // Return the new product ID
     } else {
-      throw new Error(data.body || 'Failed to create product.');
+      throw new Error('Failed to create product. Product ID not found in response.');
     }
   } catch (error) {
     console.error('Error creating product:', error);
@@ -401,12 +413,8 @@ export const fetchOrderDetails = async (orderId) => {
     }
 
     const data = await response.json();
-
-    if (data && !data.includes('Failed')) {
-      return JSON.parse(data.body);  // Return the order details
-    } else {
-      throw new Error(data.body || 'Failed to fetch order details.');
-    }
+    console.log("ORDER DETAILS: ", data);
+    return data;
   } catch (error) {
     console.error('Error fetching order details:', error);
     throw new Error('Failed to fetch order details. Please try again later.');
@@ -522,43 +530,6 @@ export const fetchProductDetails = async (productId) => {
 };
 
 // API URL
-const FETCH_STOCK_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchStock';
-
-/**
- * Function to fetch the stock for a given product ID.
- * @param {string} productId - The ID of the product to fetch stock for.
- * @returns {Promise} - Resolves with the product stock or rejects with an error message.
- */
-export const fetchProductStock = async (productId) => {
-  try {
-    const response = await fetch(FETCH_STOCK_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        product_id: productId,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Unexpected response from the server.');
-    }
-
-    const data = await response.json();
-
-    if (data.body && !data.body.includes('Incorrect request')) {
-      return data.body;  // Return the product stock
-    } else {
-      throw new Error(data.body || 'Failed to fetch product stock.');
-    }
-  } catch (error) {
-    console.error('Error fetching product stock:', error);
-    throw new Error('Failed to fetch product stock. Please try again later.');
-  }
-};
-
-// API URL
 const FULFILL_ORDER_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FulfillOrder';
 
 /**
@@ -594,7 +565,6 @@ export const fulfillOrder = async (orderId) => {
     throw new Error('Failed to fulfill order. Please try again later.');
   }
 };
-
 // API URL
 const GET_PRODUCT_LIST_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_GetProductList';
 
@@ -617,8 +587,9 @@ export const getProductList = async () => {
 
     const data = await response.json();
 
-    if (data) {
-      return data;  // Return the list of products
+    if (data && data.body) {
+      const productList = JSON.parse(data.body);  // Parse the body to get the actual product list
+      return productList;  // Return the list of products
     } else {
       throw new Error('Failed to fetch product list.');
     }
@@ -628,44 +599,6 @@ export const getProductList = async () => {
   }
 };
 
-// API URL
-const LOGGING_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_Logging';
-
-/**
- * Function to log a request to the Matrix Logging API.
- * @param {string} functionName - The name of the function making the request.
- * @param {string} productId - The ID of the product associated with the request.
- * @returns {Promise} - Resolves with a success message or rejects with an error message.
- */
-export const logRequest = async (functionName, productId) => {
-  try {
-    const response = await fetch(LOGGING_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        function_name: functionName,
-        product_id: productId,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Unexpected response from the server.');
-    }
-
-    const data = await response.json();
-
-    if (data.body && !data.body.includes('Internal Server Error')) {
-      return data.body;  // Return the success message
-    } else {
-      throw new Error(data.body || 'Failed to log request.');
-    }
-  } catch (error) {
-    console.error('Error logging request:', error);
-    throw new Error('Failed to log request. Please try again later.');
-  }
-};
 
 // API URL for sending requests to SQS
 const MODIFY_ORDER_STATUS_SQS_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ModifyOrderStatusSQS';
@@ -678,27 +611,33 @@ const MODIFY_ORDER_STATUS_SQS_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-
  */
 export const modifyOrderStatusSQS = async (orderId, requestedStatus) => {
   try {
+    const requestBody = {
+        body: JSON.stringify({
+          order_id: orderId,
+          requested_status: requestedStatus,
+        }),
+      };
+    console.log(orderId, requestedStatus);
     const response = await fetch(MODIFY_ORDER_STATUS_SQS_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        order_id: orderId,
-        requested_status: requestedStatus,
-      }),
+      body: JSON.stringify(requestBody),
     });
-
+    
     if (!response.ok) {
       throw new Error('Unexpected response from the server.');
     }
 
     const data = await response.json();
+    console.log(data);
 
-    if (data.body && !data.body.includes('error')) {
+    if (data.body && !JSON.parse(data.body).error) {
       return data.body;  // Return the success message
     } else {
-      throw new Error(data.body || 'Failed to submit order status update request.');
+        console.log("Fk")
+        throw new Error(data.body || 'Failed to submit order status update request.');
     }
   } catch (error) {
     console.error('Error modifying order status via SQS:', error);
@@ -744,7 +683,6 @@ export const modifyProductDetails = async (productId, productDetails) => {
     throw new Error('Failed to modify product details. Please try again later.');
   }
 };
-
 // API URL
 const PUBLIC_IMAGE_UPLOAD_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_PublicImageUpload';
 
@@ -754,33 +692,42 @@ const PUBLIC_IMAGE_UPLOAD_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.am
  * @returns {Promise} - Resolves with the URL of the uploaded image or rejects with an error message.
  */
 export const uploadPublicImage = async (base64ImageData) => {
-  try {
-    const response = await fetch(PUBLIC_IMAGE_UPLOAD_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        body: base64ImageData,  // Base64 encoded image data
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Unexpected response from the server.');
+    try {
+      const response = await fetch(PUBLIC_IMAGE_UPLOAD_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          body: base64ImageData,  // Base64 encoded image data
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Unexpected response from the server.');
+      }
+  
+      const data = await response.json();
+      console.log('Upload response data:', data); // Debugging line
+  
+      // Check if response contains the imageUrl key
+      if (data.body) {
+        const parsedBody = JSON.parse(data.body); // Parse the body if needed
+        if (parsedBody.imageUrl) {
+          return parsedBody.imageUrl;  // Return the URL of the uploaded image
+        } else {
+          throw new Error('Image URL not found in the response.');
+        }
+      } else {
+        throw new Error('No response body found.');
+      }
+    } catch (error) {
+      console.error('Error uploading public image:', error);
+      throw new Error('Failed to upload image. Please try again later.');
     }
+  };
+  
 
-    const data = await response.json();
-
-    if (data.imageUrl) {
-      return data.imageUrl;  // Return the URL of the uploaded image
-    } else {
-      throw new Error(data.body || 'Failed to upload image.');
-    }
-  } catch (error) {
-    console.error('Error uploading public image:', error);
-    throw new Error('Failed to upload image. Please try again later.');
-  }
-};
 
 // API URL
 const TOGGLE_VISIBILITY_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ToggleVisibility';
@@ -820,13 +767,73 @@ export const toggleProductVisibility = async (productId) => {
 };
 
 // API URL
+const LOGGING_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_Logging';
 const MODIFY_STOCK_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/ModifyStock';
+const FETCH_STOCK_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchStock';
+
+/**
+ * Function to log a request to the Matrix Logging API.
+ */
+export const logRequest = async (functionName, productId) => {
+    try {
+      const response = await fetch(LOGGING_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          function_name: functionName,
+          product_id: productId,
+        }),
+      });
+  
+      return true;
+    } catch (error) {
+      console.error('Error logging request:', error);
+      throw new Error('Failed to log request. Please try again later.');
+    }
+  };
+  
+
+/**
+ * Function to fetch the stock for a given product ID.
+ */
+export const fetchProductStock = async (productId) => {
+    try {
+      console.log('Fetching stock for product ID:', productId); // Debugging line
+  
+      const response = await fetch(FETCH_STOCK_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product_id: productId,
+        }),
+      });
+  
+      if (!response.ok) {
+        console.error('Fetch Stock API response not ok:', response.status, response.statusText);
+        throw new Error(`Failed to fetch product stock. Server responded with status: ${response.status} - ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      console.log('Fetch Stock API raw response:', data); // Debugging line
+  
+      if (data.body && !data.body.includes('Incorrect request')) {
+        return data.body; // Return the product stock value directly
+      } else {
+        console.error('Fetch Stock API response error:', data.body);
+        throw new Error(data.body || 'Failed to fetch product stock.');
+      }
+    } catch (error) {
+      console.error('Error fetching product stock:', error);
+      throw new Error('Failed to fetch product stock. Please try again later.');
+    }
+  };
 
 /**
  * Function to modify the stock of a product.
- * @param {string} productId - The ID of the product to modify stock for.
- * @param {string} newStock - The new stock value for the product.
- * @returns {Promise} - Resolves with a success message or rejects with an error message.
  */
 export const modifyProductStock = async (productId, newStock) => {
   try {
@@ -842,20 +849,21 @@ export const modifyProductStock = async (productId, newStock) => {
     });
 
     if (!response.ok) {
-      throw new Error('Unexpected response from the server.');
+      console.error('Modify Stock API response not ok:', response.statusText);
+      throw new Error('Failed to modify product stock.');
     }
 
     const data = await response.json();
 
     if (data.body && !data.body.includes('Failed')) {
-      return data.body;  // Return the success message
+      console.log('Stock modification successful:', data.body); // Debugging line
+      return true;  // Indicate success
     } else {
-      throw new Error(data.body || 'Failed to modify product stock.');
+      console.error('Modify Stock API response error:', data.body);
+      throw new Error('Failed to modify product stock.');
     }
   } catch (error) {
     console.error('Error modifying product stock:', error);
     throw new Error('Failed to modify product stock. Please try again later.');
   }
 };
-
-
