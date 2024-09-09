@@ -867,3 +867,52 @@ export const modifyProductStock = async (productId, newStock) => {
     throw new Error('Failed to modify product stock. Please try again later.');
   }
 };
+
+// API URL
+const USER_INFO_UTIL_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_UserInfoUtil';
+
+/**
+ * Function to interact with the Matrix_UserInfoUtil API to perform CRUD operations.
+ * @param {string} action - The action to perform ('GET', 'POST', 'PUT', 'DELETE').
+ * @param {Object} payload - The payload to send with the request, if applicable.
+ * @returns {Promise} - Resolves with the API response data or rejects with an error message.
+ */
+export const userInfoUtil = async (action, payload = {}) => {
+  try {
+    // Validate action
+    const validActions = ['GET', 'POST', 'PUT', 'DELETE'];
+    if (!validActions.includes(action)) {
+      throw new Error(`Invalid action: ${action}. Valid actions are ${validActions.join(', ')}.`);
+    }
+
+    // Set up the request options
+    const options = {
+      method: action,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    // Add payload for non-GET requests
+    if (action !== 'GET' && Object.keys(payload).length > 0) {
+      options.body = JSON.stringify(payload);
+    }
+
+    // Make the API request
+    const response = await fetch(USER_INFO_UTIL_API_URL, options);
+
+    // Check if the response is OK
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+    }
+
+    // Parse the response JSON
+    const data = await response.json();
+
+    // Return the response data
+    return data;
+  } catch (error) {
+    console.error('Error interacting with Matrix_UserInfoUtil API:', error);
+    throw new Error('Failed to interact with Matrix_UserInfoUtil API. Please try again later.');
+  }
+};
