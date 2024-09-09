@@ -916,3 +916,46 @@ export const userInfoUtil = async (action, payload = {}) => {
     throw new Error('Failed to interact with Matrix_UserInfoUtil API. Please try again later.');
   }
 };
+
+// API URL
+const FETCH_USER_ORDERS_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchUserOrders';
+
+/**
+ * Function to fetch user orders from the Matrix_FetchUserOrders API.
+ * @param {Object} payload - The payload to send with the request, containing the user's email and userId.
+ * @returns {Promise} - Resolves with the API response data or rejects with an error message.
+ */
+export const fetchUserOrders = async (payload = {}) => {
+  try {
+    // Ensure the payload contains necessary data
+    if (!payload.email || !payload.userId) {
+      throw new Error('Both email and userId are required in the payload.');
+    }
+
+    // Set up the request options
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    // Make the API request
+    const response = await fetch(FETCH_USER_ORDERS_API_URL, options);
+
+    // Check if the response is OK
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+    }
+
+    // Parse the response JSON
+    const data = await response.json();
+
+    // Return the response data
+    return data;
+  } catch (error) {
+    console.error('Error fetching user orders from Matrix_FetchUserOrders API:', error);
+    throw new Error('Failed to fetch user orders. Please try again later.');
+  }
+};

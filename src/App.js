@@ -1,6 +1,6 @@
 // src/App.js
 
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Banner from './components/Banner';
@@ -18,6 +18,8 @@ import AdminOrders from './components/admin-dashboard/AdminOrders';
 import OrderDetails from './components/admin-dashboard/OrderDetails';
 import CartPage from './components/cart/CartPage';
 import { CartProvider } from './components/cart/CartContext';
+import UserArea from './components/user-area/UserArea'; // Import UserArea component
+import UserOrderDetails from './components/user-area/UserOrderDetails'; // Import UserOrderDetails component
 import { NotificationProvider, useNotification } from './components/admin-dashboard/utils/Notification';
 import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
@@ -88,6 +90,10 @@ const AppContent = () => {
           <Route path="orders" element={<AdminOrders />} /> {/* Route for Admin Orders */}
           <Route path="/admin/orders/:orderId" element={<OrderDetails />} />
         </Route>
+        {/* Add route for User Area */}
+        <Route path="/user-area" element={<UserArea />} /> {/* User Area Route */}
+        {/* Add route for User Order Details */}
+        <Route path="/user-area/orders/:orderId" element={<UserOrderDetails />} /> {/* User Order Details Route */}
       </Routes>
     </div>
   );

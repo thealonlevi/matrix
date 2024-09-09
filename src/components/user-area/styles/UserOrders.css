@@ -1,0 +1,72 @@
+/* User Orders Container */
+.user-orders-container {
+    margin: 20px auto;
+    width: 80%;
+    max-width: 1000px;
+    background-color: #1e1e2e; /* Darker background for contrast */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Heading */
+  .user-orders-container h3 {
+    color: #f8f8f8; /* Light color for better readability */
+    margin-bottom: 20px;
+    font-size: 24px;
+    border-bottom: 2px solid #2e2e3e; /* Adds an underline */
+    padding-bottom: 10px;
+  }
+  
+  /* Table */
+  .user-orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #27293d; /* Background color for the table */
+    color: #f8f8f8; /* Light color for better readability */
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  /* Table Head */
+  .user-orders-table th {
+    background-color: #2e2e3e; /* Header background color */
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: bold;
+    color: #f8f8f8;
+    border-bottom: 1px solid #3e3e4e; /* Adds bottom border */
+  }
+  
+  /* Table Body */
+  .user-orders-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #3e3e4e;
+  }
+  
+  /* Hover Effect on Table Rows */
+  .user-orders-table tr:hover {
+    background-color: #3e3e5e; /* Lighter background on hover */
+    cursor: pointer; /* Change cursor on hover */
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .user-orders-container {
+      width: 95%;
+    }
+  
+    .user-orders-table th,
+    .user-orders-table td {
+      padding: 10px;
+    }
+  }
+  
+  /* Error Message Styling */
+  .error-message {
+    color: #e63946; /* Red color for error messages */
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
