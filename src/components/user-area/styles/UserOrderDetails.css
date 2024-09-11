@@ -1,79 +1,78 @@
 /* src/components/user-area/styles/UserOrderDetails.css */
 
 .user-order-details-container {
-    max-width: 800px;
-    margin: 40px auto;
-    background-color: #1e1e2f;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    color: #f0f0f5;
+  max-width: 800px;
+  margin: 40px auto;
+  background-color: #1e1e2f;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  color: #f0f0f5;
+}
+
+.user-order-details-container h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.user-order-details-container ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.user-order-details-container ul li {
+  background-color: #252540;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-order-details-container ul li strong {
+  color: #f9a826;
+}
+
+.user-order-details-container h3 {
+  margin-top: 30px;
+  font-size: 20px;
+  color: #f9a826;
+  text-align: left;
+}
+
+.user-order-details-container ul li .fulfillment-details {
+  font-size: 14px;
+  color: #d0d0d5;
+}
+
+.user-order-details-container ul li .fulfillment-details strong {
+  color: #f0f0f5;
+}
+
+.user-order-details-container li + li {
+  margin-top: 15px;
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+  .user-order-details-container {
+    padding: 15px;
   }
-  
+
   .user-order-details-container h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #ffffff;
-    text-align: center;
-  }
-  
-  .user-order-details-container ul {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0;
-  }
-  
-  .user-order-details-container ul li {
-    background-color: #252540;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    font-size: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .user-order-details-container ul li strong {
-    color: #f9a826;
-  }
-  
-  .user-order-details-container h3 {
-    margin-top: 30px;
     font-size: 20px;
-    color: #f9a826;
-    text-align: left;
   }
-  
-  .user-order-details-container ul li .fulfillment-details {
+
+  .user-order-details-container ul li {
     font-size: 14px;
-    color: #d0d0d5;
   }
-  
-  .user-order-details-container ul li .fulfillment-details strong {
-    color: #f0f0f5;
+
+  .user-order-details-container h3 {
+    font-size: 18px;
   }
-  
-  .user-order-details-container li + li {
-    margin-top: 15px;
-  }
-  
-  /* Responsive Styles */
-  @media (max-width: 600px) {
-    .user-order-details-container {
-      padding: 15px;
-    }
-  
-    .user-order-details-container h2 {
-      font-size: 20px;
-    }
-  
-    .user-order-details-container ul li {
-      font-size: 14px;
-    }
-  
-    .user-order-details-container h3 {
-      font-size: 18px;
-    }
-  }
-  
+}

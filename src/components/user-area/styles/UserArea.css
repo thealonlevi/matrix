@@ -1,29 +1,48 @@
 /* src/components/styles/UserArea.css */
 .user-area-container {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .user-orders-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  .user-orders-table th, .user-orders-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-  }
-  
-  .user-orders-table tr:hover {
-    background-color: #f1f1f1;
-    cursor: pointer;
-  }
-  
-  .error-message {
-    color: red;
-    margin-top: 10px;
-  }
-  
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #1b1b1b; /* Dark theme background */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  color: #fff; /* White text */
+}
+
+.user-area-content {
+  text-align: center;
+}
+
+.user-area-section {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #2a2a2a; /* Slightly lighter background */
+  border-radius: 8px;
+}
+
+.user-area-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.user-area-button {
+  background-color: #007bff; /* Primary button color */
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.user-area-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.error-message {
+  color: #ff4d4d; /* Error message color */
+  margin-top: 1rem;
+}

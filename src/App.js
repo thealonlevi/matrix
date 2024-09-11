@@ -19,7 +19,7 @@ import OrderDetails from './components/admin-dashboard/OrderDetails';
 import CartPage from './components/cart/CartPage';
 import { CartProvider } from './components/cart/CartContext';
 import UserArea from './components/user-area/UserArea'; // Import UserArea component
-import UserOrderDetails from './components/user-area/UserOrderDetails'; // Import UserOrderDetails component
+import UserOrders from './components/user-area/UserOrders'; // Import UserOrders component
 import { NotificationProvider, useNotification } from './components/admin-dashboard/utils/Notification';
 import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
@@ -27,17 +27,17 @@ import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
 async function currentAuthenticatedUser() {
   try {
     const user = await fetchUserAttributes();
-    const { email } = user;
-    console.log(`The email: ${email}`);
-    return { email, isGuest: false };
+    const { email, sub: userId } = user; // Extract userId from Cognito
+    console.log(`The email: ${email}, UserId: ${userId}`);
+    return { email, userId, isGuest: false };
   } catch (err) {
     console.log(err);
-    return { email: null, isGuest: true };
+    return { email: null, userId: null, isGuest: true };
   }
 }
 
 const AppContent = () => {
-  const [user, setUser] = useState({ email: null, isGuest: true });
+  const [user, setUser] = useState({ email: null, userId: null, isGuest: true });
   const location = useLocation();
   const { showNotification } = useNotification(); // Access notification context
 
@@ -53,7 +53,7 @@ const AppContent = () => {
   const handleLogout = async () => {
     try {
       await signOut();
-      setUser({ email: null, isGuest: true });
+      setUser({ email: null, userId: null, isGuest: true });
       showNotification('Logged out successfully', 'success'); // Show notification
     } catch (error) {
       console.log('Error signing out: ', error);
@@ -92,8 +92,11 @@ const AppContent = () => {
         </Route>
         {/* Add route for User Area */}
         <Route path="/user-area" element={<UserArea />} /> {/* User Area Route */}
-        {/* Add route for User Order Details */}
-        <Route path="/user-area/orders/:orderId" element={<UserOrderDetails />} /> {/* User Order Details Route */}
+        {/* Add route for User Orders and pass userEmail and userId */}
+        <Route 
+          path="/user-area/orders" 
+          element={<UserOrders userEmail={user.email} userId={user.userId} />} 
+        /> {/* User Orders Route */}
       </Routes>
     </div>
   );
