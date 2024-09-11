@@ -1,48 +1,161 @@
-/* src/components/styles/UserArea.css */
-.user-area-container {
-  padding: 2rem;
-  max-width: 800px;
+/* General Page Styles */
+.user-area-page {
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
-  background-color: #1b1b1b; /* Dark theme background */
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  color: #fff; /* White text */
-}
-
-.user-area-content {
-  text-align: center;
-}
-
-.user-area-section {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background-color: #2a2a2a; /* Slightly lighter background */
-  border-radius: 8px;
-}
-
-.user-area-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.user-area-button {
-  background-color: #007bff; /* Primary button color */
+  padding: 20px;
   color: #fff;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  background-color: #181818; /* Background for the user area */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.user-area-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+/* Top Navigation Styles */
+.user-area-nav {
+  display: flex;
+  justify-content: flex-start; /* Align to the left */
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #2b2b2b;
+}
+
+.nav-link {
+  color: #ccc; /* Default color */
+  padding: 10px 15px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s, border-bottom 0.2s, background-color 0.3s; /* Added background color transition */
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px; /* Rounded corners for a modern look */
+  position: relative; /* For hover effect */
+}
+
+.nav-link:hover {
+  color: #fff; /* Hover color */
+  background-color: #2b2b2b; /* Background color change on hover */
+}
+
+.nav-link.active {
+  color: #fff; /* Active color */
+  border-bottom: 2px solid #3498db; /* Blue underline for active tab */
+}
+
+/* User Information Section */
+.user-info-section {
+  background-color: #1f1f1f;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.info-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
+  gap: 15px; /* Spacing between items */
+  margin-top: 20px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  background-color: #2b2b2b;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  color: #e0e0e0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
+}
+
+.info-item:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.info-icon {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.blue-icon {
+  color: #3498db; /* Blue color for icons */
+}
+
+.action-link, .topup-link {
+  margin-left: 8px;
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.action-link:hover, .topup-link:hover {
+  color: #5dade2; /* Slightly lighter blue on hover */
+  text-decoration: underline;
+}
+
+/* Table Styles for Orders Component */
+.user-orders-container {
+  background-color: #1f1f1f;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.user-orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.user-orders-table th,
+.user-orders-table td {
+  padding: 12px 15px;
+  text-align: left;
+  color: #e0e0e0;
+  border-bottom: 1px solid #333;
+}
+
+.user-orders-table th {
+  background-color: #2b2b2b;
+  font-weight: 600;
+  color: #fff;
+}
+
+.user-orders-table tr {
+  background-color: #1f1f1f;
+  transition: background-color 0.2s;
+}
+
+.user-orders-table tr:hover {
+  background-color: #2b2b2b;
 }
 
 .error-message {
-  color: #ff4d4d; /* Error message color */
-  margin-top: 1rem;
+  color: #3498db; /* Changed from red to blue */
+  margin: 10px 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .user-area-page {
+    padding: 10px;
+  }
+
+  .user-area-nav {
+    flex-wrap: wrap;
+  }
+
+  .nav-link {
+    flex: 1 1 50%;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .info-list {
+    grid-template-columns: 1fr; /* Stack vertically on smaller screens */
+  }
 }

@@ -48,29 +48,31 @@ const UserOrders = ({ userEmail, userId }) => {
   };
 
   return (
-    <div className="user-orders-container">
+    <div className="user-orders">
       {error && <p className="error-message">{error}</p>}
-      <h3>Your Orders</h3>
-      <table className="user-orders-table">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Value</th>
-            <th>Status</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order, index) => (
-            <tr key={index} onClick={() => handleOrderClick(order.orderId)}>
-              <td>{order.orderId}</td>
-              <td>${order.final_price}</td>
-              <td>{order.payment_status}</td>
-              <td>{new Date(order.order_date).toLocaleString()}</td>
+      <h2>Your Orders</h2>
+      <div className="orders-table-container">
+        <table className="orders-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Value</th>
+              <th>Status</th>
+              <th>Date</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {orders.map((order, index) => (
+              <tr key={index} onClick={() => handleOrderClick(order.orderId)} className="order-row">
+                <td>{order.orderId}</td>
+                <td>${order.final_price}</td>
+                <td>{order.payment_status}</td>
+                <td>{new Date(order.order_date).toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
