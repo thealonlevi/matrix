@@ -12,10 +12,11 @@ import AdminLayout from './components/admin-dashboard/AdminLayout';
 import ManageProducts from './components/admin-dashboard/ManageProducts';
 import CreateProductForm from './components/admin-dashboard/CreateProductForm';
 import ModifyProductForm from './components/admin-dashboard/ModifyProductForm';
-import ModifyStockForm from './components/admin-dashboard/ModifyStockForm'; 
+import ModifyStockForm from './components/admin-dashboard/ModifyStockForm';
 import CreateGroupForm from './components/admin-dashboard/CreateGroupForm';
 import AdminOrders from './components/admin-dashboard/AdminOrders';
 import OrderDetails from './components/admin-dashboard/OrderDetails';
+import ManageUsers from './components/admin-dashboard/ManageUsers'; // Import ManageUsers component
 import CartPage from './components/cart/CartPage';
 import { CartProvider } from './components/cart/CartContext';
 import UserArea from './components/user-area/UserArea'; // Import UserArea component
@@ -88,7 +89,8 @@ const AppContent = () => {
           <Route path="modifyproduct/:groupId/:productId" element={<ModifyProductForm />} /> {/* Support for group/productId format */}
           <Route path="modifystock/:productId" element={<ModifyStockForm />} />
           <Route path="orders" element={<AdminOrders />} /> {/* Route for Admin Orders */}
-          <Route path="/admin/orders/:orderId" element={<OrderDetails />} />
+          <Route path="orders/:orderId" element={<OrderDetails />} />
+          <Route path="users" element={<ManageUsers />} /> {/* New Route for Manage Users */}
         </Route>
         {/* Add route for User Area */}
         <Route path="/user-area" element={<UserArea />} /> {/* User Area Route */}

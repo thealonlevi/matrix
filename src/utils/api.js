@@ -20,13 +20,14 @@ export const checkAdminPermission = async (email, userId) => {
       }),
     });
 
-    if (!response.ok) {
-      throw new Error('Unexpected response from the server.');
-    }
-
     const data = await response.json();
-
-    return data.body;  // 'Permission granted' or 'Permission denied'
+    if (data.statusCode !== 200) {
+      console.warn('Permission denied due to non-200 status code:', response.status);
+      return 'Permission denied';  // Explicitly return 'Permission denied' for non-200 status codes
+    }
+    console.log(data);
+    // Check if the body contains 'Permission granted'
+    return data.body;  // Either 'Permission granted' or 'Permission denied'
   } catch (error) {
     console.error('Error checking admin permission:', error);
     throw new Error('Failed to check admin permission. Please try again later.');
@@ -957,5 +958,51 @@ export const fetchUserOrders = async (payload = {}) => {
   } catch (error) {
     console.error('Error fetching user orders from Matrix_FetchUserOrders API:', error);
     throw new Error('Failed to fetch user orders. Please try again later.');
+  }
+};
+
+/**
+ * Fetches all users from the Matrix_GetAllUsers API.
+ * 
+ * This function makes a GET request to the API Gateway URL to retrieve
+ * all user information from the 'matrix_userinfo' DynamoDB table.
+ * 
+ * @returns {Promise<Array>} A promise that resolves to an array of user objects.
+ *                           Each user object contains user details like email, userId, roles, etc.
+ * @throws {Error} If the API request fails or the response is not as expected.
+ */
+export const fetchAllUsers = async () => {
+  const apiUrl = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_GetAllUsers';
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch users: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    if (!data || !data.body) {
+      throw new Error('Invalid response format.');
+    }
+
+    const parsedData = JSON.parse(data.body);
+
+    if (!parsedData.users) {
+      throw new Error('No users found in the response.');
+    }
+
+    // Return the list of users
+    return parsedData.users;
+
+  } catch (error) {
+    console.error('Error fetching all users:', error);
+    throw error; // Re-throw the error so it can be handled by the caller
   }
 };

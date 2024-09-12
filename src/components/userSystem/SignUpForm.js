@@ -1,6 +1,6 @@
 // src/components/SignUpForm.js
 import React, { useState, useEffect } from 'react';
-import { signUp, confirmSignUp, fetchUserAttributes, signIn } from 'aws-amplify/auth'; // Correct imports from aws-amplify/auth
+import { signUp, confirmSignUp, fetchUserAttributes, signIn, signOut } from 'aws-amplify/auth'; // Correct imports from aws-amplify/auth
 import { useNavigate } from 'react-router-dom';
 import { userInfoUtil } from '../../utils/api'; // Import userInfoUtil from api.js
 import './styles/SignUpForm.css';
@@ -51,6 +51,7 @@ const SignUpForm = () => {
     }
 
     try {
+      await signOut();
       await signUp({
         username: email,
         password: password,
@@ -80,7 +81,8 @@ const SignUpForm = () => {
         confirmationCode: confirmationCode,
       });
       console.log('Confirmation successful');
-
+      // Sleep for 0.5 seconds (500 milliseconds)
+      await new Promise((resolve) => setTimeout(resolve, 500));
       // Sign the user in after confirmation
       await signIn({ username: email, password: password });  // Ensure to sign in the user after confirmation
       console.log('Sign-in successful');
@@ -108,7 +110,7 @@ const SignUpForm = () => {
         OrderHistory: [], // Initialize empty order history
         GeolocationData: { ip: ipAddress, country: 'Unknown', city: 'Unknown' }, // Initialize geolocation data (replace with actual data if available)
         DeviceInformation: deviceInfo // Send device information
-      });
+      });      
 
       console.log('User information added to DynamoDB');
 
