@@ -1,15 +1,19 @@
 // src/components/Admin/ManageUsers.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchAllUsers, userInfoUtil } from '../../utils/api'; // Import fetchAllUsers from api.js
+import { fetchAllUsers, userInfoUtil, addCredit, removeCredit } from '../../utils/api'; // Import necessary API functions
 import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import checkAdminPermission
+import { useNotification } from './utils/Notification'; // Import notification hook
 import './styles/ManageUsers.css'; // Import relevant styles
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedAction, setSelectedAction] = useState({});
+  const [creditAmount, setCreditAmount] = useState({});
   const navigate = useNavigate();
+  const { showNotification } = useNotification(); // Notification hook
 
   // Fetch users
   const fetchUsers = async () => {
@@ -54,7 +58,7 @@ const ManageUsers = () => {
         email: users.find(user => user.userId === userId).email,
         role: newRole,
       });
-      
+
       // Update the users state to reflect the change
       setUsers(users.map(user => (user.userId === userId ? { ...user, role: newRole } : user)));
       console.log(`User role updated successfully for ${userId} to ${newRole}`);
@@ -68,6 +72,52 @@ const ManageUsers = () => {
   const handleDeleteUser = (userId) => {
     console.log(`Delete user ${userId}`);
     // Here you'd call another API function to delete the user in your backend
+  };
+
+  // Handle credit addition
+  const handleAddCredit = async (userId) => {
+    console.log(`Add credit to user ${userId}`);
+    const staffEmail = 'levialon@proton.me';  // Replace with actual staff email
+    const staffUserId = 'a2057434-8011-70e2-d347-ab045ef7e9d6';  // Replace with actual staff user ID
+    try {
+      const amount = creditAmount[userId] || 0; // Get the amount from state
+      await addCredit(staffEmail, staffUserId, users.find(user => user.userId === userId).email, amount);
+      console.log(`Successfully added ${amount} credit to user ${userId}`);
+      showNotification(`$${amount} credit added to ${users.find(user => user.userId === userId).email}`, 'success');
+      handleActionSelect(userId, ''); // Reset action to 'Select Action'
+    } catch (error) {
+      console.error('Failed to add credit:', error);
+      setError('Failed to add credit. Please check the console for details.');
+      showNotification('Failed to add credit. Please check the console for details.', 'error');
+    }
+  };
+
+  // Handle credit removal
+  const handleRemoveCredit = async (userId) => {
+    console.log(`Remove credit from user ${userId}`);
+    const staffEmail = 'levialon@proton.me';  // Replace with actual staff email
+    const staffUserId = 'a2057434-8011-70e2-d347-ab045ef7e9d6';  // Replace with actual staff user ID
+    try {
+      const amount = creditAmount[userId] || 0; // Get the amount from state
+      await removeCredit(staffEmail, staffUserId, users.find(user => user.userId === userId).email, amount);
+      console.log(`Successfully removed ${amount} credit from user ${userId}`);
+      showNotification(`$${amount} credit removed from ${users.find(user => user.userId === userId).email}`, 'success');
+      handleActionSelect(userId, ''); // Reset action to 'Select Action'
+    } catch (error) {
+      console.error('Failed to remove credit:', error);
+      setError('Failed to remove credit. Please check the console for details.');
+      showNotification('Failed to remove credit. Please check the console for details.', 'error');
+    }
+  };
+
+  // Handle action selection
+  const handleActionSelect = (userId, action) => {
+    setSelectedAction({ ...selectedAction, [userId]: action });
+  };
+
+  // Handle credit amount change
+  const handleCreditAmountChange = (userId, amount) => {
+    setCreditAmount({ ...creditAmount, [userId]: amount });
   };
 
   return (
@@ -108,9 +158,49 @@ const ManageUsers = () => {
                 </td>
                 <td>{user.LastLoginDate ? new Date(user.LastLoginDate).toLocaleString() : 'N/A'}</td>
                 <td>
-                  <button onClick={() => handleDeleteUser(user.userId)} className="delete-user-button">
-                    Delete
-                  </button>
+                  <select
+                    value={selectedAction[user.userId] || ''}
+                    onChange={(e) => handleActionSelect(user.userId, e.target.value)}
+                    className="actions-dropdown"
+                  >
+                    <option value="">Select Action</option>
+                    <option value="delete">Delete User</option>
+                    <option value="addCredit">Add Credit</option>
+                    <option value="removeCredit">Remove Credit</option>
+                  </select>
+                  {selectedAction[user.userId] === 'addCredit' && (
+                    <div>
+                      <input
+                        type="number"
+                        placeholder="Credit Amount"
+                        value={creditAmount[user.userId] || ''}
+                        onChange={(e) => handleCreditAmountChange(user.userId, e.target.value)}
+                        className="credit-input"
+                      />
+                      <button onClick={() => handleAddCredit(user.userId)} className="add-credit-button">
+                        Add Credit
+                      </button>
+                    </div>
+                  )}
+                  {selectedAction[user.userId] === 'removeCredit' && (
+                    <div>
+                      <input
+                        type="number"
+                        placeholder="Credit Amount"
+                        value={creditAmount[user.userId] || ''}
+                        onChange={(e) => handleCreditAmountChange(user.userId, e.target.value)}
+                        className="credit-input"
+                      />
+                      <button onClick={() => handleRemoveCredit(user.userId)} className="remove-credit-button">
+                        Remove Credit
+                      </button>
+                    </div>
+                  )}
+                  {selectedAction[user.userId] === 'delete' && (
+                    <button onClick={() => handleDeleteUser(user.userId)} className="delete-user-button">
+                      Confirm Delete
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

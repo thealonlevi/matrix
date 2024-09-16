@@ -1155,16 +1155,21 @@ export const fetchAllUsers = async () => {
       },
     });
 
+    // Ensure the response is OK before parsing
     if (!response.ok) {
       throw new Error(`Failed to fetch users: ${response.statusText}`);
     }
 
+    // Parse the response body only once
     const data = await response.json();
+    console.log(data);
 
+    // Validate the format of the response
     if (!data || !data.body) {
       throw new Error('Invalid response format.');
     }
 
+    // Parse the body field from the response data
     const parsedData = JSON.parse(data.body);
 
     if (!parsedData.users) {
@@ -1179,6 +1184,7 @@ export const fetchAllUsers = async () => {
     throw error; // Re-throw the error so it can be handled by the caller
   }
 };
+
 
 // API URL
 const ADD_CREDIT_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_AddCredit';

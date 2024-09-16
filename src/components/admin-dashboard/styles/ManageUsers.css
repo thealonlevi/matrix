@@ -58,13 +58,53 @@
     background-color: #2980b9;
   }
   
-  /* src/components/styles/ManageUsers.css */
-
-.role-select-dropdown {
+  .role-select-dropdown {
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
     background-color: #1f1f1f;
     color: #fff;
+    margin-right: 10px;
+  }
+  
+  .actions-dropdown {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #1f1f1f;
+    color: #fff;
+    margin-top: 10px;
+  }
+  
+  .add-credit-button,
+  .remove-credit-button {
+    background-color: #c71010;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  
+  .add-credit-button:hover,
+  .remove-credit-button:hover {
+    background-color: #229954;
+  }
+  
+  .credit-input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 80px;
+    margin-right: 10px;
+    background-color: #1f1f1f;
+    color: #fff;
+    margin-top: 5px;
+  }
+  
+  .credit-input::placeholder {
+    color: #888;
   }
   
