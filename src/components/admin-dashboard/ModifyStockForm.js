@@ -21,24 +21,19 @@ const ModifyStockForm = () => {
 
   useEffect(() => {
     const fetchStockData = async () => {
-      try {
-        const stockData = await fetchProductStock(productId); // Use api.js function to fetch product stock
-        
-        // Handle the stock data directly as a string
-        if (stockData) {
-          setStock(stockData); // Set stock if data is successfully fetched
-          setError(null); // Clear any previous errors if the fetch is successful
-          showNotification('Stock fetched successfully.', 'success'); // Show success notification
-        } else {
-          throw new Error('Failed to fetch product stock.'); // Explicit error if stockData is not returned correctly
-        }
-      } catch (error) {
-        setError('Failed to fetch product stock. Please try again later.');
-        showNotification('Failed to fetch product stock. Please try again later.', 'error'); // Show error notification
-      } finally {
-        setLoading(false);
-        isFetchingRef.current = false; // Reset fetching state
+      const stockData = await fetchProductStock(productId);
+      // Handle the stock data directly as a string
+      if (stockData) {
+        setStock(stockData); // Set stock if data is successfully fetched
+        setError(null); // Clear any previous errors if the fetch is successful
+        showNotification('Stock fetched successfully.', 'success'); // Show success notification
+      } else {
+        setStock(''); // Set stock if data is successfully fetched
+        setError(null); // Clear any previous errors if the fetch is successful
+        showNotification('Stock fetched successfully.', 'success'); // Show success notification
       }
+      setLoading(false);
+      isFetchingRef.current = false; // Reset fetching state
     };
 
     const verifyAccessAndExecute = async () => {

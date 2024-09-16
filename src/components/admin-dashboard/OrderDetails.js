@@ -20,6 +20,7 @@ const OrderDetails = () => {
 
   // Use ref to track marking paid state
   const isMarkingPaidRef = useRef(false);
+  const fetchCalledRef = useRef(false);  // Add a ref to prevent duplicate fetches
 
   const fetchOrderDetailsHandler = async () => {
     const userId = getUserIdForOrder(orderId);
@@ -131,12 +132,15 @@ const OrderDetails = () => {
 
   useEffect(() => {
     const init = async () => {
-      try {
-        await checkPermissionAndFetchData(fetchOrderDetailsHandler, 'Matrix_FetchOrderDetails', '99990');
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
+      if (!fetchCalledRef.current) {  // Check if fetch has already been called
+        fetchCalledRef.current = true;  // Mark fetch as called
+        try {
+          await checkPermissionAndFetchData(fetchOrderDetailsHandler, 'Matrix_FetchOrderDetails', '99990');
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
       }
     };
 

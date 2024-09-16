@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './styles/AdminOrders.css';
 import { useNavigate } from 'react-router-dom';
 import { fetchOrdersCache } from '../../utils/api'; // Import fetchOrdersCache from api.js
@@ -12,6 +12,8 @@ const AdminOrders = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [ordersPerPage, setOrdersPerPage] = useState(10); // Default is 10 orders per page
   const navigate = useNavigate();
+
+  const initRef = useRef(false); // Add useRef to track initialization
 
   const fetchOrders = async () => {
     try {
@@ -78,6 +80,9 @@ const AdminOrders = () => {
   };
 
   useEffect(() => {
+    if (initRef.current) return; // Prevent multiple initializations
+    initRef.current = true; // Mark as initialized
+
     const init = async () => {
       try {
         await checkPermissionAndFetchData(fetchOrders, 'Matrix_FetchOrders', '9999');

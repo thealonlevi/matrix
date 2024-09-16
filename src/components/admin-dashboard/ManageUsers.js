@@ -1,7 +1,8 @@
 // src/components/Admin/ManageUsers.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchAllUsers, userInfoUtil } from '../../utils/api'; // Import fetchAllUsers and userInfoUtil from api.js
+import { fetchAllUsers, userInfoUtil } from '../../utils/api'; // Import fetchAllUsers from api.js
+import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import checkAdminPermission
 import './styles/ManageUsers.css'; // Import relevant styles
 
 const ManageUsers = () => {
@@ -24,36 +25,49 @@ const ManageUsers = () => {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    const init = async () => {
+      try {
+        // Check if the user has admin permissions
+        const hasPermission = await checkAdminPermission();
+        if (!hasPermission) {
+          throw new Error('Access denied: Admin permissions required.');
+        }
+        // Fetch users if the user has admin permissions
+        await fetchUsers();
+      } catch (error) {
+        console.error('Error during ManageUsers initialization:', error.message);
+        setError(error.message);
+        // Redirect the user to the home page or login page if they don't have permissions
+        navigate('/');
+      }
+    };
+
+    init();
+  }, [navigate]);
 
   // Handle role modification
-  const handleModifyRole = async (userEmail, newRole) => {
+  const handleRoleChange = async (userId, newRole) => {
+    console.log(`Modify role for user ${userId} to ${newRole}`);
     try {
-      const response = await userInfoUtil('PUT', {
-        email: userEmail,
+      // Update user role using userInfoUtil
+      await userInfoUtil('POST', {
+        email: users.find(user => user.userId === userId).email,
         role: newRole,
       });
-      console.log(`User role modified: ${response}`);
-      fetchUsers(); // Refresh the list after modification
+      
+      // Update the users state to reflect the change
+      setUsers(users.map(user => (user.userId === userId ? { ...user, role: newRole } : user)));
+      console.log(`User role updated successfully for ${userId} to ${newRole}`);
     } catch (error) {
-      console.error('Error modifying user role:', error);
-      setError('Failed to modify user role. Please check the console for details.');
+      console.error('Failed to update user role:', error);
+      setError('Failed to update user role. Please check the console for details.');
     }
   };
 
   // Handle user deletion
-  const handleDeleteUser = async (userEmail) => {
-    try {
-      const response = await userInfoUtil('DELETE', {
-        email: userEmail,
-      });
-      console.log(`User deleted: ${response}`);
-      fetchUsers(); // Refresh the list after deletion
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      setError('Failed to delete user. Please check the console for details.');
-    }
+  const handleDeleteUser = (userId) => {
+    console.log(`Delete user ${userId}`);
+    // Here you'd call another API function to delete the user in your backend
   };
 
   return (
@@ -81,19 +95,20 @@ const ManageUsers = () => {
                 <td>{index + 1}</td>
                 <td>{user.email}</td>
                 <td>{user.userId}</td>
-                <td>{user.role || 'N/A'}</td>
+                <td>
+                  <select
+                    value={user.role || 'user'}
+                    onChange={(e) => handleRoleChange(user.userId, e.target.value)}
+                    className="role-select-dropdown"
+                  >
+                    <option value="user">user</option>
+                    <option value="support">support</option>
+                    <option value="admin">admin</option>
+                  </select>
+                </td>
                 <td>{user.LastLoginDate ? new Date(user.LastLoginDate).toLocaleString() : 'N/A'}</td>
                 <td>
-                  <button
-                    onClick={() => handleModifyRole(user.email, 'admin')}
-                    className="modify-role-button"
-                  >
-                    Promote to Admin
-                  </button>
-                  <button
-                    onClick={() => handleDeleteUser(user.email)}
-                    className="delete-user-button"
-                  >
+                  <button onClick={() => handleDeleteUser(user.userId)} className="delete-user-button">
                     Delete
                   </button>
                 </td>

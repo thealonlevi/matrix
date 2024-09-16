@@ -1,3 +1,38 @@
+/**
+ * Utility function to generate a unique request key based on URL, method, and body.
+ */
+const generateRequestKey = (url, method, body) => {
+  const bodyString = JSON.stringify(body || {});
+  return `${method}:${url}:${bodyString}`;
+};
+
+/**
+ * Utility function to check for duplicate requests.
+ */
+const isDuplicateRequest = (requestKey, timeout = 0.2*1000) => { // 5 minutes default timeout
+  const requestInfo = localStorage.getItem(requestKey);
+  if (requestInfo) {
+    const { timestamp } = JSON.parse(requestInfo);
+    const currentTime = new Date().getTime();
+    if (currentTime - timestamp < timeout) {
+      return true; // Duplicate request
+    } else {
+      localStorage.removeItem(requestKey); // Clean up expired entry
+    }
+  }
+  return false;
+};
+
+/**
+ * Utility function to store request in local storage.
+ */
+const storeRequestInLocalStorage = (requestKey) => {
+  const requestInfo = {
+    timestamp: new Date().getTime(),
+  };
+  localStorage.setItem(requestKey, JSON.stringify(requestInfo));
+};
+
 // API URL
 const ADMIN_PERMISSION_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_AdminPermission';
 
@@ -122,7 +157,24 @@ const CREATE_GROUP_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws
  * @returns {Promise} - Resolves with a success message or rejects with an error message.
  */
 export const createProductGroup = async (title, category, imageUrl, productIds) => {
+  // Generate a unique request key for this API call
+  const requestKey = generateRequestKey(CREATE_GROUP_API_URL, 'POST', {
+    title,
+    category,
+    image_url: imageUrl,
+    product_ids: productIds,
+  });
+
+  // Check if the request is a duplicate
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    throw new Error('Duplicate request detected. Please try again later.');
+  }
+
   try {
+    // Store the request in local storage to prevent duplicates
+    storeRequestInLocalStorage(requestKey);
+
     const response = await fetch(CREATE_GROUP_API_URL, {
       method: 'POST',
       headers: {
@@ -149,6 +201,7 @@ export const createProductGroup = async (title, category, imageUrl, productIds) 
   }
 };
 
+
 // API URL
 const CREATE_ORDER_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_CreateOrder';
 
@@ -174,7 +227,28 @@ export const createOrder = async (
   userAgent = 'Unknown',
   deviceType = 'Unknown'
 ) => {
+  // Generate a unique request key for this API call
+  const requestKey = generateRequestKey(CREATE_ORDER_API_URL, 'POST', {
+    user_email: userEmail,
+    order_contents: orderContents,
+    user_id: userId,
+    payment_method: paymentMethod,
+    coupon_code: couponCode,
+    ip_address: ipAddress,
+    user_agent: userAgent,
+    device_type: deviceType,
+  });
+
+  // Check if the request is a duplicate
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    throw new Error('Duplicate request detected. Please try again later.');
+  }
+
   try {
+    // Store the request in local storage to prevent duplicates
+    storeRequestInLocalStorage(requestKey);
+
     console.log(userEmail);
     console.log(orderContents);
     console.log(userId);
@@ -194,21 +268,21 @@ export const createOrder = async (
         device_type: deviceType,
       }),
     });
-    console.log(response)
+    console.log(response);
 
     if (!response.ok) {
       throw new Error('Unexpected response from the server.');
     }
 
     const data = JSON.parse((await response.json()).body);
-    console.log(data)
+    console.log(data);
     if (data.order_id) {
-        console.log("True")
+      console.log('True');
       return {
         message: data.message,
         orderId: data.order_id,
         amountToBePaid: data.amount_to_be_paid,
-      };  // Return the order creation details
+      }; // Return the order creation details
     } else {
       throw new Error(data.error || 'Failed to create order.');
     }
@@ -217,6 +291,7 @@ export const createOrder = async (
     throw new Error('Failed to create order. Please try again later.');
   }
 };
+
 
 // Corrected `createProduct` function
 const CREATE_PRODUCT_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_CreateProduct';
@@ -237,7 +312,25 @@ export const createProduct = async (
   productImgUrl = '',
   productDescription = ''
 ) => {
+  // Generate a unique request key for this API call
+  const requestKey = generateRequestKey(CREATE_PRODUCT_API_URL, 'POST', {
+    product_title: productTitle,
+    product_price: productPrice,
+    product_category: productCategory,
+    product_img_url: productImgUrl,
+    product_description: productDescription,
+  });
+
+  // Check if the request is a duplicate
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    throw new Error('Duplicate request detected. Please try again later.');
+  }
+
   try {
+    // Store the request in local storage to prevent duplicates
+    storeRequestInLocalStorage(requestKey);
+
     const response = await fetch(CREATE_PRODUCT_API_URL, {
       method: 'POST',
       headers: {
@@ -272,6 +365,7 @@ export const createProduct = async (
     throw new Error('Failed to create product. Please try again later.');
   }
 };
+
 
 
 // API URL
@@ -360,7 +454,22 @@ const EXPORT_STOCK_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws
  * @returns {Promise} - Resolves with the exported stock or rejects with an error message.
  */
 export const exportProductStock = async (productId, quantity) => {
+  // Generate a unique request key for this API call
+  const requestKey = generateRequestKey(EXPORT_STOCK_API_URL, 'POST', {
+    product_id: productId,
+    quantity: quantity,
+  });
+
+  // Check if the request is a duplicate
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    throw new Error('Duplicate request detected. Please try again later.');
+  }
+
   try {
+    // Store the request in local storage to prevent duplicates
+    storeRequestInLocalStorage(requestKey);
+
     const response = await fetch(EXPORT_STOCK_API_URL, {
       method: 'POST',
       headers: {
@@ -388,6 +497,7 @@ export const exportProductStock = async (productId, quantity) => {
     throw new Error('Failed to export stock. Please try again later.');
   }
 };
+
 
 // API URL
 const FETCH_ORDER_DETAILS_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchOrderDetails';
@@ -539,7 +649,21 @@ const FULFILL_ORDER_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaw
  * @returns {Promise} - Resolves with a success message or rejects with an error message.
  */
 export const fulfillOrder = async (orderId) => {
+  // Generate a unique request key for this API call
+  const requestKey = generateRequestKey(FULFILL_ORDER_API_URL, 'POST', {
+    order_id: orderId,
+  });
+
+  // Check if the request is a duplicate
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    throw new Error('Duplicate request detected. Please try again later.');
+  }
+
   try {
+    // Store the request in local storage to prevent duplicates
+    storeRequestInLocalStorage(requestKey);
+
     const response = await fetch(FULFILL_ORDER_API_URL, {
       method: 'POST',
       headers: {
@@ -566,6 +690,7 @@ export const fulfillOrder = async (orderId) => {
     throw new Error('Failed to fulfill order. Please try again later.');
   }
 };
+
 // API URL
 const GET_PRODUCT_LIST_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_GetProductList';
 
@@ -739,7 +864,21 @@ const TOGGLE_VISIBILITY_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amaz
  * @returns {Promise} - Resolves with the new visibility status of the product or rejects with an error message.
  */
 export const toggleProductVisibility = async (productId) => {
+  // Generate a unique request key for this API call
+  const requestKey = generateRequestKey(TOGGLE_VISIBILITY_API_URL, 'POST', {
+    product_id: productId,
+  });
+
+  // Check if the request is a duplicate
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    throw new Error('Duplicate request detected. Please try again later.');
+  }
+
   try {
+    // Store the request in local storage to prevent duplicates
+    storeRequestInLocalStorage(requestKey);
+
     const response = await fetch(TOGGLE_VISIBILITY_API_URL, {
       method: 'POST',
       headers: {
@@ -769,70 +908,104 @@ export const toggleProductVisibility = async (productId) => {
 
 // API URL
 const LOGGING_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_Logging';
-const MODIFY_STOCK_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/ModifyStock';
-const FETCH_STOCK_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchStock';
 
 /**
  * Function to log a request to the Matrix Logging API.
  */
 export const logRequest = async (functionName, productId) => {
-    try {
-      const response = await fetch(LOGGING_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          function_name: functionName,
-          product_id: productId,
-        }),
-      });
-  
-      return true;
-    } catch (error) {
-      console.error('Error logging request:', error);
-      throw new Error('Failed to log request. Please try again later.');
+  // Generate a unique request key for this API call
+  const requestKey = generateRequestKey(LOGGING_API_URL, 'POST', {
+    function_name: functionName,
+    product_id: productId,
+  });
+
+  console.log("Logging: ", functionName, productId);
+
+  // Check if the request is a duplicate
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    throw new Error('Duplicate request detected. Please try again later.');
+  }
+
+  try {
+    // Store the request in local storage to prevent duplicates
+    storeRequestInLocalStorage(requestKey);
+
+    const response = await fetch(LOGGING_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        function_name: functionName,
+        product_id: productId,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
     }
-  };
+
+    return true;
+  } catch (error) {
+    console.error('Error logging request:', error);
+    throw new Error('Failed to log request. Please try again later.');
+  }
+};
+
   
+
+const FETCH_STOCK_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchStock';
 
 /**
  * Function to fetch the stock for a given product ID.
+ * @param {string} productId - The ID of the product to fetch the stock for.
+ * @returns {Promise<string|number>} - Resolves with the stock if found, or an empty string if not.
  */
 export const fetchProductStock = async (productId) => {
-    try {
-      console.log('Fetching stock for product ID:', productId); // Debugging line
+  console.log("Request received for: ", productId);
   
-      const response = await fetch(FETCH_STOCK_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          product_id: productId,
-        }),
-      });
-  
-      if (!response.ok) {
-        console.error('Fetch Stock API response not ok:', response.status, response.statusText);
-        throw new Error(`Failed to fetch product stock. Server responded with status: ${response.status} - ${response.statusText}`);
-      }
-  
-      const data = await response.json();
-      console.log('Fetch Stock API raw response:', data); // Debugging line
-  
-      if (data.body && !data.body.includes('Incorrect request')) {
-        return data.body; // Return the product stock value directly
-      } else {
-        console.error('Fetch Stock API response error:', data.body);
-        throw new Error(data.body || 'Failed to fetch product stock.');
-      }
-    } catch (error) {
-      console.error('Error fetching product stock:', error);
-      throw new Error('Failed to fetch product stock. Please try again later.');
-    }
-  };
+  try {
+    console.log('Fetching stock for product ID:', productId); // Debugging line
 
+    const response = await fetch(FETCH_STOCK_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        product_id: productId,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Fetch Stock API response not ok:', response.status, response.statusText);
+      throw new Error(`Failed to fetch product stock. Server responded with status: ${response.status} - ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('Fetch Stock API raw response:', data); // Debugging line
+
+    if (data.body) {
+      if (!data.body.includes('Incorrect request')) {
+        return data.body; // Return the product stock value directly if found
+      } else {
+        console.warn('Stock not found for product ID:', productId);
+        return ''; // Return an empty string if the request was incorrect or stock not found
+      }
+    } else {
+      console.warn('No stock data found for product ID:', productId);
+      return ''; // Return an empty string if no body is present in the response
+    }
+
+  } catch (error) {
+    console.error('Error fetching product stock:', error);
+    return ''; // Return an empty string on error
+  }
+};
+
+
+const MODIFY_STOCK_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/ModifyStock';
 /**
  * Function to modify the stock of a product.
  */
@@ -1004,5 +1177,125 @@ export const fetchAllUsers = async () => {
   } catch (error) {
     console.error('Error fetching all users:', error);
     throw error; // Re-throw the error so it can be handled by the caller
+  }
+};
+
+// API URL
+const ADD_CREDIT_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_AddCredit';
+
+/**
+ * Function to add credit to a user.
+ * @param {string} staffEmail - The email of the staff member issuing the credit.
+ * @param {string} staffUserId - The user ID of the staff member issuing the credit.
+ * @param {string} userEmail - The email of the user receiving the credit.
+ * @param {number} creditAmount - The amount of credit to add.
+ * @returns {Promise} - Resolves with a success message or rejects with an error message.
+ */
+export const addCredit = async (staffEmail, staffUserId, userEmail, creditAmount) => {
+  // Generate a unique request key for this API call
+  const requestKey = generateRequestKey(ADD_CREDIT_API_URL, 'POST', {
+    staff_email: staffEmail,
+    staff_user_id: staffUserId,
+    user_email: userEmail,
+    credit_amount: creditAmount,
+  });
+
+  // Check if the request is a duplicate
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    throw new Error('Duplicate request detected. Please try again later.');
+  }
+
+  try {
+    // Store the request in local storage to prevent duplicates
+    storeRequestInLocalStorage(requestKey);
+
+    const response = await fetch(ADD_CREDIT_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        staff_email: staffEmail,
+        staff_user_id: staffUserId,
+        user_email: userEmail,
+        credit_amount: creditAmount,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
+    }
+
+    const data = await response.json();
+
+    if (data.body && data.body.includes('Successfully added')) {
+      return data.body;  // Return the success message
+    } else {
+      throw new Error(data.body || 'Failed to add credit.');
+    }
+  } catch (error) {
+    console.error('Error adding credit:', error);
+    throw new Error('Failed to add credit. Please try again later.');
+  }
+};
+
+// API URL
+const REMOVE_CREDIT_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_RemoveCredit';
+
+/**
+ * Function to remove credit from a user.
+ * @param {string} staffEmail - The email of the staff member removing the credit.
+ * @param {string} staffUserId - The user ID of the staff member removing the credit.
+ * @param {string} userEmail - The email of the user from whom the credit is being removed.
+ * @param {number} creditAmount - The amount of credit to remove.
+ * @returns {Promise} - Resolves with a success message or rejects with an error message.
+ */
+export const removeCredit = async (staffEmail, staffUserId, userEmail, creditAmount) => {
+  // Generate a unique request key for this API call
+  const requestKey = generateRequestKey(REMOVE_CREDIT_API_URL, 'POST', {
+    staff_email: staffEmail,
+    staff_user_id: staffUserId,
+    user_email: userEmail,
+    credit_amount: creditAmount,
+  });
+
+  // Check if the request is a duplicate
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    throw new Error('Duplicate request detected. Please try again later.');
+  }
+
+  try {
+    // Store the request in local storage to prevent duplicates
+    storeRequestInLocalStorage(requestKey);
+
+    const response = await fetch(REMOVE_CREDIT_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        staff_email: staffEmail,
+        staff_user_id: staffUserId,
+        user_email: userEmail,
+        credit_amount: creditAmount,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
+    }
+
+    const data = await response.json();
+
+    if (data.body && data.body.includes('Successfully deducted')) {
+      return data.body;  // Return the success message
+    } else {
+      throw new Error(data.body || 'Failed to remove credit.');
+    }
+  } catch (error) {
+    console.error('Error removing credit:', error);
+    throw new Error('Failed to remove credit. Please try again later.');
   }
 };

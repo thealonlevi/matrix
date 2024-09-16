@@ -1,95 +1,114 @@
-/* src/components/styles/UserOrders.css */
-
-/* General Container Styles */
+/* Container for the Orders Section */
 .user-orders {
-  background-color: #1f1f1f;
+  margin-top: 30px;
   padding: 20px;
-  border-radius: 8px;
-  margin-top: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.user-orders h2 {
-  color: #3498db;
-  margin-bottom: 20px;
-  text-align: left;
-  padding-left: 10px;
-  font-size: 24px; /* Increased font size for better visibility */
-  border-bottom: 1px solid #333;
+  background-color: #1f1f1f; /* Dark background to match the theme */
+  color: #e0e0e0; /* Light text color */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+  max-width: 100%; /* Full width */
 }
 
 /* Orders Table Container */
 .orders-table-container {
-  background-color: transparent;
-  padding: 0;
-  margin-top: 15px;
-  border: none;
+  overflow-x: auto; /* Allow scrolling for wide tables */
+  margin-bottom: 20px;
 }
 
 /* Orders Table */
 .orders-table {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  background-color: #2b2b2b;
-  border-radius: 8px;
-  overflow: hidden;
+  border-collapse: collapse; /* Remove default table spacing */
+  margin-top: 15px;
 }
 
 .orders-table th,
 .orders-table td {
   padding: 12px 15px;
-  text-align: left; /* Align text consistently */
-  color: #e0e0e0;
-  border-bottom: none;
+  text-align: left;
+  border-bottom: 1px solid #333; /* Subtle border */
+  color: #e0e0e0; /* Text color */
 }
 
 .orders-table th {
-  background-color: #2b2b2b;
+  background-color: #2b2b2b; /* Header background */
   font-weight: 600;
-  color: #fff;
-  text-align: left;
-  padding: 15px;
+  color: #fff; /* Header text color */
 }
 
-.orders-table tr {
-  background-color: #1f1f1f;
-  transition: background-color 0.2s;
-  border-radius: 5px;
-}
-
-.orders-table tr:hover {
-  background-color: #2b2b2b;
-}
-
-/* Hover Effect on Rows */
 .order-row {
+  background-color: #1f1f1f; /* Row background */
+  transition: background-color 0.2s ease; /* Smooth transition */
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .order-row:hover {
-  background-color: #3498db;
-  color: #fff;
+  background-color: #2b2b2b; /* Row hover effect */
 }
 
-/* Error Message Styling */
 .error-message {
-  color: #e74c3c;
-  margin: 10px 0;
+  color: #ff4d4d; /* Error color */
   font-size: 14px;
-  font-weight: 500;
+  margin-top: 20px;
+  text-align: center;
 }
 
-/* Active Tab Underline */
-.user-area-nav .nav-link.active {
-  color: #fff; /* Active color */
-  border-bottom: 3px solid #3498db; /* Thicker and more noticeable underline */
+/* Order Details Section */
+.order-details {
+  padding: 20px;
+  background-color: #1f1f1f; /* Background for order details */
+  border-radius: 8px;
+  margin-top: 20px;
+  margin-bottom: 20px; /* Space below the order details */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Box shadow */
+}
+
+.order-details h3 {
+  margin-bottom: 15px; /* Spacing below title */
+  color: #aad4ff; /* Title color */
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* List Styles for Order Details */
+.order-details ul {
+  list-style: none; /* Remove bullet points */
+  padding: 0;
+}
+
+.order-details ul li {
+  margin-bottom: 10px; /* Spacing between list items */
+  font-size: 16px;
+  color: #e0e0e0; /* Text color */
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.order-details ul li strong {
+  color: #aad4ff; /* Highlighted text color */
+}
+
+/* Back to Orders Button */
+.back-to-orders-button {
+  background-color: #aad4ff; /* Button background */
+  color: #1a1e30; /* Button text color */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.back-to-orders-button:hover {
+  background-color: #8abdfc; /* Hover effect */
 }
 
 /* Responsive Styles */
 @media (max-width: 768px) {
-  .user-orders {
+  .user-orders,
+  .order-details {
     padding: 15px;
   }
 
@@ -98,7 +117,11 @@
     padding: 10px;
   }
 
-  .orders-table-container {
-    padding: 0;
+  .order-details h3 {
+    font-size: 20px;
+  }
+
+  .back-to-orders-button {
+    padding: 8px 16px;
   }
 }

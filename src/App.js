@@ -21,6 +21,7 @@ import CartPage from './components/cart/CartPage';
 import { CartProvider } from './components/cart/CartContext';
 import UserArea from './components/user-area/UserArea'; // Import UserArea component
 import UserOrders from './components/user-area/UserOrders'; // Import UserOrders component
+import UserOrderDetails from './components/user-area/UserOrderDetails'; // Import UserOrderDetails component
 import { NotificationProvider, useNotification } from './components/admin-dashboard/utils/Notification';
 import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
@@ -99,6 +100,11 @@ const AppContent = () => {
           path="/user-area/orders" 
           element={<UserOrders userEmail={user.email} userId={user.userId} />} 
         /> {/* User Orders Route */}
+        {/* Add route for User Order Details */}
+        <Route 
+          path="/user-area/orders/:orderId" 
+          element={<UserOrderDetails />} 
+        /> {/* User Order Details Route */}
       </Routes>
     </div>
   );
