@@ -19,7 +19,12 @@ const ManageUsers = () => {
   const fetchUsers = async () => {
     try {
       const fetchedUsers = await fetchAllUsers();
-      setUsers(fetchedUsers);
+      // Ensure credit is set to 0 if not present
+      const usersWithCredit = fetchedUsers.map(user => ({
+        ...user,
+        credits: user.credits || 0, // Use the 'credits' field
+      }));
+      setUsers(usersWithCredit);
     } catch (error) {
       console.error('Failed to fetch users:', error);
       setError('Failed to fetch users. Please check the console for details.');
@@ -85,6 +90,8 @@ const ManageUsers = () => {
       console.log(`Successfully added ${amount} credit to user ${userId}`);
       showNotification(`$${amount} credit added to ${users.find(user => user.userId === userId).email}`, 'success');
       handleActionSelect(userId, ''); // Reset action to 'Select Action'
+      // Update user credit
+      setUsers(users.map(user => (user.userId === userId ? { ...user, credits: user.credits + amount } : user)));
     } catch (error) {
       console.error('Failed to add credit:', error);
       setError('Failed to add credit. Please check the console for details.');
@@ -103,6 +110,8 @@ const ManageUsers = () => {
       console.log(`Successfully removed ${amount} credit from user ${userId}`);
       showNotification(`$${amount} credit removed from ${users.find(user => user.userId === userId).email}`, 'success');
       handleActionSelect(userId, ''); // Reset action to 'Select Action'
+      // Update user credit
+      setUsers(users.map(user => (user.userId === userId ? { ...user, credits: Math.max(0, user.credits - amount) } : user)));
     } catch (error) {
       console.error('Failed to remove credit:', error);
       setError('Failed to remove credit. Please check the console for details.');
@@ -133,9 +142,9 @@ const ManageUsers = () => {
             <tr>
               <th>#</th>
               <th>Email</th>
-              <th>User ID</th>
-              <th>Role</th>
+              <th>Credits</th>
               <th>Last Login</th>
+              <th>Role</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -144,7 +153,8 @@ const ManageUsers = () => {
               <tr key={user.userId}>
                 <td>{index + 1}</td>
                 <td>{user.email}</td>
-                <td>{user.userId}</td>
+                <td>{user.credits}</td>
+                <td>{user.LastLoginDate ? new Date(user.LastLoginDate).toLocaleString() : 'N/A'}</td>
                 <td>
                   <select
                     value={user.role || 'user'}
@@ -156,7 +166,6 @@ const ManageUsers = () => {
                     <option value="admin">admin</option>
                   </select>
                 </td>
-                <td>{user.LastLoginDate ? new Date(user.LastLoginDate).toLocaleString() : 'N/A'}</td>
                 <td>
                   <select
                     value={selectedAction[user.userId] || ''}

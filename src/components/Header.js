@@ -1,12 +1,17 @@
+// src/components/Header.js
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  FaHome,
+  FaShoppingCart,
+  FaStar,
+  FaUserPlus,
+  FaSignInAlt,
+  FaSignOutAlt,
+  FaUserShield,
+  FaBars, // Menu icon for mobile view
+} from 'react-icons/fa'; // Import icons from react-icons
 import '../styles/Header.css';
-import homeIcon from '../assets/icons/house.png';
-import cartIcon from '../assets/icons/shopping_cart.png';
-import registerIcon from '../assets/icons/register.png';
-import loginIcon from '../assets/icons/login.png';
-import starIcon from '../assets/icons/star.png';
-import logoutIcon from '../assets/icons/signout.png';
 import { fetchAndStoreProductList } from '../utils/utils';
 import { useNotification } from './admin-dashboard/utils/Notification'; // Use the hook to manage notifications
 
@@ -44,67 +49,78 @@ const Header = ({ user, handleLogout }) => {
     };
 
     checkForNotifications(); // Initial check
-
   }, []); // Empty dependency array to run only once
 
   const toggleMenu = () => {
-    console.log('Toggling menu. Current state:', menuOpen);
     setMenuOpen(!menuOpen);
   };
 
   return (
-    <header className="header">
-      <div className="logo-container">
-        <Link to="/">
-          <img src="/assets/images/logo.png" alt="Logo" className="logo" />
+    <header className="header-container">
+      <div className="header-logo-container">
+        <Link to="/" className="header-logo-link">
+          <img src="/assets/images/logo.png" alt="Logo" className="header-logo" />
         </Link>
-        <span>&nbsp;&nbsp;</span>
-        <span className="menu-text" onClick={toggleMenu}>&nbsp;MENU</span>
+        <div className="header-left-nav-links">
+          <Link to="/" className="header-nav-link">
+            <FaHome className="header-icon" />
+            Shop
+          </Link>
+          <Link to="/reviews" className="header-nav-link">
+            <FaStar className="header-icon" />
+            Reviews
+          </Link>
+        </div>
       </div>
-      <nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
-        <Link to="/" onClick={toggleMenu}>
-          <img src={homeIcon} alt="Home" className="icon" />
+      <nav className={`header-right-nav-links ${menuOpen ? 'open' : ''}`}>
+        {/* Include Shop and Reviews in the dropdown menu for mobile */}
+        <Link to="/" className="header-nav-link" onClick={toggleMenu}>
+          <FaHome className="header-icon" />
           Shop
         </Link>
-        <Link to="/reviews" onClick={toggleMenu}>
-          <img src={starIcon} alt="Reviews" className="icon" />
+        <Link to="/reviews" className="header-nav-link" onClick={toggleMenu}>
+          <FaStar className="header-icon" />
           Reviews
         </Link>
         {user.isGuest ? (
           <>
-            <Link to="/register" onClick={toggleMenu}>
-              <img src={registerIcon} alt="Register" className="icon" />
+            <Link to="/register" className="header-nav-link" onClick={toggleMenu}>
+              <FaUserPlus className="header-icon" />
               Register
             </Link>
-            <Link to="/login" onClick={toggleMenu}>
-              <img src={loginIcon} alt="Login" className="icon" />
+            <Link to="/login" className="header-nav-link" onClick={toggleMenu}>
+              <FaSignInAlt className="header-icon" />
               Login
             </Link>
           </>
         ) : (
           <>
-            <Link to="/admin" onClick={toggleMenu}>
-              <img src={homeIcon} alt="Admin" className="icon" />
+            <Link to="/admin" className="header-nav-link" onClick={toggleMenu}>
+              <FaUserShield className="header-icon" />
               Admin
             </Link>
-            <button className="logout-button" onClick={() => { 
-              console.log('Logging out user.');
-              handleLogout(); 
-              toggleMenu(); 
-              showNotification('Logged out successfully', 'success'); // Show success notification
-            }}>
-              <img src={logoutIcon} alt="Logout" className="icon" />
+            <button
+              className="header-nav-link header-logout-button"
+              onClick={() => {
+                handleLogout();
+                toggleMenu();
+                showNotification('Logged out successfully', 'success'); // Show success notification
+              }}
+            >
+              <FaSignOutAlt className="header-icon" />
               Logout
             </button>
           </>
         )}
-        <Link to="/cart" onClick={toggleMenu}>
-          <img src={cartIcon} alt="Cart" className="icon" />
+        <Link to="/cart" className="header-nav-link" onClick={toggleMenu}>
+          <FaShoppingCart className="header-icon" />
           Cart
         </Link>
       </nav>
 
-
+      <button className="header-menu-icon" onClick={toggleMenu}>
+        <FaBars />
+      </button>
     </header>
   );
 };

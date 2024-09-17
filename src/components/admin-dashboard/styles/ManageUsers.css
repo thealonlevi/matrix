@@ -5,80 +5,62 @@
     background-color: #1f1f1f;
     border-radius: 8px;
     color: #e0e0e0;
-  }
-  
-  .manage-users-title {
+}
+
+.manage-users-title {
     color: #3498db;
     margin-bottom: 20px;
     font-size: 24px;
-  }
-  
-  .users-table {
+}
+
+.users-table {
     width: 100%;
     border-collapse: collapse;
-  }
-  
-  .users-table th,
-  .users-table td {
+}
+
+.users-table th,
+.users-table td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #333;
     color: #e0e0e0;
-  }
-  
-  .users-table th {
+}
+
+.users-table th {
     background-color: #2b2b2b;
     font-weight: 600;
     color: #fff;
-  }
-  
-  .users-table tr {
+}
+
+.users-table tr {
     background-color: #1f1f1f;
     transition: background-color 0.2s;
-  }
-  
-  .users-table tr:hover {
+}
+
+.users-table tr:hover {
     background-color: #2b2b2b;
-  }
-  
-  .modify-role-button,
-  .delete-user-button {
-    background-color: #3498db;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    margin-right: 10px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-  }
-  
-  .modify-role-button:hover,
-  .delete-user-button:hover {
-    background-color: #2980b9;
-  }
-  
-  .role-select-dropdown {
+}
+
+.role-select-dropdown {
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
     background-color: #1f1f1f;
     color: #fff;
     margin-right: 10px;
-  }
-  
-  .actions-dropdown {
+}
+
+.actions-dropdown {
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
     background-color: #1f1f1f;
     color: #fff;
     margin-top: 10px;
-  }
-  
-  .add-credit-button,
-  .remove-credit-button {
-    background-color: #c71010;
+}
+
+.add-credit-button {
+    background-color: #27ae60; /* Green for adding credit */
     color: #fff;
     border: none;
     padding: 8px 12px;
@@ -86,14 +68,28 @@
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s;
-  }
-  
-  .add-credit-button:hover,
-  .remove-credit-button:hover {
+}
+
+.add-credit-button:hover {
     background-color: #229954;
-  }
-  
-  .credit-input {
+}
+
+.remove-credit-button {
+    background-color: #c71010; /* Red for removing credit */
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.remove-credit-button:hover {
+    background-color: #a10c0c;
+}
+
+.credit-input {
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -102,9 +98,8 @@
     background-color: #1f1f1f;
     color: #fff;
     margin-top: 5px;
-  }
-  
-  .credit-input::placeholder {
+}
+
+.credit-input::placeholder {
     color: #888;
-  }
-  
+}

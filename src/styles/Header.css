@@ -1,175 +1,133 @@
 /* src/styles/Header.css */
-.header {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+.header-container {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
   background-color: #1a1a1d;
   position: sticky;
   top: 0;
-  z-index: 1100; /* Increase z-index to ensure header overlays the sidebar */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.logo-container {
+.header-logo-container {
   display: flex;
   align-items: center;
 }
 
-.logo {
+.header-logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.header-logo {
   height: 40px;
 }
 
-.nav-links, .user-options {
+.header-left-nav-links {
   display: flex;
   align-items: center;
+  gap: 20px; /* Space between Shop and Reviews */
 }
 
-.nav-links a, .user-options a, .logout-button {
+.header-right-nav-links {
+  margin-right: 25px;
   display: flex;
   align-items: center;
-  margin-right: 20px;
-  color: #b3b3b3; /* Light grey color for text */
+  gap: 20px; /* Space between the right links */
+}
+
+.header-nav-link {
+  color: #b3b3b3;
   text-decoration: none;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
 }
 
-.nav-links a img, .user-options a img, .logout-button img {
-  width: 22px;
-  height: 22px;
+.header-nav-link:hover {
+  color: #ffffff;
+}
+
+.header-icon {
   margin-right: 8px;
-  transition: filter 0.3s ease; /* Smooth transition on hover */
+  font-size: 20px;
 }
 
-.nav-links a:hover, .user-options a:hover, .logout-button:hover {
-  color: #ffffff; /* White color on hover */
-  text-decoration: underline;
-}
-
-.nav-links a:hover img, .user-options a:hover img, .logout-button:hover img {
-  filter: brightness(1.2); /* Increase brightness on hover */
-}
-
-.user-options {
-  justify-content: flex-end;
-  margin-right: 20px;
-}
-
-.menu-text {
-  display: none;
-  font-size: 16px; /* Adjusted font size */
-  font-weight: 600; /* Semi-bold font */
-  color: #ffffff; /* White color */
-  cursor: pointer;
-  padding: 5px 10px; /* Smaller padding for smaller button */
-  background-color: #1a1a1d; /* Background color */
-  border: 2px solid #58a6ff; /* Border to make it stand out */
-  border-radius: 5px; /* Rounded corners for button effect */
-  transition: color 0.3s ease, background-color 0.3s ease, text-shadow 0.3s ease, transform 0.3s ease; /* Smooth transition */
-  margin-top: 10px; /* Add margin to create space between logo and button */
-}
-
-.menu-text:hover {
-  color: #58a6ff;
-  background-color: #1a1a1d; /* Background remains the same */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Enhance shadow on hover */
-  transform: scale(1.05); /* Slight scaling effect */
-}
-
-.logout-button {
-  display: flex;
-  align-items: center;
-  margin-right: 20px;
-  color: #b3b3b3; /* Light grey color for text */
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: 500;
+.header-logout-button {
   background: none;
   border: none;
+  color: #b3b3b3;
+  font-size: 18px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
 }
 
-.logout-button img {
-  width: 22px;
-  height: 22px;
-  margin-right: 8px;
-  transition: filter 0.3s ease; /* Smooth transition on hover */
+.header-logout-button:hover {
+  color: #ffffff;
 }
 
-.logout-button:hover {
-  color: #ffffff; /* White color on hover */
-  text-decoration: underline;
+.header-menu-icon {
+  font-size: 26px;
+  color: #fff;
+  background: none; /* No background */
+  border: none;
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: 0;
+  padding: 0; /* Ensure no padding */
+  outline: none; /* Remove outline */
 }
 
-.logout-button:hover img {
-  filter: brightness(1.2); /* Increase brightness on hover */
+.header-menu-icon:focus,
+.header-menu-icon:active {
+  background: none; /* Ensure no background on focus or active state */
+  color: #fff; /* Maintain the same color */
+  outline: none; /* Remove focus outline */
 }
 
-/* Media Query for Mobile Devices */
 @media (max-width: 768px) {
-  .nav-links {
-    display: none;
+  .header-left-nav-links {
+    display: none; /* Hide left links on mobile */
+  }
+
+  .header-right-nav-links {
+    display: none; /* Hide right links on mobile */
     flex-direction: column;
     align-items: center;
-    width: 100%;
-    background-color: #1a1a1d;
-    position: absolute;
-    top: 60px;
-    left: 0;
-    padding: 10px 0;
-    z-index: 999;
-  }
-
-  .nav-links.open {
-    display: flex;
-  }
-
-  .nav-links a, .logout-button {
-    margin: 10px 0; /* Space out links vertically */
-    font-size: 18px; /* Adjust font size for better fit */
-  }
-
-  .nav-links a img, .logout-button img {
-    width: 24px; /* Adjust icon size for better fit */
-    height: 24px;
-  }
-
-  .logo {
-    height: 30px; /* Adjust logo size for better fit */
-  }
-
-  .menu-text {
-    display: block;
-    font-size: 18px;
-    font-weight: bold;
-    color: #ffffff;
-    text-align: center;
-    width: 100%; /* Make it take full width for centering */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.3s ease;
-    padding: 5px 10px; /* Adjust padding */
-    background-color: #58a6ff; /* Background color */
-    border-radius: 5px; /* Rounded corners */
-    margin-top: 10px; /* Space from the top */
-  }
-
-  .menu-text:hover {
-    color: #ffffff;
-    background-color: #1f78c1; /* Change background on hover */
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-    transform: scale(1.05); /* Slight scaling effect */
-  }
-
-  .header {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .logo-container {
-    width: 100%;
-    display: flex;
     justify-content: center;
-    padding: 0 20px;
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1a1a1d;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 300px;
+  }
+
+  .header-right-nav-links.open {
+    display: flex; /* Show menu when open */
+  }
+
+  .header-menu-icon {
+    display: block; /* Show menu button on mobile */
+  }
+}
+
+@media (min-width: 769px) {
+  .header-menu-icon {
+    display: none; /* Hide menu button on larger screens */
+  }
+
+  .header-right-nav-links {
+    justify-content: flex-end; /* Right align the right links */
   }
 }

@@ -24,3 +24,24 @@ header, .banner {
   align-items: center;
   padding: 20px;
 }
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1d; /* Background of the scrollbar track */
+  border-radius: 10px; /* Rounded corners for the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #444; /* Scrollbar color */
+  border-radius: 10px; /* Rounded corners for the scrollbar */
+  border: 2px solid #1a1a1d; /* Adds space between thumb and track */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #58a6ff; /* Color when hovering */
+}
+
