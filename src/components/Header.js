@@ -61,7 +61,8 @@ const Header = ({ user, handleLogout }) => {
         <Link to="/" className="header-logo-link">
           <img src="/assets/images/logo.png" alt="Logo" className="header-logo" />
         </Link>
-        <div className="header-left-nav-links">
+        {/* Links visible on larger screens */}
+        <div className="header-left-nav-links header-desktop-only">
           <Link to="/" className="header-nav-link">
             <FaHome className="header-icon" />
             Shop
@@ -72,13 +73,13 @@ const Header = ({ user, handleLogout }) => {
           </Link>
         </div>
       </div>
+      {/* All links for mobile menu and smaller screens */}
       <nav className={`header-right-nav-links ${menuOpen ? 'open' : ''}`}>
-        {/* Include Shop and Reviews in the dropdown menu for mobile */}
-        <Link to="/" className="header-nav-link" onClick={toggleMenu}>
+        <Link to="/" className="header-nav-link header-mobile-only" onClick={toggleMenu}>
           <FaHome className="header-icon" />
           Shop
         </Link>
-        <Link to="/reviews" className="header-nav-link" onClick={toggleMenu}>
+        <Link to="/reviews" className="header-nav-link header-mobile-only" onClick={toggleMenu}>
           <FaStar className="header-icon" />
           Reviews
         </Link>

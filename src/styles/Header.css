@@ -79,7 +79,7 @@
   border: none;
   cursor: pointer;
   margin-left: auto;
-  margin-right: 30px;
+  margin-right: 25px;
   padding: 0; /* Ensure no padding */
   outline: none; /* Remove outline */
 }
@@ -91,9 +91,21 @@
   outline: none; /* Remove focus outline */
 }
 
+.header-desktop-only {
+  display: flex; /* Show on larger screens */
+}
+
+.header-mobile-only {
+  display: none; /* Hide on larger screens */
+}
+
 @media (max-width: 768px) {
   .header-left-nav-links {
     display: none; /* Hide left links on mobile */
+  }
+
+  .header-mobile-only {
+    display: flex; /* Show mobile links on smaller screens */
   }
 
   .header-right-nav-links {
