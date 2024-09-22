@@ -1,7 +1,7 @@
 // src/components/Admin/ManageUsers.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchAllUsers, userInfoUtil, addCredit, removeCredit } from '../../utils/api'; // Import necessary API functions
+import { fetchAllUsers, userInfoUtil, addCredit, removeCredit, logRequest } from '../../utils/api'; // Import necessary API functions
 import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import checkAdminPermission
 import { useNotification } from './utils/Notification'; // Import notification hook
 import './styles/ManageUsers.css'; // Import relevant styles
@@ -86,12 +86,28 @@ const ManageUsers = () => {
     const staffUserId = 'a2057434-8011-70e2-d347-ab045ef7e9d6';  // Replace with actual staff user ID
     try {
       const amount = creditAmount[userId] || 0; // Get the amount from state
+      console.log("Logging");
+      // Log the request before modifying the credit
+      const logSuccess = await logRequest('Matrix_AddCredit', userId);
+      console.log(logSuccess);
+      
+      if (!logSuccess) {
+        throw new Error('Failed to log the add credit request.');
+      }
+
       await addCredit(staffEmail, staffUserId, users.find(user => user.userId === userId).email, amount);
       console.log(`Successfully added ${amount} credit to user ${userId}`);
       showNotification(`$${amount} credit added to ${users.find(user => user.userId === userId).email}`, 'success');
       handleActionSelect(userId, ''); // Reset action to 'Select Action'
       // Update user credit
-      setUsers(users.map(user => (user.userId === userId ? { ...user, credits: user.credits + amount } : user)));
+      setUsers(users.map(user => (
+        user.userId === userId 
+          ? { 
+              ...user, 
+              credits: String((parseFloat(user.credits) || 0) + parseFloat(amount))  // Ensure both are floats and sum them, then convert to string
+            } 
+          : user
+      )));      
     } catch (error) {
       console.error('Failed to add credit:', error);
       setError('Failed to add credit. Please check the console for details.');
@@ -106,6 +122,13 @@ const ManageUsers = () => {
     const staffUserId = 'a2057434-8011-70e2-d347-ab045ef7e9d6';  // Replace with actual staff user ID
     try {
       const amount = creditAmount[userId] || 0; // Get the amount from state
+
+      // Log the request before modifying the credit
+      const logSuccess = await logRequest('Matrix_RemoveCredit', userId);
+      if (!logSuccess) {
+        throw new Error('Failed to log the remove credit request.');
+      }
+
       await removeCredit(staffEmail, staffUserId, users.find(user => user.userId === userId).email, amount);
       console.log(`Successfully removed ${amount} credit from user ${userId}`);
       showNotification(`$${amount} credit removed from ${users.find(user => user.userId === userId).email}`, 'success');
