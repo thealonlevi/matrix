@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { fetchAllStaff } from '../../utils/api'; // Import necessary API function
 import { useNotification } from './utils/Notification'; // Notification hook
 import './styles/ManageStaff.css'; // Import relevant styles
+import { FiEdit } from 'react-icons/fi'; // Import the edit icon from react-icons
 
 const ManageStaff = () => {
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [selectedAction, setSelectedAction] = useState({});
   const { showNotification } = useNotification(); // Notification hook
 
   // Fetch staff data on component mount
@@ -15,7 +15,6 @@ const ManageStaff = () => {
     const loadStaffData = async () => {
       try {
         const staffList = await fetchAllStaff();
-        console.log(staffList);
         // Map the data to the correct format
         const formattedStaffList = staffList.map(staffMember => ({
           email: staffMember.email,
@@ -29,7 +28,6 @@ const ManageStaff = () => {
         }));
         
         setStaff(formattedStaffList);
-        console.log(formattedStaffList);
       } catch (err) {
         console.error('Failed to load staff data:', err);
         setError('Failed to load staff data. Please try again later.');
@@ -41,12 +39,7 @@ const ManageStaff = () => {
     loadStaffData();
   }, []);
 
-  // Handle action selection (for future actions like edit/delete)
-  const handleActionSelect = (userId, action) => {
-    setSelectedAction({ ...selectedAction, [userId]: action });
-  };
-
-  // Handle the edit click (we'll implement the functionality later)
+  // Handle the edit click
   const handleEditClick = (userId) => {
     showNotification(`Edit functionality for user ${userId} is under construction.`, 'info');
   };
@@ -72,7 +65,7 @@ const ManageStaff = () => {
             <th>Issued Credits</th>
             <th>Permissions</th>
             <th>Last Login</th>
-            <th>Actions</th>
+            <th>Edit</th>
           </tr>
         </thead>
         <tbody>
@@ -86,25 +79,12 @@ const ManageStaff = () => {
               <td>{staffMember.permissions}</td>
               <td>{staffMember.lastLogin}</td>
               <td>
-                <select
-                  value={selectedAction[staffMember.userId] || ''}
-                  onChange={(e) => handleActionSelect(staffMember.userId, e.target.value)}
-                  className="actions-dropdown"
+                <button 
+                  className="manage-staff-edit-icon-button"
+                  onClick={() => handleEditClick(staffMember.userId)}
                 >
-                  <option value="">Select Action</option>
-                  <option value="edit">Edit</option>
-                  <option value="delete">Delete</option>
-                </select>
-                {selectedAction[staffMember.userId] === 'edit' && (
-                  <button onClick={() => handleEditClick(staffMember.userId)} className="edit-button">
-                    Edit
-                  </button>
-                )}
-                {selectedAction[staffMember.userId] === 'delete' && (
-                  <button onClick={() => showNotification('Delete functionality under construction.', 'info')} className="delete-button">
-                    Confirm Delete
-                  </button>
-                )}
+                  <FiEdit className="manage-staff-edit-icon" />
+                </button>
               </td>
             </tr>
           ))}
