@@ -56,3 +56,95 @@
 .manage-staff-edit-icon-button:hover .manage-staff-edit-icon {
     color: #1abc9c;
 }
+
+.json-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .json-modal-content {
+    background-color: #2b2b2b;
+    padding: 20px;
+    border-radius: 8px;
+    color: #e0e0e0;
+    max-width: 90%;
+    max-height: 80%;
+    overflow-y: auto;
+    white-space: pre-wrap;
+  }
+  
+  .json-modal-close-button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+  
+  .json-modal-close-button:hover {
+    background-color: #2980b9;
+  }
+  
+  .json-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .json-modal-content {
+    background-color: #1f1f1f;
+    padding: 20px;
+    border-radius: 8px;
+    width: 600px;
+    color: #e0e0e0;
+  }
+  
+  .json-textarea {
+    width: 100%;
+    height: 300px;
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+  
+  .modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .json-modal-save-button,
+  .json-modal-close-button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .json-modal-save-button:hover,
+  .json-modal-close-button:hover {
+    background-color: #2980b9;
+  }
+  

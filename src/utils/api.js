@@ -1343,3 +1343,51 @@ export const fetchAllStaff = async () => {
     throw error;  // Re-throw the error so it can be handled by the caller
   }
 };
+
+// API URL
+const MODIFY_STAFF_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ModifyStaff';
+
+/**
+ * Function to modify staff information.
+ * @param {Object} staffData - The updated staff data to be sent to the API.
+ * @returns {Promise} - Resolves with a success message or rejects with an error message.
+ */
+export const modifyStaff = async (staffData) => {
+  // Generate a unique request key for this API call
+  const requestKey = generateRequestKey(MODIFY_STAFF_API_URL, 'POST', staffData);
+
+  // Check if the request is a duplicate
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    throw new Error('Duplicate request detected. Please try again later.');
+  }
+
+  try {
+    // Store the request in local storage to prevent duplicates
+    storeRequestInLocalStorage(requestKey);
+
+    const response = await fetch(MODIFY_STAFF_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        body: JSON.stringify(staffData),  // Nesting JSON in the 'body' field as per API's requirement
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
+    }
+
+    const data = await response.json();
+    if (data.body.includes('updated successfully')) {
+      return data.body;  // Return the success message
+    } else {
+      throw new Error(data.body || 'Failed to update staff data.');
+    }
+  } catch (error) {
+    console.error('Error modifying staff data:', error);
+    throw new Error('Failed to modify staff data. Please try again later.');
+  }
+};
