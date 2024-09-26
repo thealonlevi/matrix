@@ -1,3 +1,4 @@
+// src/components/Admin/AdminLayout.js
 import React, { useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import './styles/AdminLayout.css';
@@ -49,7 +50,10 @@ const AdminLayout = () => {
             <Link to="/admin/orders">Orders</Link>
           </li>
           <li className={isActive('/admin/users') ? 'active' : ''}>
-            <Link to="/admin/users">Manage Users</Link> {/* Added Manage Users link */}
+            <Link to="/admin/users">Manage Users</Link>
+          </li>
+          <li className={isActive('/admin/staff') ? 'active' : ''}>
+            <Link to="/admin/staff">Manage Staff</Link> {/* New Manage Staff link */}
           </li>
         </ul>
       </div>

@@ -1,6 +1,7 @@
 // src/components/Admin/ManageUsers.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchUserAttributes } from 'aws-amplify/auth';  // Fetch user attributes
 import { fetchAllUsers, userInfoUtil, addCredit, removeCredit, logRequest } from '../../utils/api'; // Import necessary API functions
 import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import checkAdminPermission
 import { useNotification } from './utils/Notification'; // Import notification hook
@@ -12,8 +13,28 @@ const ManageUsers = () => {
   const [error, setError] = useState('');
   const [selectedAction, setSelectedAction] = useState({});
   const [creditAmount, setCreditAmount] = useState({});
+  const [staffEmail, setStaffEmail] = useState(''); // For staff email
+  const [staffUserId, setStaffUserId] = useState(''); // For staff user ID
   const navigate = useNavigate();
   const { showNotification } = useNotification(); // Notification hook
+
+  // Fetch staff attributes (email and user ID)
+  useEffect(() => {
+    const fetchStaffAttributes = async () => {
+      try {
+        const userResponse = await fetchUserAttributes();
+        const { email, sub: userId } = userResponse;
+
+        setStaffEmail(email);
+        setStaffUserId(userId);
+      } catch (error) {
+        console.error('Error fetching staff attributes:', error);
+        setError('Failed to fetch staff details. Please try again.');
+      }
+    };
+
+    fetchStaffAttributes();
+  }, []);
 
   // Fetch users
   const fetchUsers = async () => {
@@ -82,8 +103,6 @@ const ManageUsers = () => {
   // Handle credit addition
   const handleAddCredit = async (userId) => {
     console.log(`Add credit to user ${userId}`);
-    const staffEmail = 'levialon@proton.me';  // Replace with actual staff email
-    const staffUserId = 'a2057434-8011-70e2-d347-ab045ef7e9d6';  // Replace with actual staff user ID
     try {
       const amount = creditAmount[userId] || 0; // Get the amount from state
       console.log("Logging");
@@ -118,8 +137,6 @@ const ManageUsers = () => {
   // Handle credit removal
   const handleRemoveCredit = async (userId) => {
     console.log(`Remove credit from user ${userId}`);
-    const staffEmail = 'levialon@proton.me';  // Replace with actual staff email
-    const staffUserId = 'a2057434-8011-70e2-d347-ab045ef7e9d6';  // Replace with actual staff user ID
     try {
       const amount = creditAmount[userId] || 0; // Get the amount from state
 

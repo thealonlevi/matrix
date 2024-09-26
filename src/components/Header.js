@@ -10,6 +10,7 @@ import {
   FaSignOutAlt,
   FaUserShield,
   FaBars, // Menu icon for mobile view
+  FaUser, // Icon for Account
 } from 'react-icons/fa'; // Import icons from react-icons
 import '../styles/Header.css';
 import { fetchAndStoreProductList } from '../utils/utils';
@@ -73,6 +74,7 @@ const Header = ({ user, handleLogout }) => {
           </Link>
         </div>
       </div>
+
       {/* All links for mobile menu and smaller screens */}
       <nav className={`header-right-nav-links ${menuOpen ? 'open' : ''}`}>
         <Link to="/" className="header-nav-link header-mobile-only" onClick={toggleMenu}>
@@ -99,6 +101,10 @@ const Header = ({ user, handleLogout }) => {
             <Link to="/admin" className="header-nav-link" onClick={toggleMenu}>
               <FaUserShield className="header-icon" />
               Admin
+            </Link>
+            <Link to="/user-area" className="header-nav-link" onClick={toggleMenu}>
+              <FaUser className="header-icon" />
+              Account
             </Link>
             <button
               className="header-nav-link header-logout-button"

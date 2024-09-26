@@ -17,6 +17,7 @@ import CreateGroupForm from './components/admin-dashboard/CreateGroupForm';
 import AdminOrders from './components/admin-dashboard/AdminOrders';
 import OrderDetails from './components/admin-dashboard/OrderDetails';
 import ManageUsers from './components/admin-dashboard/ManageUsers'; // Import ManageUsers component
+import ManageStaff from './components/admin-dashboard/ManageStaff'; // Import ManageStaff component
 import CartPage from './components/cart/CartPage';
 import { CartProvider } from './components/cart/CartContext';
 import UserArea from './components/user-area/UserArea'; // Import UserArea component
@@ -92,6 +93,7 @@ const AppContent = () => {
           <Route path="orders" element={<AdminOrders />} /> {/* Route for Admin Orders */}
           <Route path="orders/:orderId" element={<OrderDetails />} />
           <Route path="users" element={<ManageUsers />} /> {/* New Route for Manage Users */}
+          <Route path="staff" element={<ManageStaff />} /> {/* New Route for Manage Staff */}
         </Route>
         {/* Add route for User Area */}
         <Route path="/user-area" element={<UserArea />} /> {/* User Area Route */}

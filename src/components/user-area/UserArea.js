@@ -1,6 +1,6 @@
-// src/components/UserArea.js
 import React, { useEffect, useState } from 'react';
 import { fetchUserAttributes } from 'aws-amplify/auth';
+import { userInfoUtil } from '../../utils/api'; // Import the API utility
 import UserOrders from './UserOrders'; // Import the UserOrders component
 import { FaUser, FaEnvelope, FaLock, FaDollarSign, FaCreditCard } from 'react-icons/fa';
 import './styles/UserArea.css';
@@ -8,10 +8,11 @@ import './styles/UserArea.css';
 const UserArea = () => {
   const [userEmail, setUserEmail] = useState('');
   const [userId, setUserId] = useState('');
+  const [userCredits, setUserCredits] = useState(0); // Initialize as a number
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('Dashboard'); // State for managing active tab
 
-  // Fetch user attributes
+  // Fetch user attributes and credit info
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -21,8 +22,16 @@ const UserArea = () => {
 
         setUserEmail(email);
         setUserId(userId);
+
+        // Fetch user info, including credits
+        const userInfoResponse = await userInfoUtil('POST', { email, fetchUserData: true });
+        console.log(userInfoResponse);
+
+        // Ensure userCredits is a numeric value
+        const userCredits = userInfoResponse.credits ? parseFloat(userInfoResponse.credits) : 0;
+        setUserCredits(userCredits);
       } catch (err) {
-        console.error('Error fetching user data:', err);
+        console.error('Error fetching user data or credits:', err);
         setError('An error occurred while fetching user data.');
       }
     };
@@ -58,7 +67,9 @@ const UserArea = () => {
               </div>
               <div className="info-item">
                 <FaCreditCard className="info-icon blue-icon" />
-                <span className="info-text">Credits: $5.00</span>
+                <span className="info-text">
+                  Credits: ${userCredits.toFixed(2)} {/* Format credits as a currency value */}
+                </span> {/* Render fetched credits */}
               </div>
               <div className="info-item">
                 <span className="info-text">Joined: 04/04/2024 15:40</span>

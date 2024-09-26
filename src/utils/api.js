@@ -1305,3 +1305,41 @@ export const removeCredit = async (staffEmail, staffUserId, userEmail, creditAmo
     throw new Error('Failed to remove credit. Please try again later.');
   }
 };
+// API URL
+const GET_STAFF_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_GetStaff';
+
+/**
+ * Function to fetch all staff data from the Matrix_GetStaff API.
+ * @returns {Promise<Array>} - Resolves with an array of staff objects or rejects with an error message.
+ */
+export const fetchAllStaff = async () => {
+  try {
+    const response = await fetch(GET_STAFF_API_URL, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    // Check if the response is OK
+    if (!response.ok) {
+      throw new Error(`Failed to fetch staff data: ${response.statusText}`);
+    }
+
+    // Parse the response body
+    const data = await response.json();
+    const parsedBody = JSON.parse(data.body);  // Parse the 'body' field in the response
+    console.log(parsedBody);
+
+    // Ensure the response has a 'data' field with staff info
+    if (parsedBody && parsedBody.data) {
+      return parsedBody.data;  // Return the list of staff members
+    } else {
+      throw new Error('No staff data found in the response.');
+    }
+
+  } catch (error) {
+    console.error('Error fetching staff data:', error);
+    throw error;  // Re-throw the error so it can be handled by the caller
+  }
+};

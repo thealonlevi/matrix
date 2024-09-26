@@ -1,0 +1,80 @@
+.manage-staff-container {
+    padding: 20px;
+    background-color: #1f1f1f;
+    border-radius: 8px;
+    color: #e0e0e0;
+}
+
+.manage-staff-title {
+    color: #3498db;
+    margin-bottom: 20px;
+    font-size: 24px;
+    text-align: center;
+}
+
+.staff-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.staff-table th,
+.staff-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #333;
+    color: #e0e0e0;
+}
+
+.staff-table th {
+    background-color: #2b2b2b;
+    font-weight: 600;
+    color: #fff;
+}
+
+.staff-table tr {
+    background-color: #1f1f1f;
+    transition: background-color 0.2s;
+}
+
+.staff-table tr:hover {
+    background-color: #2b2b2b;
+}
+
+.actions-dropdown {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #1f1f1f;
+    color: #fff;
+    margin-top: 10px;
+}
+
+.edit-button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.edit-button:hover {
+    background-color: #2980b9;
+}
+
+.delete-button {
+    background-color: #c71010;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.delete-button:hover {
+    background-color: #a10c0c;
+}
