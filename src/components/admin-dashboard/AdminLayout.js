@@ -1,12 +1,14 @@
-// src/components/Admin/AdminLayout.js
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import './styles/AdminLayout.css';
 import { checkAdminPermission } from './utils/checkAdminPermissions';
 import { fetchAndStoreProductList } from '../../utils/utils';
+import { useNavigate } from 'react-router-dom'; // For redirection
 
 const AdminLayout = () => {
+  const [loading, setLoading] = useState(true); // Add a loading state
   const location = useLocation();
+  const navigate = useNavigate(); // For navigation
 
   const isActive = (path) => location.pathname.startsWith(path);
 
@@ -16,26 +18,27 @@ const AdminLayout = () => {
         // Check if the user has admin permissions
         const hasPermission = await checkAdminPermission();
         if (!hasPermission) {
+          navigate('/'); // Redirect to the main page
           throw new Error('Access denied: Admin permissions required.');
         }
 
-        const initializeProductList = async () => {
-          try {
-            await fetchAndStoreProductList();
-            console.log('Product list fetched and stored successfully.');
-          } catch (error) {
-            console.error('Failed to initialize product list:', error);
-          }
-        };
-    
-        initializeProductList();
+        // If the user has permission, initialize the product list
+        await fetchAndStoreProductList();
+        console.log('Product list fetched and stored successfully.');
       } catch (error) {
         console.error('Error during AdminLayout initialization:', error.message);
+      } finally {
+        setLoading(false); // Set loading to false once check is done
       }
     };
 
     init();
-  }, []);
+  }, [navigate]);
+
+  if (loading) {
+    // While loading (checking permissions), render nothing or a loader
+    return null; // You could also return a spinner or a loading message if desired
+  }
 
   return (
     <div className="admin-layout-container">

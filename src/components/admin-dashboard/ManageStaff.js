@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { fetchAllStaff, modifyStaff } from '../../utils/api'; // Import necessary API functions
 import { useNotification } from './utils/Notification'; // Notification hook
+import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import admin permission check
 import './styles/ManageStaff.css'; // Import relevant styles
 import { FiEdit } from 'react-icons/fi'; // Import the edit icon from react-icons
+import { useNavigate } from 'react-router-dom'; // For redirection
 
 const ManageStaff = () => {
   const [staff, setStaff] = useState([]);
@@ -11,38 +13,49 @@ const ManageStaff = () => {
   const [selectedStaffJSON, setSelectedStaffJSON] = useState(null); // For storing the raw JSON data
   const [modifiedJSON, setModifiedJSON] = useState(''); // For storing the modified JSON
   const { showNotification } = useNotification(); // Notification hook
+  const navigate = useNavigate(); // For navigation
 
-  // Fetch staff data on component mount
+  // Fetch staff data and check admin permission on component mount
   useEffect(() => {
-    const loadStaffData = async () => {
-      try {
-        const staffList = await fetchAllStaff(); 
-        console.log(staffList);
+    const verifyAccessAndFetchStaff = async () => {
+      const hasPermission = await checkAdminPermission();
 
-        const formattedStaffList = staffList.map(staffMember => ({
-          raw: staffMember, // Store the unformatted JSON data
-          email: staffMember.email,
-          createdAt: new Date(staffMember.created_at).toLocaleString(),  // Convert to a readable date
-          creditLimit: staffMember.credit_limit,
-          issuedCreditsTotal: staffMember.issued_credits_total,
-          lastLogin: new Date(staffMember.last_login).toLocaleString(), 
-          permissions: Array.isArray(staffMember.permissions) ? staffMember.permissions.join(', ') : staffMember.permissions, 
-          role: staffMember.role,
-          userId: staffMember.user_id
-        }));
+      if (!hasPermission) {
+        setError('Page not found.');
+        showNotification('Access denied. Redirecting...', 'error');
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
+      } else {
+        try {
+          const staffList = await fetchAllStaff();
+          console.log(staffList);
 
-        setStaff(formattedStaffList);
-        console.log(formattedStaffList);
-      } catch (err) {
-        console.error('Failed to load staff data:', err);
-        setError('Failed to load staff data. Please try again later.');
-      } finally {
-        setLoading(false);
+          const formattedStaffList = staffList.map(staffMember => ({
+            raw: staffMember, // Store the unformatted JSON data
+            email: staffMember.email,
+            createdAt: new Date(staffMember.created_at).toLocaleString(),  // Convert to a readable date
+            creditLimit: staffMember.credit_limit,
+            issuedCreditsTotal: staffMember.issued_credits_total,
+            lastLogin: new Date(staffMember.last_login).toLocaleString(),
+            permissions: Array.isArray(staffMember.permissions) ? staffMember.permissions.join(', ') : staffMember.permissions,
+            role: staffMember.role,
+            userId: staffMember.user_id
+          }));
+
+          setStaff(formattedStaffList);
+          console.log(formattedStaffList);
+        } catch (err) {
+          console.error('Failed to load staff data:', err);
+          setError('Failed to load staff data. Please try again later.');
+        } finally {
+          setLoading(false);
+        }
       }
     };
 
-    loadStaffData();
-  }, []);
+    verifyAccessAndFetchStaff();
+  }, [navigate, showNotification]);
 
   // Handle the edit click to show raw JSON data
   const handleEditClick = (staffJSON) => {
