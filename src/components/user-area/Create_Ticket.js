@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { submitSupportTicket } from '../../utils/api';
-import './styles/Create_Ticket.css'; // Add your styles here
+import { FiFileText, FiShoppingCart, FiMessageSquare, FiCamera, FiHash } from 'react-icons/fi'; // Feather icons
+import './styles/Create_Ticket.css';
 
 const CreateTicket = () => {
   const [orderID, setOrderID] = useState('');
@@ -19,22 +20,20 @@ const CreateTicket = () => {
     setError('');
     setSuccess(false);
 
-    // Example ticket data
     const ticketData = {
-      ticket_id: `ticket-${Date.now()}`, // Mock ticket ID
+      ticket_id: `ticket-${Date.now()}`,
       orderID,
-      ownerEmail: "useremail@example.com", // Replace with actual user's email from auth
+      ownerEmail: "useremail@example.com",
       creationDate: new Date().toLocaleString(),
       lastModificationDate: new Date().toLocaleString(),
       issue,
       product,
-      productOption: 'No Locks', // Example product option, you can change this based on UI
+      productOption: 'No Locks',
       replacementsCountAsked: parseInt(replacementsCount, 10),
       status: 'pending',
       message: `${message}\nProof: ${imgurImageLink}`,
     };
 
-    // Wrap ticket data in the required 'body' field as per the API requirements
     const requestBody = {
       body: JSON.stringify(ticketData)
     };
@@ -42,7 +41,7 @@ const CreateTicket = () => {
     try {
       const response = await submitSupportTicket(requestBody);
       console.log(response);
-      setSuccess(true); // Show success message
+      setSuccess(true);
     } catch (error) {
       console.error(error);
       setError('Error submitting the ticket. Please try again later.');
@@ -65,6 +64,7 @@ const CreateTicket = () => {
         </div>
 
         <div className="form-group">
+          <FiHash size={20} />
           <label htmlFor="orderID">Order ID</label>
           <input
             type="text"
@@ -76,6 +76,7 @@ const CreateTicket = () => {
         </div>
 
         <div className="form-group">
+          <FiShoppingCart size={20} />
           <label htmlFor="product">Product</label>
           <select
             id="product"
@@ -86,11 +87,11 @@ const CreateTicket = () => {
             <option value="" disabled>Select a product</option>
             <option value="Product1">Product 1</option>
             <option value="Product2">Product 2</option>
-            {/* Add more products here */}
           </select>
         </div>
 
         <div className="form-group">
+          <FiMessageSquare size={20} />
           <label htmlFor="issue">Issue</label>
           <input
             type="text"
@@ -102,6 +103,7 @@ const CreateTicket = () => {
         </div>
 
         <div className="form-group">
+          <FiFileText size={20} />
           <label htmlFor="replacementsCount">Replacements Count</label>
           <input
             type="number"
@@ -113,6 +115,7 @@ const CreateTicket = () => {
         </div>
 
         <div className="form-group">
+          <FiCamera size={20} />
           <label htmlFor="imgurImageLink">Proof Images (Imgur link)</label>
           <input
             type="text"
@@ -124,6 +127,7 @@ const CreateTicket = () => {
         </div>
 
         <div className="form-group">
+          <FiMessageSquare size={20} />
           <label htmlFor="message">Message</label>
           <textarea
             id="message"
