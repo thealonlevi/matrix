@@ -1391,3 +1391,64 @@ export const modifyStaff = async (staffData) => {
     throw new Error('Failed to modify staff data. Please try again later.');
   }
 };
+
+// API URL
+const FETCH_TICKETS_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_Fetchtickets';
+
+/**
+ * Function to fetch support tickets from the DynamoDB table via the Matrix_Fetchtickets API.
+ * @returns {Promise<Array>} - Resolves with the list of support tickets or rejects with an error message.
+ */
+export const fetchSupportTickets = async () => {
+  try {
+    const response = await fetch(FETCH_TICKETS_API_URL, {
+      method: 'GET', // or 'POST' depending on your API setup
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
+    }
+
+    const data = await response.json(); // Parse the response body
+
+    if (data && data.body) {
+      return JSON.parse(data.body);  // Parse and return the tickets
+    } else {
+      throw new Error('Failed to fetch tickets.');
+    }
+  } catch (error) {
+    console.error('Error fetching support tickets:', error);
+    throw new Error('Failed to fetch support tickets. Please try again later.');
+  }
+
+  
+};
+
+// API URL for submitting support tickets
+const SUBMIT_TICKET_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/matrix_ticketform';
+
+export const submitSupportTicket = async (ticketData) => {
+  try {
+    const response = await fetch(SUBMIT_TICKET_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(ticketData),  // Send the ticketData which includes the 'body' field
+    });
+
+    if (!response.ok) {
+      // If the response is not OK (status code outside of 2xx), throw an error
+      throw new Error('Failed to submit the support ticket.');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error submitting support ticket:', error);
+    throw new Error('Failed to submit the support ticket.');
+  }
+};

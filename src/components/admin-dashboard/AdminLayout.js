@@ -58,6 +58,9 @@ const AdminLayout = () => {
           <li className={isActive('/admin/staff') ? 'active' : ''}>
             <Link to="/admin/staff">Manage Staff</Link> {/* New Manage Staff link */}
           </li>
+          <li className={isActive('/admin/support-tickets') ? 'active' : ''}>
+            <Link to="/admin/support-tickets">Support Tickets</Link>
+          </li>
         </ul>
       </div>
       <div className="main-content">

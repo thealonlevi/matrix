@@ -26,7 +26,11 @@ import UserOrderDetails from './components/user-area/UserOrderDetails'; // Impor
 import { NotificationProvider, useNotification } from './components/admin-dashboard/utils/Notification';
 import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
+import SupportTicketSystem from './components/admin-dashboard/SupportTicketSystem';
+import CreateTicket from './components/user-area/Create_Ticket';
 
+
+// Function to get the current authenticated user
 async function currentAuthenticatedUser() {
   try {
     const user = await fetchUserAttributes();
@@ -82,6 +86,7 @@ const AppContent = () => {
         <Route path="/forgot-password" element={<ForgotPasswordForm />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/reviews" element={<div>Reviews Page</div>} />
+
         {/* Wrap all admin routes under AdminLayout */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="products" element={<ManageProducts />} />
@@ -94,20 +99,23 @@ const AppContent = () => {
           <Route path="orders/:orderId" element={<OrderDetails />} />
           <Route path="users" element={<ManageUsers />} /> {/* New Route for Manage Users */}
           <Route path="staff" element={<ManageStaff />} /> {/* New Route for Manage Staff */}
+          <Route path="/admin/support-tickets" element={<SupportTicketSystem />} />
         </Route>
-        {/* Add route for User Area */}
+
+        {/* User Area routes */}
         <Route path="/user-area" element={<UserArea />} /> {/* User Area Route */}
-        {/* Add route for User Orders and pass userEmail and userId */}
         <Route 
           path="/user-area/orders" 
           element={<UserOrders userEmail={user.email} userId={user.userId} />} 
         /> {/* User Orders Route */}
-        {/* Add route for User Order Details */}
         <Route 
           path="/user-area/orders/:orderId" 
           element={<UserOrderDetails />} 
         /> {/* User Order Details Route */}
-      </Routes>
+        <Route
+          path="/user-area/Create_Ticket"
+          element= {<CreateTicket/>}></Route>
+         </Routes>
     </div>
   );
 };

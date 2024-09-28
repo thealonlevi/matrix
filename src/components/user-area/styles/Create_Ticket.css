@@ -1,0 +1,68 @@
+.ticket-form-container {
+    background: #1c1c1c;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .ticket-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .ticket-form label {
+    margin-bottom: 10px;
+    color: #ccc;
+  }
+  
+  .ticket-form input,
+  .ticket-form select,
+  .ticket-form textarea {
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background: #2c2c2c;
+    color: #ccc;
+  }
+  
+  .ticket-form button {
+    background: #8b57db;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .success-msg {
+    margin-top: 20px;
+    color: #4caf50;
+    font-weight: bold;
+  }
+  
+  .error-msg {
+    margin-top: 20px;
+    color: #f44336;
+    font-weight: bold;
+  }
+  
+  .checkbox {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .checkbox input {
+    margin-right: 10px;
+  }
+  
+  .instructions {
+    background-color: #2a2a2a;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    color: #fff;
+  }
+  

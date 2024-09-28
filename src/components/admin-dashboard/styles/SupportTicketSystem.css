@@ -1,0 +1,39 @@
+.support-ticket-system {
+    padding: 20px;
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+    border-radius: 8px;
+  }
+  
+  .support-ticket-system h2 {
+    color: #3498db;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  th, td {
+    padding: 12px;
+    border-bottom: 1px solid #333;
+  }
+  
+  th {
+    background-color: #2b2b2b;
+    color: #fff;
+  }
+  
+  td {
+    background-color: #1f1f1f;
+  }
+  
+  .resolved {
+    color: green;
+  }
+  
+  .unresolved {
+    color: orange;
+  }
+  

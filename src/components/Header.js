@@ -1,4 +1,3 @@
-// src/components/Header.js
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -106,6 +105,10 @@ const Header = ({ user, handleLogout }) => {
               <FaUser className="header-icon" />
               Account
             </Link>
+            <Link to="/user-area/support-tickets" className="header-nav-link" onClick={toggleMenu}>
+              <FaUserShield className="header-icon" />
+              Support Tickets
+            </Link> {/* New Support Tickets link */}
             <button
               className="header-nav-link header-logout-button"
               onClick={() => {
