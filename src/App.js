@@ -87,7 +87,7 @@ const AppContent = () => {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/reviews" element={<div>Reviews Page</div>} />
 
-        {/* Wrap all admin routes under AdminLayout */}
+        {/* Admin routes */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="products" element={<ManageProducts />} />
           <Route path="createproduct" element={<CreateProductForm />} />
@@ -97,25 +97,25 @@ const AppContent = () => {
           <Route path="modifystock/:productId" element={<ModifyStockForm />} />
           <Route path="orders" element={<AdminOrders />} /> {/* Route for Admin Orders */}
           <Route path="orders/:orderId" element={<OrderDetails />} />
-          <Route path="users" element={<ManageUsers />} /> {/* New Route for Manage Users */}
-          <Route path="staff" element={<ManageStaff />} /> {/* New Route for Manage Staff */}
-          <Route path="/admin/support-tickets" element={<SupportTicketSystem />} />
+          <Route path="users" element={<ManageUsers />} /> {/* Route for Manage Users */}
+          <Route path="staff" element={<ManageStaff />} /> {/* Route for Manage Staff */}
+          <Route path="support-tickets" element={<SupportTicketSystem />} />
         </Route>
 
         {/* User Area routes */}
         <Route path="/user-area" element={<UserArea />} /> {/* User Area Route */}
-        <Route 
-          path="/user-area/orders" 
-          element={<UserOrders userEmail={user.email} userId={user.userId} />} 
-        /> {/* User Orders Route */}
-        <Route 
-          path="/user-area/orders/:orderId" 
-          element={<UserOrderDetails />} 
-        /> {/* User Order Details Route */}
         <Route
-          path="/user-area/Create_Ticket"
-          element= {<CreateTicket/>}></Route>
-         </Routes>
+          path="/user-area/orders"
+          element={<UserOrders userEmail={user.email} userId={user.userId} />}
+        /> {/* User Orders Route */}
+        <Route
+          path="/user-area/orders/:orderId"
+          element={<UserOrderDetails />}
+        /> {/* User Order Details Route */}
+        
+        {/* New global route for Create Ticket */}
+        <Route path="/Create_Ticket" element={<CreateTicket />} />
+      </Routes>
     </div>
   );
 };

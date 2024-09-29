@@ -10,6 +10,7 @@ import {
   FaUserShield,
   FaBars, // Menu icon for mobile view
   FaUser, // Icon for Account
+  FaEnvelopeOpenText, // Icon for Create Ticket
 } from 'react-icons/fa'; // Import icons from react-icons
 import '../styles/Header.css';
 import { fetchAndStoreProductList } from '../utils/utils';
@@ -84,6 +85,11 @@ const Header = ({ user, handleLogout }) => {
           <FaStar className="header-icon" />
           Reviews
         </Link>
+        {/* This new Create Ticket link */}
+        <Link to="/Create_Ticket" className="header-nav-link" onClick={toggleMenu}>
+          <FaEnvelopeOpenText className="header-icon" />
+          Create Ticket
+        </Link>
         {user.isGuest ? (
           <>
             <Link to="/register" className="header-nav-link" onClick={toggleMenu}>
@@ -105,10 +111,6 @@ const Header = ({ user, handleLogout }) => {
               <FaUser className="header-icon" />
               Account
             </Link>
-            <Link to="/user-area/support-tickets" className="header-nav-link" onClick={toggleMenu}>
-              <FaUserShield className="header-icon" />
-              Support Tickets
-            </Link> {/* New Support Tickets link */}
             <button
               className="header-nav-link header-logout-button"
               onClick={() => {

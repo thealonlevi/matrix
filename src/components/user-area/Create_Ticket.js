@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { submitSupportTicket } from '../../utils/api';
 import { FiFileText, FiShoppingCart, FiMessageSquare, FiCamera, FiHash } from 'react-icons/fi'; // Feather icons
-import './styles/Create_Ticket.css';
+import './styles/Create_Ticket.css';  // Your CSS styles
+import { fetchUserAttributes } from 'aws-amplify/auth';
 
 const CreateTicket = () => {
   const [orderID, setOrderID] = useState('');
@@ -13,6 +14,9 @@ const CreateTicket = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,26 +24,27 @@ const CreateTicket = () => {
     setError('');
     setSuccess(false);
 
-    const ticketData = {
-      ticket_id: `ticket-${Date.now()}`,
+    // Ticket data payload to be sent to the API
+    const body = {
       orderID,
-      ownerEmail: "useremail@example.com",
-      creationDate: new Date().toLocaleString(),
-      lastModificationDate: new Date().toLocaleString(),
+      ownerEmail: userEmail,  // Replace with actual user email from context or auth
       issue,
       product,
-      productOption: 'No Locks',
+      productOption: "No Locks",
       replacementsCountAsked: parseInt(replacementsCount, 10),
-      status: 'pending',
-      message: `${message}\nProof: ${imgurImageLink}`,
+      status: "pending",
+      message: `${message}\nProof: ${imgurImageLink}`, // Backticks are used here for string interpolation
     };
 
-    const requestBody = {
-      body: JSON.stringify(ticketData)
+    const ticketData =
+    {
+        body: JSON.stringify(body)
     };
+    console.log("Payload being sent to API:", body);  // Log the payload
 
     try {
-      const response = await submitSupportTicket(requestBody);
+      // Submit the ticket data using your API
+      const response = await submitSupportTicket(ticketData);  // Body will be converted to JSON in the API call
       console.log(response);
       setSuccess(true);
     } catch (error) {
@@ -50,12 +55,33 @@ const CreateTicket = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+        try {
+          const userResponse = await fetchUserAttributes();
+          const userId = userResponse.sub;
+          const { email } = userResponse;
+  
+          setUserEmail(email);
+          setUserId(userId);
+            console.log("THE EMAIL:", email);
+          
+        } catch (err) {
+          console.error('Error fetching user data or credits:', err);
+          setError('An error occurred while fetching user data.');
+        }
+    
+      };
+      fetchUserData();
+    })
+ 
+
   return (
     <div className="create-ticket-container">
       <h2>Submit Ticket</h2>
       <form onSubmit={handleSubmit} className="ticket-form">
         <div className="instructions">
-          <h3>How to perform new ticket?</h3>
+          <h3>How to create a new ticket?</h3>
           <ul>
             <li>Copy order ID from the Orders page.</li>
             <li>Select the product, issue, and provide necessary details.</li>

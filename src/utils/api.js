@@ -1427,9 +1427,14 @@ export const fetchSupportTickets = async () => {
   
 };
 
-// API URL for submitting support tickets
+// Define constant for the Submit Ticket API URL
 const SUBMIT_TICKET_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/matrix_ticketform';
 
+/**
+ * Function to submit a support ticket.
+ * @param {Object} ticketData - The ticket data to be submitted.
+ * @returns {Promise<Object>} - Resolves with the API response data or rejects with an error message.
+ */
 export const submitSupportTicket = async (ticketData) => {
   try {
     const response = await fetch(SUBMIT_TICKET_API_URL, {
@@ -1437,18 +1442,18 @@ export const submitSupportTicket = async (ticketData) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(ticketData),  // Send the ticketData which includes the 'body' field
+      body: JSON.stringify(ticketData),
     });
 
     if (!response.ok) {
-      // If the response is not OK (status code outside of 2xx), throw an error
-      throw new Error('Failed to submit the support ticket.');
+      throw new Error('Failed to submit the ticket');
     }
 
-    const data = await response.json();
-    return data;
+    const result = await response.json();
+    return result;  // Return the result for further handling
   } catch (error) {
-    console.error('Error submitting support ticket:', error);
-    throw new Error('Failed to submit the support ticket.');
+    console.error('Error submitting ticket:', error);
+    throw error;  // Rethrow the error so it can be caught in the calling component
   }
 };
+
