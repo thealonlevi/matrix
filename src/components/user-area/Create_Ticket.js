@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { submitSupportTicket } from '../../utils/api';
+import { submitSupportTicket, fetchUserOrders } from '../../utils/api';  // Assuming you have an API utility to fetch user orders
 import { FiFileText, FiShoppingCart, FiMessageSquare, FiCamera, FiHash } from 'react-icons/fi'; // Feather icons
 import './styles/Create_Ticket.css';  // Your CSS styles
 import { fetchUserAttributes } from 'aws-amplify/auth';
+import { getGroupTitleById,getProductTitleById } from '../admin-dashboard/utils/adminUtils';
 
 const CreateTicket = () => {
-  const [orderID, setOrderID] = useState('');
+  const [orderID, setOrderID] = useState('');  // To store the selected order ID
+  const [orders, setOrders] = useState([]);  // For storing fetched orders
+  const [productOptions, setProductOptions] = useState([]);  // To store the combined group and product names
   const [product, setProduct] = useState('');
   const [issue, setIssue] = useState('');
   const [replacementsCount, setReplacementsCount] = useState(0);
@@ -17,6 +20,78 @@ const CreateTicket = () => {
   const [userId, setUserId] = useState('');
   const [userEmail, setUserEmail] = useState('');
 
+  // Fetch user's previous orders and user attributes
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Fetch user attributes
+        const userResponse = await fetchUserAttributes();
+        const { email, sub: userId } = userResponse;
+
+        setUserEmail(email);
+        setUserId(userId);
+
+        console.log("User Email:", email);
+        console.log("User ID:", userId);
+
+        // Fetch user orders from the API
+        const response = await fetchUserOrders({
+          email: email,  // Pass user email
+          userId: userId,  // Pass user ID
+        });
+
+        if (response.body) {
+          const responseBody = JSON.parse(response.body);
+          if (responseBody.orders) {
+            setOrders(responseBody.orders);  // Set orders in state
+            console.log("Fetched Orders:", responseBody.orders);
+          } else {
+            setError('No orders found for this user.');
+          }
+        } else {
+          setError('Failed to fetch user orders.');
+        }
+      } catch (err) {
+        console.error('Error fetching user orders or user data:', err);
+        setError('An error occurred while fetching user data or orders.');
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  // Update productOptions based on selected Order ID
+  useEffect(() => {
+    const fetchTitlesForOrder = async () => {
+      if (orderID) {
+        const selectedOrder = orders.find(order => order.orderId === orderID);
+        if (selectedOrder) {
+          const productOptions = await Promise.all(selectedOrder.order_contents.map(async (item) => {
+            const [groupId, productId] = item.product_id.split('/');
+            const groupTitle = await getGroupTitleById(groupId);
+            let productTitle = await getProductTitleById(item.product_id);
+
+            // Log to debug the product title fetching
+            console.log(`Fetching product title for product ID ${productId}`);
+            console.log(`Product title fetched: ${productTitle}`);
+
+            // Fallback if productTitle is not fetched correctly
+            if (!productTitle) {
+              productTitle = `Product ID: ${productId}`;
+            }
+
+            return {
+              id: `${groupId}/${productId}`,
+              title: `${productTitle}`
+            };
+          }));
+          setProductOptions(productOptions);  // Set the combined group and product names
+        }
+      }
+    };
+
+    fetchTitlesForOrder();
+  }, [orderID, orders]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,24 +102,23 @@ const CreateTicket = () => {
     // Ticket data payload to be sent to the API
     const body = {
       orderID,
-      ownerEmail: userEmail,  // Replace with actual user email from context or auth
+      ownerEmail: userEmail,  // Actual user email from fetched attributes
       issue,
-      product,
+      product,  // Product ID as "groupID/productID"
       productOption: "No Locks",
       replacementsCountAsked: parseInt(replacementsCount, 10),
       status: "pending",
-      message: `${message}\nProof: ${imgurImageLink}`, // Backticks are used here for string interpolation
+      message: `${message}\nProof: ${imgurImageLink}`,  // Use backticks for string interpolation
     };
-
-    const ticketData =
-    {
-        body: JSON.stringify(body)
+    
+    const ticketData = {
+      body: JSON.stringify(body)
     };
     console.log("Payload being sent to API:", body);  // Log the payload
 
     try {
       // Submit the ticket data using your API
-      const response = await submitSupportTicket(ticketData);  // Body will be converted to JSON in the API call
+      const response = await submitSupportTicket(ticketData);  // API call to submit the ticket
       console.log(response);
       setSuccess(true);
     } catch (error) {
@@ -54,27 +128,6 @@ const CreateTicket = () => {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-        try {
-          const userResponse = await fetchUserAttributes();
-          const userId = userResponse.sub;
-          const { email } = userResponse;
-  
-          setUserEmail(email);
-          setUserId(userId);
-            console.log("THE EMAIL:", email);
-          
-        } catch (err) {
-          console.error('Error fetching user data or credits:', err);
-          setError('An error occurred while fetching user data.');
-        }
-    
-      };
-      fetchUserData();
-    })
- 
 
   return (
     <div className="create-ticket-container">
@@ -89,18 +142,32 @@ const CreateTicket = () => {
           </ul>
         </div>
 
+        {/* Dropdown for Order ID */}
         <div className="form-group">
           <FiHash size={20} />
           <label htmlFor="orderID">Order ID</label>
-          <input
-            type="text"
+          <select
             id="orderID"
             value={orderID}
             onChange={(e) => setOrderID(e.target.value)}
             required
-          />
+          >
+            <option value="" disabled>Select an order</option>
+            {orders.map((order) => {
+              const formattedDate = isNaN(new Date(order.order_date))
+                ? 'Unknown Date'
+                : new Date(order.order_date).toLocaleDateString();
+
+              return (
+                <option key={order.orderId} value={order.orderId}>
+                  {order.orderId} - {formattedDate}
+                </option>
+              );
+            })}
+          </select>
         </div>
 
+        {/* Dropdown for Product (combined group and product names) */}
         <div className="form-group">
           <FiShoppingCart size={20} />
           <label htmlFor="product">Product</label>
@@ -111,11 +178,15 @@ const CreateTicket = () => {
             required
           >
             <option value="" disabled>Select a product</option>
-            <option value="Product1">Product 1</option>
-            <option value="Product2">Product 2</option>
+            {productOptions.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.title}
+              </option>
+            ))}
           </select>
         </div>
 
+        {/* Issue Text Field */}
         <div className="form-group">
           <FiMessageSquare size={20} />
           <label htmlFor="issue">Issue</label>
@@ -128,6 +199,7 @@ const CreateTicket = () => {
           />
         </div>
 
+        {/* Replacements Count */}
         <div className="form-group">
           <FiFileText size={20} />
           <label htmlFor="replacementsCount">Replacements Count</label>
@@ -140,6 +212,7 @@ const CreateTicket = () => {
           />
         </div>
 
+        {/* Imgur Image Link */}
         <div className="form-group">
           <FiCamera size={20} />
           <label htmlFor="imgurImageLink">Proof Images (Imgur link)</label>
@@ -152,6 +225,7 @@ const CreateTicket = () => {
           />
         </div>
 
+        {/* Message Text Area */}
         <div className="form-group">
           <FiMessageSquare size={20} />
           <label htmlFor="message">Message</label>
