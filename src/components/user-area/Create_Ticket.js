@@ -102,8 +102,7 @@ const CreateTicket = () => {
     // Ticket data payload to be sent to the API
     const body = {
       orderID,
-      userEmail,  // Changed from ownerEmail to userEmail
-      userId,  // Added userId
+      ownerEmail: userEmail,  // Actual user email from fetched attributes
       issue,
       product_id: product,  // Product ID as "groupID/productID"
       replacementsCountAsked: parseInt(replacementsCount, 10),
