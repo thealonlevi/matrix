@@ -102,10 +102,10 @@ const CreateTicket = () => {
     // Ticket data payload to be sent to the API
     const body = {
       orderID,
-      ownerEmail: userEmail,  // Actual user email from fetched attributes
+      userEmail: userEmail,  // Actual user email from fetched attributes
+      userId,
       issue,
-      product,  // Product ID as "groupID/productID"
-      productOption: "No Locks",
+      product_id: product,  // Product ID as "groupID/productID"
       replacementsCountAsked: parseInt(replacementsCount, 10),
       status: "pending",
       message: `${message}\nProof: ${imgurImageLink}`,  // Use backticks for string interpolation
