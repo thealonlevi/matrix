@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchSupportTickets } from '../../utils/api';
-import './styles/SupportTicketSystem.css'; // Create CSS for the ticket system
+import './styles/SupportTicketSystem.css'; // Ensure proper styling
 
 const SupportTicketSystem = () => {
   const [tickets, setTickets] = useState([]);
@@ -37,10 +37,8 @@ const SupportTicketSystem = () => {
       <table>
         <thead>
           <tr>
-            <th>Ticket ID</th>
             <th>Order ID</th>
-            <th>Owner</th>
-            <th>Issue</th>
+            <th>Email</th>
             <th>Status</th>
             <th>Modified</th>
           </tr>
@@ -48,10 +46,8 @@ const SupportTicketSystem = () => {
         <tbody>
           {tickets.map((ticket) => (
             <tr key={ticket.ticket_id}>
-              <td>{ticket.ticket_id}</td>
               <td>{ticket.orderID}</td>
-              <td>{ticket.ownerEmail}</td>
-              <td>{ticket.issue}</td>
+              <td>{ticket.userEmail}</td>
               <td className={ticket.status === 'resolved' ? 'resolved' : 'unresolved'}>
                 {ticket.status}
               </td>
