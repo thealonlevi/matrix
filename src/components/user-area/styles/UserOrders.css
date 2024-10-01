@@ -7,11 +7,15 @@
   border-radius: 8px; /* Rounded corners */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Shadow for depth */
   max-width: 100%; /* Full width */
+  max-height: 80vh; /* Set a max height */
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 /* Orders Table Container */
 .orders-table-container {
-  overflow-x: auto; /* Allow scrolling for wide tables */
+  overflow-x: auto; /* Allow horizontal scrolling for wide tables */
+  overflow-y: auto; /* Allow vertical scrolling if needed */
+  max-height: 60vh; /* Set a max height to prevent overflow */
   margin-bottom: 20px;
 }
 

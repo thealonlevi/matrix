@@ -38,3 +38,11 @@ td {
 .unresolved {
     color: orange;
 }
+
+.info-icon {
+    transition: transform 0.2s ease-in-out;
+}
+
+.info-icon:hover {
+    transform: scale(1.2); /* Slightly enlarge the icon on hover */
+}

@@ -1457,3 +1457,28 @@ export const submitSupportTicket = async (ticketData) => {
   }
 };
 
+// Import the necessary configurations
+const SUBMIT_ISSUE_REPLACEMENT_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_IssueReplacement';
+
+// Function to submit an issue replacement
+export const issueReplacement = async (ticketData) => {
+  try {
+    const response = await fetch(SUBMIT_ISSUE_REPLACEMENT_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(ticketData), // Send ticket data as JSON
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to issue replacement.');
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Error issuing replacement:', error);
+    throw error; // Re-throw the error to handle it in the component
+  }
+};
