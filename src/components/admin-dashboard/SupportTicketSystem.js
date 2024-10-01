@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Modal from 'react-modal'; // Import Modal from react-modal
 import { fetchSupportTickets, issueReplacement } from '../../utils/api'; // Include the issueReplacement API call
 import { FaInfoCircle } from 'react-icons/fa'; // Import the info circle icon from react-icons
-import { checkPermissionAndFetchData } from './utils/adminUtils';
+import { fetchUserAttributes } from 'aws-amplify/auth';
+import Modal from 'react-modal';
 import './styles/SupportTicketSystem.css'; // Ensure proper styling
 
 // Modal style configuration
@@ -29,11 +29,10 @@ const SupportTicketSystem = () => {
 
   // Function to fetch the operator's email (this will be the fetchCallback)
   const fetchOperatorEmail = async () => {
-    // Simulated operator data fetching; replace with actual API call if necessary
-    console.log('Fetching operator email...');
-    return {
-      email: 'operator@example.com',
-    };
+    const userResponse = await fetchUserAttributes();
+    const { email } = userResponse;
+
+    return email;
   };
 
   useEffect(() => {
@@ -55,9 +54,9 @@ const SupportTicketSystem = () => {
       try {
         console.log('Getting operator email...');
         // Check permissions and fetch operator email
-        const userAttributes = await checkPermissionAndFetchData(fetchOperatorEmail, 'Matrix_GetOperator', '9999');
-        console.log('Operator email fetched:', userAttributes.email);
-        setOperatorEmail(userAttributes.email); // Set the operator's email
+        const userEmail = await fetchOperatorEmail();
+        console.log('Operator email fetched:', userEmail);
+        setOperatorEmail(userEmail); // Set the operator's email
       } catch (error) {
         console.error('Error fetching operator email:', error);
       }
@@ -184,7 +183,6 @@ const SupportTicketSystem = () => {
     </div>
   );
 };
-
-Modal.setAppElement('#root');
+Modal.setAppElement('#root'); // Make sure to set this to your app's root element ID
 
 export default SupportTicketSystem;
