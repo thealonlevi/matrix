@@ -1,21 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchSupportTickets, issueReplacement } from '../../utils/api'; // Include the issueReplacement API call
-import { FaInfoCircle } from 'react-icons/fa'; // Import the info circle icon from react-icons
+import { FaInfoCircle, FaTimes } from 'react-icons/fa'; // Import the info circle and times (X) icon from react-icons
 import { fetchUserAttributes } from 'aws-amplify/auth';
 import Modal from 'react-modal';
 import './styles/SupportTicketSystem.css'; // Ensure proper styling
-
-// Modal style configuration
-const customStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-  },
-};
 
 const SupportTicketSystem = () => {
   const [tickets, setTickets] = useState([]);
@@ -142,9 +130,7 @@ const SupportTicketSystem = () => {
                 <FaInfoCircle
                   className="info-icon"
                   size={24}
-                  color="dodgerblue"
                   onClick={() => openModal(ticket)}
-                  style={{ cursor: 'pointer' }}
                 />
               </td>
             </tr>
@@ -154,28 +140,37 @@ const SupportTicketSystem = () => {
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
-        style={customStyles}
+        className="modal-content"
+        overlayClassName="modal-overlay"
         contentLabel="Ticket Details Modal"
       >
         {selectedTicket ? (
-          <div>
-            <h2>Ticket Details</h2>
-            <p><strong>Order ID:</strong> {selectedTicket.orderID}</p>
-            <p><strong>Email:</strong> {selectedTicket.userEmail}</p>
-            <p><strong>Status:</strong> {selectedTicket.status}</p>
-            <p><strong>Last Modified:</strong> {selectedTicket.lastModificationDate}</p>
-            <p><strong>Ticket ID:</strong> {selectedTicket.ticket_id}</p>
-            <p><strong>Product ID:</strong> {selectedTicket.product_id}</p>
-            <p><strong>Operator:</strong> {operatorEmail}</p>
-            <input
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              min="1"
-            />
-            <button onClick={handleIssueReplacement} className="issue-replacement-btn">Issue Replacement</button>
-            <button onClick={closeModal} className="close-btn">Close</button>
-          </div>
+          loading ? (
+            <div className="modal-loading">Loading ticket details...</div>
+          ) : (
+            <div>
+              {/* Use FaTimes Icon for Close Button */}
+              <FaTimes className="modal-close-icon" onClick={closeModal} />
+
+              <h2>Ticket Details</h2>
+              <p><strong>Order ID:</strong> {selectedTicket.orderID}</p>
+              <p><strong>Email:</strong> {selectedTicket.userEmail}</p>
+              <p><strong>Status:</strong> {selectedTicket.status}</p>
+              <p><strong>Last Modified:</strong> {selectedTicket.lastModificationDate}</p>
+              <p><strong>Ticket ID:</strong> {selectedTicket.ticket_id}</p>
+              <p><strong>Product ID:</strong> {selectedTicket.product_id}</p>
+              <p><strong>Operator:</strong> {operatorEmail}</p>
+              <input
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                min="1"
+              />
+              <button onClick={handleIssueReplacement} className="issue-replacement-btn">
+                Issue Replacement
+              </button>
+            </div>
+          )
         ) : (
           <p>Loading ticket details...</p>
         )}
