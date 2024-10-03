@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchSupportTickets, issueReplacement } from '../../utils/api';
+import { fetchSupportTickets, issueReplacement, addCreditViaTicket, logRequest } from '../../utils/api';
 import { FaInfoCircle, FaTimes } from 'react-icons/fa'; 
 import { fetchUserAttributes } from 'aws-amplify/auth';
 import Modal from 'react-modal';
@@ -11,17 +11,23 @@ const SupportTicketSystem = () => {
   const [error, setError] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false); 
   const [creditModalIsOpen, setCreditModalIsOpen] = useState(false); 
-  const [replacementModalIsOpen, setReplacementModalIsOpen] = useState(false); // State to control replacement modal
+  const [replacementModalIsOpen, setReplacementModalIsOpen] = useState(false); 
   const [selectedTicket, setSelectedTicket] = useState(null); 
-  const [operatorEmail, setOperatorEmail] = useState(''); 
+  const [operatorEmail, setOperatorEmail] = useState('');
+  const [staffUserId, setStaffUserId] = useState('');
   const [creditAmount, setCreditAmount] = useState(''); 
-  const [replacementQuantity, setReplacementQuantity] = useState(''); // State for replacement quantity
+  const [replacementQuantity, setReplacementQuantity] = useState(''); 
   const initRef = useRef(false); 
 
   const fetchOperatorEmail = async () => {
     const userResponse = await fetchUserAttributes();
     const { email } = userResponse;
     return email;
+  };
+  
+  const fetchOperatorUserId = async () => {
+    const { userId } = await fetchUserAttributes();
+    return userId;
   };
 
   useEffect(() => {
@@ -39,6 +45,8 @@ const SupportTicketSystem = () => {
     const getOperatorEmail = async () => {
       try {
         const userEmail = await fetchOperatorEmail();
+        const userId = await fetchOperatorUserId();
+        setStaffUserId(userId);
         setOperatorEmail(userEmail); 
       } catch (error) {
         console.error('Error fetching operator email:', error);
@@ -106,9 +114,40 @@ const SupportTicketSystem = () => {
     }
   };
 
-  const handleCredit = () => {
-    console.log(`Credit amount entered: ${creditAmount}`);
-    closeCreditModal();
+  const handleCredit = async () => {
+    if (!selectedTicket) return;
+
+    const creditAmountValue = parseFloat(creditAmount);
+    if (isNaN(creditAmountValue) || creditAmountValue <= 0) {
+      alert('Please enter a valid credit amount.');
+      return;
+    }
+
+    const creditData = {
+      user_email: selectedTicket.userEmail,
+      ticket_id: selectedTicket.ticket_id,
+      operator: operatorEmail,  
+      staff_email: operatorEmail, 
+      staff_user_id: staffUserId, 
+      credit_amount: creditAmountValue,
+    };
+
+    try {
+      // Log the add credit request before calling addCreditViaTicket
+      console.log(`Add credit to user ${staffUserId}`);
+      const logSuccess = await logRequest('Matrix_AddCredit', staffUserId);
+      console.log(logSuccess);
+      
+      if (!logSuccess) {
+        throw new Error('Failed to log the add credit request.');
+      }
+
+      const response = await addCreditViaTicket(creditData);
+      alert('Credit added successfully!');
+      closeCreditModal();
+    } catch (error) {
+      alert('Failed to add credit.');
+    }
   };
 
   const handleResolve = () => {
@@ -182,7 +221,7 @@ const SupportTicketSystem = () => {
               </button>
               <button onClick={openCreditModal} className="credit-btn">Credit</button> 
               <button className="deny-replacement-btn">Deny Replacement</button>
-              <button onClick={handleResolve} className="resolve-btn">Resolve</button> {/* Resolve button */}
+              <button onClick={handleResolve} className="resolve-btn">Resolve</button> 
             </div>
           </div>
         ) : (

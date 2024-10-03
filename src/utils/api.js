@@ -1482,3 +1482,33 @@ export const issueReplacement = async (ticketData) => {
     throw error; // Re-throw the error to handle it in the component
   }
 };
+
+// Define constant for the Matrix_AddCreditViaTicket API URL
+const ADD_CREDIT_VIA_TICKET_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_AddCreditViaTicket';
+
+/**
+ * Function to add credit via a support ticket.
+ * @param {Object} creditData - The credit data to be submitted.
+ * @returns {Promise<Object>} - Resolves with the API response data or rejects with an error message.
+ */
+export const addCreditViaTicket = async (creditData) => {
+  try {
+    const response = await fetch(ADD_CREDIT_VIA_TICKET_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(creditData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add credit via ticket.');
+    }
+
+    const result = await response.json();
+    return result;  // Return the result for further handling
+  } catch (error) {
+    console.error('Error adding credit via ticket:', error);
+    throw error;  // Rethrow the error to handle in the calling component
+  }
+};
