@@ -91,24 +91,6 @@ td {
     padding: 20px;
 }
 
-/* Issue Replacement Button */
-.issue-replacement-btn {
-    background-color: #3498db;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 200px; /* Increased width for better appearance */
-    display: block;
-    margin: 20px auto 0; /* Center the button */
-}
-
-.issue-replacement-btn:hover {
-    background-color: #2980b9;
-}
-
 /* Close "X" icon */
 .modal-close-icon {
     position: absolute;
@@ -122,4 +104,77 @@ td {
 
 .modal-close-icon:hover {
     color: #c0392b;
+}
+
+/* Button Container */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+/* Issue Replacement Button */
+.issue-replacement-btn {
+    background-color: #3498db;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 200px; /* Increased width for better appearance */
+}
+
+.issue-replacement-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Credit Button */
+.credit-btn {
+    background-color: #f1c40f;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 200px;
+}
+
+.credit-btn:hover {
+    background-color: #f39c12;
+}
+
+/* Resolve Button */
+.resolve-btn {
+    background-color: #27ae60; /* Green for Resolve Button */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 200px;
+    margin-right: auto; /* Forces the Resolve button to align far left */
+}
+
+.resolve-btn:hover {
+    background-color: #229954;
+}
+
+/* Deny Button */
+.deny-replacement-btn {
+    background-color: #e74c3c;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 200px;
+    margin-left: auto; /* Forces the Deny button to align far right */
+}
+
+.deny-replacement-btn:hover {
+    background-color: #c0392b;
 }

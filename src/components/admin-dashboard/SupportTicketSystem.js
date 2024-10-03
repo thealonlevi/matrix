@@ -1,37 +1,35 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchSupportTickets, issueReplacement } from '../../utils/api'; // Include the issueReplacement API call
-import { FaInfoCircle, FaTimes } from 'react-icons/fa'; // Import the info circle and times (X) icon from react-icons
+import { fetchSupportTickets, issueReplacement } from '../../utils/api';
+import { FaInfoCircle, FaTimes } from 'react-icons/fa'; 
 import { fetchUserAttributes } from 'aws-amplify/auth';
 import Modal from 'react-modal';
-import './styles/SupportTicketSystem.css'; // Ensure proper styling
+import './styles/SupportTicketSystem.css'; 
 
 const SupportTicketSystem = () => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [modalIsOpen, setModalIsOpen] = useState(false); // State to control modal visibility
-  const [selectedTicket, setSelectedTicket] = useState(null); // State for the selected ticket
-  const [operatorEmail, setOperatorEmail] = useState(''); // Operator's email state
-  const [quantity, setQuantity] = useState(1); // State to handle quantity
-  const initRef = useRef(false); // Add useRef to track initialization
+  const [modalIsOpen, setModalIsOpen] = useState(false); 
+  const [creditModalIsOpen, setCreditModalIsOpen] = useState(false); 
+  const [replacementModalIsOpen, setReplacementModalIsOpen] = useState(false); // State to control replacement modal
+  const [selectedTicket, setSelectedTicket] = useState(null); 
+  const [operatorEmail, setOperatorEmail] = useState(''); 
+  const [creditAmount, setCreditAmount] = useState(''); 
+  const [replacementQuantity, setReplacementQuantity] = useState(''); // State for replacement quantity
+  const initRef = useRef(false); 
 
-  // Function to fetch the operator's email (this will be the fetchCallback)
   const fetchOperatorEmail = async () => {
     const userResponse = await fetchUserAttributes();
     const { email } = userResponse;
-
     return email;
   };
 
   useEffect(() => {
     const loadTickets = async () => {
-      console.log('Loading tickets...');
       try {
         const fetchedTickets = await fetchSupportTickets();
         setTickets(fetchedTickets);
-        console.log('Tickets loaded:', fetchedTickets);
       } catch (err) {
-        console.error('Error fetching tickets:', err);
         setError('Failed to load tickets');
       } finally {
         setLoading(false);
@@ -40,17 +38,13 @@ const SupportTicketSystem = () => {
 
     const getOperatorEmail = async () => {
       try {
-        console.log('Getting operator email...');
-        // Check permissions and fetch operator email
         const userEmail = await fetchOperatorEmail();
-        console.log('Operator email fetched:', userEmail);
-        setOperatorEmail(userEmail); // Set the operator's email
+        setOperatorEmail(userEmail); 
       } catch (error) {
         console.error('Error fetching operator email:', error);
       }
     };
 
-    // Prevent multiple initializations
     if (!initRef.current) {
       initRef.current = true;
       loadTickets();
@@ -58,42 +52,69 @@ const SupportTicketSystem = () => {
     }
   }, []);
 
-  // Function to open modal and set the selected ticket
   const openModal = (ticket) => {
-    setSelectedTicket(ticket); // Set the ticket information to show in modal
-    setModalIsOpen(true); // Open the modal
+    setSelectedTicket(ticket);
+    setModalIsOpen(true);
   };
 
-  // Function to close the modal
   const closeModal = () => {
     setModalIsOpen(false);
-    setSelectedTicket(null); // Reset the selected ticket when modal closes
-    setQuantity(1); // Reset the quantity input when modal closes
+    setSelectedTicket(null);
   };
 
-  // Handle issuing the replacement
+  const openCreditModal = () => {
+    setCreditModalIsOpen(true);
+  };
+
+  const closeCreditModal = () => {
+    setCreditModalIsOpen(false);
+    setCreditAmount('');
+  };
+
+  const openReplacementModal = () => {
+    setReplacementModalIsOpen(true);
+  };
+
+  const closeReplacementModal = () => {
+    setReplacementModalIsOpen(false);
+    setReplacementQuantity('');
+  };
+
   const handleIssueReplacement = async () => {
     if (!selectedTicket) return;
+    const quantity = parseInt(replacementQuantity, 10);
+    if (isNaN(quantity) || quantity < 1) {
+      alert('Please enter a valid quantity.');
+      return;
+    }
 
     const replacementData = {
       userEmail: selectedTicket.userEmail,
-      ticket_id: selectedTicket.ticket_id, // Use ticket_id from the ticket
-      operator: operatorEmail, // Use the fetched operator's email
-      product_id: selectedTicket.product_id, // Fetch product_id from the ticket (ensure it's part of the ticket data)
-      quantity, // Quantity inputted by the operator
-      orderID: selectedTicket.orderID, // Use orderID from the ticket
+      ticket_id: selectedTicket.ticket_id, 
+      operator: operatorEmail, 
+      product_id: selectedTicket.product_id, 
+      quantity,
+      orderID: selectedTicket.orderID, 
     };
 
-    console.log('Sending replacement request:', replacementData);
     try {
-      const response = await issueReplacement(replacementData); // API call to Lambda
-      console.log('Replacement request sent, response:', response);
+      const response = await issueReplacement(replacementData); 
       alert('Issue replacement request submitted successfully!');
-      closeModal();
+      closeReplacementModal();
     } catch (error) {
-      console.error('Error issuing replacement:', error);
       alert('Failed to submit issue replacement.');
     }
+  };
+
+  const handleCredit = () => {
+    console.log(`Credit amount entered: ${creditAmount}`);
+    closeCreditModal();
+  };
+
+  const handleResolve = () => {
+    console.log('Ticket resolved.');
+    // Placeholder functionality: log the resolve action
+    // Future implementation can include updating the status in the backend.
   };
 
   if (loading) {
@@ -145,39 +166,78 @@ const SupportTicketSystem = () => {
         contentLabel="Ticket Details Modal"
       >
         {selectedTicket ? (
-          loading ? (
-            <div className="modal-loading">Loading ticket details...</div>
-          ) : (
-            <div>
-              {/* Use FaTimes Icon for Close Button */}
-              <FaTimes className="modal-close-icon" onClick={closeModal} />
-
-              <h2>Ticket Details</h2>
-              <p><strong>Order ID:</strong> {selectedTicket.orderID}</p>
-              <p><strong>Email:</strong> {selectedTicket.userEmail}</p>
-              <p><strong>Status:</strong> {selectedTicket.status}</p>
-              <p><strong>Last Modified:</strong> {selectedTicket.lastModificationDate}</p>
-              <p><strong>Ticket ID:</strong> {selectedTicket.ticket_id}</p>
-              <p><strong>Product ID:</strong> {selectedTicket.product_id}</p>
-              <p><strong>Operator:</strong> {operatorEmail}</p>
-              <input
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                min="1"
-              />
-              <button onClick={handleIssueReplacement} className="issue-replacement-btn">
+          <div>
+            <FaTimes className="modal-close-icon" onClick={closeModal} />
+            <h2>Ticket Details</h2>
+            <p><strong>Order ID:</strong> {selectedTicket.orderID}</p>
+            <p><strong>Email:</strong> {selectedTicket.userEmail}</p>
+            <p><strong>Status:</strong> {selectedTicket.status}</p>
+            <p><strong>Last Modified:</strong> {selectedTicket.lastModificationDate}</p>
+            <p><strong>Ticket ID:</strong> {selectedTicket.ticket_id}</p>
+            <p><strong>Product ID:</strong> {selectedTicket.product_id}</p>
+            <p><strong>Operator:</strong> {operatorEmail}</p>
+            <div className="button-container">
+              <button onClick={openReplacementModal} className="issue-replacement-btn">
                 Issue Replacement
               </button>
+              <button onClick={openCreditModal} className="credit-btn">Credit</button> 
+              <button className="deny-replacement-btn">Deny Replacement</button>
+              <button onClick={handleResolve} className="resolve-btn">Resolve</button> {/* Resolve button */}
             </div>
-          )
+          </div>
         ) : (
           <p>Loading ticket details...</p>
         )}
       </Modal>
+
+      {/* Credit Modal */}
+      <Modal
+        isOpen={creditModalIsOpen}
+        onRequestClose={closeCreditModal}
+        className="modal-content"
+        overlayClassName="modal-overlay"
+        contentLabel="Credit Modal"
+      >
+        <FaTimes className="modal-close-icon" onClick={closeCreditModal} />
+        <h2>Add Credit</h2>
+        <p>How much credit would you like to add?</p>
+        <input
+          type="number"
+          value={creditAmount}
+          onChange={(e) => setCreditAmount(e.target.value)}
+          min="0.01"
+          step="0.01"
+        />
+        <div className="button-container">
+          <button onClick={handleCredit} className="confirm-btn">Confirm</button>
+        </div>
+      </Modal>
+
+      {/* Replacement Modal */}
+      <Modal
+        isOpen={replacementModalIsOpen}
+        onRequestClose={closeReplacementModal}
+        className="modal-content"
+        overlayClassName="modal-overlay"
+        contentLabel="Replacement Modal"
+      >
+        <FaTimes className="modal-close-icon" onClick={closeReplacementModal} />
+        <h2>Issue Replacement</h2>
+        <p>How many replacements would you like to issue?</p>
+        <input
+          type="number"
+          value={replacementQuantity}
+          onChange={(e) => setReplacementQuantity(e.target.value)}
+          min="1"
+        />
+        <div className="button-container">
+          <button onClick={handleIssueReplacement} className="confirm-btn">Confirm</button>
+        </div>
+      </Modal>
     </div>
   );
 };
-Modal.setAppElement('#root'); // Make sure to set this to your app's root element ID
+
+Modal.setAppElement('#root'); 
 
 export default SupportTicketSystem;
