@@ -26,7 +26,9 @@ const SupportTicketSystem = () => {
   };
   
   const fetchOperatorUserId = async () => {
-    const { userId } = await fetchUserAttributes();
+    const response = await fetchUserAttributes();
+    const { sub } = response;
+    const userId = sub;
     return userId;
   };
 
@@ -122,20 +124,21 @@ const SupportTicketSystem = () => {
       alert('Please enter a valid credit amount.');
       return;
     }
-
+    const { sub } = await fetchUserAttributes(); // here is how you fetch user id
     const creditData = {
       user_email: selectedTicket.userEmail,
       ticket_id: selectedTicket.ticket_id,
       operator: operatorEmail,  
       staff_email: operatorEmail, 
-      staff_user_id: staffUserId, 
+      staff_user_id: sub, 
       credit_amount: creditAmountValue,
     };
+    console.log(creditData);
 
     try {
       // Log the add credit request before calling addCreditViaTicket
-      console.log(`Add credit to user ${staffUserId}`);
-      const logSuccess = await logRequest('Matrix_AddCredit', staffUserId);
+      console.log(`Add credit to user ${sub}`);
+      const logSuccess = await logRequest('Matrix_AddCredit', sub);
       console.log(logSuccess);
       
       if (!logSuccess) {
@@ -143,6 +146,7 @@ const SupportTicketSystem = () => {
       }
 
       const response = await addCreditViaTicket(creditData);
+      console.log(response);
       alert('Credit added successfully!');
       closeCreditModal();
     } catch (error) {
