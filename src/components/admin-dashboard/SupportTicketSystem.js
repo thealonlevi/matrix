@@ -145,9 +145,17 @@ const SupportTicketSystem = () => {
 
       const response = await addCreditViaTicket(creditData);
       console.log(response);
-      alert('Credit added successfully!');
-      closeCreditModal();
+
+      if (response.statusCode === 200) {
+        alert('Credit added successfully!');
+        closeCreditModal();
+      } else {
+        const parsedResponse = JSON.parse(response.body);
+        alert(`Failed to add credit: ${parsedResponse.message || 'Unknown error'}`);
+      }
+
     } catch (error) {
+      console.error('Error adding credit:', error);  // Log the error for debugging
       alert('Failed to add credit.');
     }
   };
