@@ -3,7 +3,7 @@ import { submitSupportTicket, fetchUserOrders } from '../../utils/api';  // Assu
 import { FiFileText, FiShoppingCart, FiMessageSquare, FiCamera, FiHash } from 'react-icons/fi'; // Feather icons
 import './styles/Create_Ticket.css';  // Your CSS styles
 import { fetchUserAttributes } from 'aws-amplify/auth';
-import { getGroupTitleById,getProductTitleById } from '../admin-dashboard/utils/adminUtils';
+import { getProductTitleById } from '../admin-dashboard/utils/adminUtils';
 
 const CreateTicket = () => {
   const [orderID, setOrderID] = useState('');  // To store the selected order ID
@@ -68,7 +68,6 @@ const CreateTicket = () => {
         if (selectedOrder) {
           const productOptions = await Promise.all(selectedOrder.order_contents.map(async (item) => {
             const [groupId, productId] = item.product_id.split('/');
-            const groupTitle = await getGroupTitleById(groupId);
             let productTitle = await getProductTitleById(item.product_id);
 
             // Log to debug the product title fetching

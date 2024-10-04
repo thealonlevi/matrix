@@ -156,9 +156,22 @@ td {
 }
 
 .deny-replacement-btn {
-    background-color: #ff1900;
+    background-color: #e74c3c;
 }
 
 .deny-replacement-btn:hover {
-    background-color: #d4301e;
+    background-color: #c0392b;
+}
+/* Add this to your CSS */
+.denied {
+    color: red;
+}
+
+/* Retain existing styles */
+.resolved {
+    color: green;
+}
+
+.unresolved {
+    color: orange;
 }

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchSupportTickets, issueReplacement, addCreditViaTicket, logRequest, resolveOrDenyTicket } from '../../utils/api';
+import { fetchSupportTickets, issueReplacement, addCreditViaTicket, logRequest, resolveOrDenyTicket } from '../../utils/api'; // Added getProductTitleById import
 import { FaInfoCircle, FaTimes, FaExchangeAlt, FaDollarSign, FaBan, FaCheckCircle } from 'react-icons/fa'; 
 import { fetchUserAttributes } from 'aws-amplify/auth';
 import Modal from 'react-modal';
 import './styles/SupportTicketSystem.css'; 
+import { getProductTitleById } from './utils/adminUtils';
 
 const SupportTicketSystem = () => {
   const [tickets, setTickets] = useState([]);
@@ -17,6 +18,7 @@ const SupportTicketSystem = () => {
   const [operatorUserId, setOperatorUserId] = useState('');
   const [creditAmount, setCreditAmount] = useState(''); 
   const [replacementQuantity, setReplacementQuantity] = useState(''); 
+  const [productTitle, setProductTitle] = useState('');  // State to store product title
   const initRef = useRef(false); 
 
   const fetchOperatorEmail = async () => {
@@ -68,8 +70,17 @@ const SupportTicketSystem = () => {
     }
   }, []);
 
-  const openModal = (ticket) => {
+  // Fetch product title when a ticket is opened
+  const openModal = async (ticket) => {
     setSelectedTicket(ticket);
+
+    // Fetch product title using the product_id from the selected ticket
+    const title = await getProductTitleById(ticket.product_id);
+
+    // Fallback if the product title is not available
+    const productTitle = title ? title : `Product ID: ${ticket.product_id}`;
+    setProductTitle(productTitle); // Update the state with the product title
+
     setModalIsOpen(true);
   };
 
@@ -220,7 +231,10 @@ const SupportTicketSystem = () => {
             <tr key={ticket.ticket_id}>
               <td>{ticket.orderID}</td>
               <td>{ticket.userEmail}</td>
-              <td className={ticket.status === 'resolved' ? 'resolved' : 'unresolved'}>
+              <td className={
+                ticket.status === 'resolved' ? 'resolved' :
+                ticket.status === 'denied' ? 'denied' : 'unresolved'
+              }>
                 {ticket.status}
               </td>
               <td>{ticket.lastModificationDate}</td>
@@ -241,7 +255,6 @@ const SupportTicketSystem = () => {
         className="modal-content"
         overlayClassName="modal-overlay"
         contentLabel="Ticket Details Modal"
-      
       >
         {selectedTicket ? (
           <div>
@@ -252,7 +265,7 @@ const SupportTicketSystem = () => {
             <p><strong>Status:</strong> {selectedTicket.status}</p>
             <p><strong>Last Modified:</strong> {selectedTicket.lastModificationDate}</p>
             <p><strong>Ticket ID:</strong> {selectedTicket.ticket_id}</p>
-            <p><strong>Product ID:</strong> {selectedTicket.product_id}</p>
+            <p><strong>Product Name:</strong> {productTitle}</p> {/* Display product title */}
             <p><strong>Operator:</strong> {operatorEmail}</p>
             <p><strong>Creation Date:</strong> {selectedTicket.creationDate}</p>
             <div className="button-container">
