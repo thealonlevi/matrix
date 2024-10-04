@@ -14,7 +14,7 @@ const SupportTicketSystem = () => {
   const [replacementModalIsOpen, setReplacementModalIsOpen] = useState(false); 
   const [selectedTicket, setSelectedTicket] = useState(null); 
   const [operatorEmail, setOperatorEmail] = useState('');
-  const [staffUserId, setStaffUserId] = useState('');
+  const [operatorUserId, setOperatorUserId] = useState('');
   const [creditAmount, setCreditAmount] = useState(''); 
   const [replacementQuantity, setReplacementQuantity] = useState(''); 
   const initRef = useRef(false); 
@@ -44,21 +44,21 @@ const SupportTicketSystem = () => {
       }
     };
 
-    const getOperatorEmail = async () => {
+    const getOperatorInfo = async () => {
       try {
         const userEmail = await fetchOperatorEmail();
         const userId = await fetchOperatorUserId();
-        setStaffUserId(userId);
+        setOperatorUserId(userId);
         setOperatorEmail(userEmail); 
       } catch (error) {
-        console.error('Error fetching operator email:', error);
+        console.error('Error fetching operator info:', error);
       }
     };
 
     if (!initRef.current) {
       initRef.current = true;
       loadTickets();
-      getOperatorEmail();
+      getOperatorInfo();
     }
   }, []);
 
@@ -124,21 +124,19 @@ const SupportTicketSystem = () => {
       alert('Please enter a valid credit amount.');
       return;
     }
-    const { sub } = await fetchUserAttributes(); // here is how you fetch user id
+    
     const creditData = {
       user_email: selectedTicket.userEmail,
       ticket_id: selectedTicket.ticket_id,
       operator: operatorEmail,  
-      staff_email: operatorEmail, 
-      staff_user_id: sub, 
+      staff_user_id: operatorUserId,  // Use operator user ID for logging
       credit_amount: creditAmountValue,
     };
-    console.log(creditData);
 
     try {
       // Log the add credit request before calling addCreditViaTicket
-      console.log(`Add credit to user ${sub}`);
-      const logSuccess = await logRequest('Matrix_AddCredit', sub);
+      console.log(`Add credit to user ${operatorUserId}`);
+      const logSuccess = await logRequest('Matrix_AddCredit', operatorUserId);
       console.log(logSuccess);
       
       if (!logSuccess) {
@@ -156,8 +154,6 @@ const SupportTicketSystem = () => {
 
   const handleResolve = () => {
     console.log('Ticket resolved.');
-    // Placeholder functionality: log the resolve action
-    // Future implementation can include updating the status in the backend.
   };
 
   if (loading) {
