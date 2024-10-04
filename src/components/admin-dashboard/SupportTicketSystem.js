@@ -36,7 +36,13 @@ const SupportTicketSystem = () => {
     const loadTickets = async () => {
       try {
         const fetchedTickets = await fetchSupportTickets();
-        setTickets(fetchedTickets);
+        
+        // Sort tickets from latest to oldest based on lastModificationDate
+        const sortedTickets = fetchedTickets.sort(
+          (a, b) => new Date(b.creationDate) - new Date(a.creationDate)
+        );
+
+        setTickets(sortedTickets);
       } catch (err) {
         setError('Failed to load tickets');
       } finally {
@@ -188,6 +194,14 @@ const SupportTicketSystem = () => {
     }
   };
 
+  if (loading) {
+    return <p>Loading tickets...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
   return (
     <div className="support-ticket-system">
       <h2>Support Ticket System</h2>
@@ -227,6 +241,7 @@ const SupportTicketSystem = () => {
         className="modal-content"
         overlayClassName="modal-overlay"
         contentLabel="Ticket Details Modal"
+      
       >
         {selectedTicket ? (
           <div>
@@ -239,6 +254,7 @@ const SupportTicketSystem = () => {
             <p><strong>Ticket ID:</strong> {selectedTicket.ticket_id}</p>
             <p><strong>Product ID:</strong> {selectedTicket.product_id}</p>
             <p><strong>Operator:</strong> {operatorEmail}</p>
+            <p><strong>Creation Date:</strong> {selectedTicket.creationDate}</p>
             <div className="button-container">
               <button onClick={openReplacementModal} className="icon-btn issue-replacement-btn">
                 <FaExchangeAlt size={20} />
