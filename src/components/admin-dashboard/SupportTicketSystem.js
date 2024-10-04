@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchSupportTickets, issueReplacement, addCreditViaTicket, logRequest, resolveOrDenyTicket } from '../../utils/api'; // Added resolveOrDenyTicket import
+import { fetchSupportTickets, issueReplacement, addCreditViaTicket, logRequest, resolveOrDenyTicket } from '../../utils/api';
 import { FaInfoCircle, FaTimes, FaExchangeAlt, FaDollarSign, FaBan, FaCheckCircle } from 'react-icons/fa'; 
 import { fetchUserAttributes } from 'aws-amplify/auth';
 import Modal from 'react-modal';
@@ -129,7 +129,7 @@ const SupportTicketSystem = () => {
       user_email: selectedTicket.userEmail,
       ticket_id: selectedTicket.ticket_id,
       operator: operatorEmail,  
-      staff_user_id: operatorUserId,  // Use operator user ID for logging
+      staff_user_id: operatorUserId,  
       credit_amount: creditAmountValue,
     };
 
@@ -159,15 +159,26 @@ const SupportTicketSystem = () => {
 
     const resolveDenyData = {
       ticket_id: selectedTicket.ticket_id,
-      status: action, // 'resolved' or 'denied'
+      status: action,
+      staff_email: operatorEmail
     };
 
     try {
       const response = await resolveOrDenyTicket(resolveDenyData);
-      console.log(response);
       if (response.statusCode === 200) {
         alert(`Ticket ${action} successfully!`);
-        setSelectedTicket({ ...selectedTicket, status: action }); 
+        
+        // Update the ticket status in the tickets array
+        setTickets(prevTickets => 
+          prevTickets.map(ticket =>
+            ticket.ticket_id === selectedTicket.ticket_id 
+              ? { ...ticket, status: action }
+              : ticket
+          )
+        );
+
+        // Update the selected ticket status
+        setSelectedTicket({ ...selectedTicket, status: action });
       } else {
         alert('Failed to update ticket status.');
       }
