@@ -1512,3 +1512,32 @@ export const addCreditViaTicket = async (creditData) => {
     throw error;  // Rethrow the error to handle in the calling component
   }
 };
+// Define constant for the Matrix_ResolveDenyButtons API URL
+const RESOLVE_DENY_TICKET_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ResolveDenyButtons';
+
+/**
+ * Function to resolve or deny a ticket.
+ * @param {Object} resolveDenyData - The data containing the ticket ID and status (resolved or denied).
+ * @returns {Promise<Object>} - Resolves with the API response data or rejects with an error message.
+ */
+export const resolveOrDenyTicket = async (resolveDenyData) => {
+  try {
+    const response = await fetch(RESOLVE_DENY_TICKET_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(resolveDenyData), // Send resolve/deny data as JSON
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update ticket status.');
+    }
+
+    const result = await response.json();
+    return result;  // Return the result for further handling
+  } catch (error) {
+    console.error('Error updating ticket status:', error);
+    throw error;  // Rethrow the error to handle in the calling component
+  }
+};

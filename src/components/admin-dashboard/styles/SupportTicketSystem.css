@@ -56,7 +56,7 @@ td {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.75); /* Dark overlay */
+    background-color: rgba(0, 0, 0, 0.75);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -66,22 +66,22 @@ td {
     background-color: #2b2b2b;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6); /* Enhanced shadow */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
     max-width: 500px;
     width: 100%;
     max-height: 80vh;
     overflow-y: auto;
-    border: 1px solid #555; /* Light border for better visibility */
-    position: relative; /* To position the close button */
+    border: 1px solid #555;
+    position: relative;
 }
 
 .modal-content h2 {
-    color: #3498db; /* Make the title more prominent */
+    color: #3498db;
     margin-bottom: 20px;
 }
 
 .modal-content p {
-    color: #e0e0e0; /* Increase contrast for readability */
+    color: #e0e0e0;
     margin-bottom: 10px;
 }
 
@@ -96,7 +96,7 @@ td {
     position: absolute;
     top: 10px;
     right: 10px;
-    font-size: 24px; /* Adjust icon size */
+    font-size: 24px;
     color: #e74c3c;
     cursor: pointer;
     transition: color 0.3s ease;
@@ -108,71 +108,55 @@ td {
 
 /* Button Container */
 .button-container {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
     margin-top: 20px;
 }
 
-/* Issue Replacement Button */
-.issue-replacement-btn {
-    background-color: #3498db;
-    color: #fff;
-    padding: 10px 20px;
+/* Icon Button Styles */
+.icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 200px; /* Increased width for better appearance */
+    width: 60px;
+    height: 50px;
+    font-size: 16px;
+    color: #fff;
+}
+
+/* Styles for each specific button */
+.issue-replacement-btn {
+    background-color: #3498db;
 }
 
 .issue-replacement-btn:hover {
     background-color: #2980b9;
 }
 
-/* Credit Button */
 .credit-btn {
     background-color: #f1c40f;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 200px;
 }
 
 .credit-btn:hover {
     background-color: #f39c12;
 }
 
-/* Resolve Button */
 .resolve-btn {
-    background-color: #27ae60; /* Green for Resolve Button */
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 200px;
-    margin-right: auto; /* Forces the Resolve button to align far left */
+    background-color: #27ae60;
 }
 
 .resolve-btn:hover {
     background-color: #229954;
 }
 
-/* Deny Button */
 .deny-replacement-btn {
     background-color: #e74c3c;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 200px;
-    margin-left: auto; /* Forces the Deny button to align far right */
 }
 
 .deny-replacement-btn:hover {

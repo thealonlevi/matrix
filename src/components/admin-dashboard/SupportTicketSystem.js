@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchSupportTickets, issueReplacement, addCreditViaTicket, logRequest } from '../../utils/api';
-import { FaInfoCircle, FaTimes } from 'react-icons/fa'; 
+import { fetchSupportTickets, issueReplacement, addCreditViaTicket, logRequest, resolveOrDenyTicket } from '../../utils/api'; // Added resolveOrDenyTicket import
+import { FaInfoCircle, FaTimes, FaExchangeAlt, FaDollarSign, FaBan, FaCheckCircle } from 'react-icons/fa'; 
 import { fetchUserAttributes } from 'aws-amplify/auth';
 import Modal from 'react-modal';
 import './styles/SupportTicketSystem.css'; 
@@ -134,18 +134,12 @@ const SupportTicketSystem = () => {
     };
 
     try {
-      // Log the add credit request before calling addCreditViaTicket
-      console.log(`Add credit to user ${operatorUserId}`);
       const logSuccess = await logRequest('Matrix_AddCredit', operatorUserId);
-      console.log(logSuccess);
-      
       if (!logSuccess) {
         throw new Error('Failed to log the add credit request.');
       }
 
       const response = await addCreditViaTicket(creditData);
-      console.log(response);
-
       if (response.statusCode === 200) {
         alert('Credit added successfully!');
         closeCreditModal();
@@ -155,22 +149,33 @@ const SupportTicketSystem = () => {
       }
 
     } catch (error) {
-      console.error('Error adding credit:', error);  // Log the error for debugging
+      console.error('Error adding credit:', error);  
       alert('Failed to add credit.');
     }
   };
 
-  const handleResolve = () => {
-    console.log('Ticket resolved.');
+  const handleResolveDeny = async (action) => {
+    if (!selectedTicket) return;
+
+    const resolveDenyData = {
+      ticket_id: selectedTicket.ticket_id,
+      status: action, // 'resolved' or 'denied'
+    };
+
+    try {
+      const response = await resolveOrDenyTicket(resolveDenyData);
+      console.log(response);
+      if (response.statusCode === 200) {
+        alert(`Ticket ${action} successfully!`);
+        setSelectedTicket({ ...selectedTicket, status: action }); 
+      } else {
+        alert('Failed to update ticket status.');
+      }
+    } catch (error) {
+      console.error(`Error ${action} ticket:`, error);
+      alert(`Failed to ${action} ticket.`);
+    }
   };
-
-  if (loading) {
-    return <p>Loading tickets...</p>;
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
 
   return (
     <div className="support-ticket-system">
@@ -224,12 +229,28 @@ const SupportTicketSystem = () => {
             <p><strong>Product ID:</strong> {selectedTicket.product_id}</p>
             <p><strong>Operator:</strong> {operatorEmail}</p>
             <div className="button-container">
-              <button onClick={openReplacementModal} className="issue-replacement-btn">
-                Issue Replacement
+              <button onClick={openReplacementModal} className="icon-btn issue-replacement-btn">
+                <FaExchangeAlt size={20} />
               </button>
-              <button onClick={openCreditModal} className="credit-btn">Credit</button> 
-              <button className="deny-replacement-btn">Deny Replacement</button>
-              <button onClick={handleResolve} className="resolve-btn">Resolve</button> 
+              <button onClick={openCreditModal} className="icon-btn credit-btn">
+                <FaDollarSign size={20} />
+              </button>
+              {selectedTicket.status === 'pending' && (
+                <>
+                  <button
+                    className="icon-btn resolve-btn"
+                    onClick={() => handleResolveDeny('resolved')}
+                  >
+                    <FaCheckCircle size={20} />
+                  </button>
+                  <button
+                    className="icon-btn deny-replacement-btn"
+                    onClick={() => handleResolveDeny('denied')}
+                  >
+                    <FaBan size={20} />
+                  </button>
+                </>
+              )}
             </div>
           </div>
         ) : (
