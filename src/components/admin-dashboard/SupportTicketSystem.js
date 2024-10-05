@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchSupportTickets, issueReplacement, addCreditViaTicket, logRequest, resolveOrDenyTicket } from '../../utils/api';
-import { FaInfoCircle, FaTimes, FaExchangeAlt, FaDollarSign, FaBan, FaCheckCircle } from 'react-icons/fa'; 
+import { fetchSupportTickets, issueReplacement, addCreditViaTicket, logRequest, resolveOrDenyTicket } from '../../utils/api'; 
+import { FaInfoCircle, FaTimes, FaExchangeAlt, FaDollarSign, FaBan, FaCheckCircle, FaSearch } from 'react-icons/fa'; 
 import { fetchUserAttributes } from 'aws-amplify/auth';
 import Modal from 'react-modal';
 import './styles/SupportTicketSystem.css'; 
@@ -18,8 +18,19 @@ const SupportTicketSystem = () => {
   const [operatorUserId, setOperatorUserId] = useState('');
   const [creditAmount, setCreditAmount] = useState(''); 
   const [replacementQuantity, setReplacementQuantity] = useState(''); 
-  const [productTitle, setProductTitle] = useState('');  // State to store product title
-  const initRef = useRef(false); 
+  const [productTitle, setProductTitle] = useState('');  
+  const [filtersVisible, setFiltersVisible] = useState(false); // Toggle filter visibility
+  const [filteredTickets, setFilteredTickets] = useState([]); // Filtered tickets list
+
+  // Filter states
+  const [searchEmail, setSearchEmail] = useState('');
+  const [searchOrderId, setSearchOrderId] = useState('');
+  const [searchUserId, setSearchUserId] = useState('');
+  const [searchProductName, setSearchProductName] = useState('');
+  const [searchStatus, setSearchStatus] = useState('');
+  const [searchIssue, setSearchIssue] = useState('');
+
+  const initRef = useRef(false);
 
   const fetchOperatorEmail = async () => {
     const userResponse = await fetchUserAttributes();
@@ -38,13 +49,11 @@ const SupportTicketSystem = () => {
     const loadTickets = async () => {
       try {
         const fetchedTickets = await fetchSupportTickets();
-        
-        // Sort tickets from latest to oldest based on lastModificationDate
         const sortedTickets = fetchedTickets.sort(
           (a, b) => new Date(b.creationDate) - new Date(a.creationDate)
         );
-
         setTickets(sortedTickets);
+        setFilteredTickets(sortedTickets); // Set filtered tickets initially to all tickets
       } catch (err) {
         setError('Failed to load tickets');
       } finally {
@@ -70,17 +79,30 @@ const SupportTicketSystem = () => {
     }
   }, []);
 
-  // Fetch product title when a ticket is opened
+  // This effect will run whenever any of the filter values change and will apply the filters in real-time
+  useEffect(() => {
+    const filtered = tickets.filter((ticket) => {
+      return (
+        (!searchEmail || ticket.userEmail.includes(searchEmail)) &&
+        (!searchOrderId || ticket.orderID.includes(searchOrderId)) &&
+        (!searchUserId || ticket.userId?.includes(searchUserId)) &&
+        (!searchProductName || productTitle?.toLowerCase().includes(searchProductName.toLowerCase())) &&
+        (!searchStatus || ticket.status === searchStatus) &&
+        (!searchIssue || ticket.issue === searchIssue)
+      );
+    });
+    setFilteredTickets(filtered);
+  }, [searchEmail, searchOrderId, searchUserId, searchProductName, searchStatus, searchIssue, tickets, productTitle]);
+
+  const toggleFilters = () => {
+    setFiltersVisible(!filtersVisible);
+  };
+
   const openModal = async (ticket) => {
     setSelectedTicket(ticket);
-
-    // Fetch product title using the product_id from the selected ticket
     const title = await getProductTitleById(ticket.product_id);
-
-    // Fallback if the product title is not available
     const productTitle = title ? title : `Product ID: ${ticket.product_id}`;
-    setProductTitle(productTitle); // Update the state with the product title
-
+    setProductTitle(productTitle); 
     setModalIsOpen(true);
   };
 
@@ -125,7 +147,7 @@ const SupportTicketSystem = () => {
     };
 
     try {
-      const response = await issueReplacement(replacementData); 
+      await issueReplacement(replacementData); 
       alert('Issue replacement request submitted successfully!');
       closeReplacementModal();
     } catch (error) {
@@ -166,7 +188,6 @@ const SupportTicketSystem = () => {
       }
 
     } catch (error) {
-      console.error('Error adding credit:', error);  
       alert('Failed to add credit.');
     }
   };
@@ -185,7 +206,6 @@ const SupportTicketSystem = () => {
       if (response.statusCode === 200) {
         alert(`Ticket ${action} successfully!`);
         
-        // Update the ticket status in the tickets array
         setTickets(prevTickets => 
           prevTickets.map(ticket =>
             ticket.ticket_id === selectedTicket.ticket_id 
@@ -194,45 +214,91 @@ const SupportTicketSystem = () => {
           )
         );
 
-        // Update the selected ticket status
         setSelectedTicket({ ...selectedTicket, status: action });
       } else {
         alert('Failed to update ticket status.');
       }
     } catch (error) {
-      console.error(`Error ${action} ticket:`, error);
       alert(`Failed to ${action} ticket.`);
     }
   };
 
-  if (loading) {
-    return <p>Loading tickets...</p>;
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
-
   return (
     <div className="support-ticket-system">
       <h2>Support Ticket System</h2>
+
+      {/* Toggle Filter Button */}
+      <button className="toggle-filter-button" onClick={toggleFilters}>
+        <FaSearch /> {filtersVisible ? 'Hide Filters' : 'Show Filters'}
+      </button>
+
+      {/* Filter Section */}
+      {filtersVisible && (
+        <div className="filter-section">
+          <input
+            type="text"
+            placeholder="Search by Email"
+            value={searchEmail}
+            onChange={(e) => setSearchEmail(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Search by Order ID"
+            value={searchOrderId}
+            onChange={(e) => setSearchOrderId(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Search by User ID"
+            value={searchUserId}
+            onChange={(e) => setSearchUserId(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Search by Product Name"
+            value={searchProductName}
+            onChange={(e) => setSearchProductName(e.target.value)}
+          />
+          <select
+            value={searchStatus}
+            onChange={(e) => setSearchStatus(e.target.value)}
+          >
+            <option value="">Select Status</option>
+            <option value="pending">Pending</option>
+            <option value="resolved">Resolved</option>
+            <option value="denied">Denied</option>
+          </select>
+          <select
+            value={searchIssue}
+            onChange={(e) => setSearchIssue(e.target.value)}
+          >
+            <option value="">Select Issue</option>
+            <option value="Invalid login">Invalid login</option>
+            <option value="Missing points/card">Missing points/card</option>
+            <option value="2FA/not able to login">2FA/not able to login</option>
+            <option value="Locked">Locked</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      )}
+
       <table>
         <thead>
           <tr>
             <th>Order ID</th>
             <th>Email</th>
-            <th>Issue</th> {/* New column for Issue */}
+            <th>Issue</th>
             <th>Status</th>
             <th>Modified</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          {tickets.map((ticket) => (
+          {filteredTickets.map((ticket) => (
             <tr key={ticket.ticket_id}>
               <td>{ticket.orderID}</td>
               <td>{ticket.userEmail}</td>
-              <td>{ticket.issue}</td> {/* Display the issue */}
+              <td>{ticket.issue}</td>
               <td className={
                 ticket.status === 'resolved' ? 'resolved' :
                 ticket.status === 'denied' ? 'denied' : 'unresolved'
@@ -251,6 +317,8 @@ const SupportTicketSystem = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Modal Sections */}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -264,11 +332,11 @@ const SupportTicketSystem = () => {
             <h2>Ticket Details</h2>
             <p><strong>Order ID:</strong> {selectedTicket.orderID}</p>
             <p><strong>Email:</strong> {selectedTicket.userEmail}</p>
-            <p><strong>Issue:</strong> {selectedTicket.issue}</p> {/* Show issue in the modal as well */}
+            <p><strong>Issue:</strong> {selectedTicket.issue}</p>
             <p><strong>Status:</strong> {selectedTicket.status}</p>
             <p><strong>Last Modified:</strong> {selectedTicket.lastModificationDate}</p>
             <p><strong>Ticket ID:</strong> {selectedTicket.ticket_id}</p>
-            <p><strong>Product Name:</strong> {productTitle}</p> 
+            <p><strong>Product Name:</strong> {productTitle}</p>
             <p><strong>Operator:</strong> {operatorEmail}</p>
             <p><strong>Creation Date:</strong> {selectedTicket.creationDate}</p>
             <div className="button-container">

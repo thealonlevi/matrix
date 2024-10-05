@@ -1,13 +1,44 @@
-/* Support Ticket System General Styles */
+/* General Styles */
 .support-ticket-system {
     padding: 20px;
-    background-color: #1f1f1f;
+    background-color: #1a1a1a;
     color: #e0e0e0;
     border-radius: 8px;
+    font-family: 'Arial', sans-serif;
 }
 
 .support-ticket-system h2 {
     color: #3498db;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* Filters Section */
+.filter-section {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+.filter-section input, 
+.filter-section select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+    transition: border-color 0.3s;
+}
+
+.filter-section input:focus, 
+.filter-section select:focus {
+    border-color: #3498db;
+    outline: none;
 }
 
 /* Table Styles */
@@ -18,18 +49,26 @@ table {
 }
 
 th, td {
-    padding: 12px;
+    padding: 14px;
     border-bottom: 1px solid #333;
     text-align: left;
+    font-size: 14px;
 }
 
 th {
     background-color: #2b2b2b;
     color: #fff;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 td {
     background-color: #1f1f1f;
+    transition: background-color 0.3s;
+}
+
+td:hover {
+    background-color: #333;
 }
 
 .resolved {
@@ -40,6 +79,10 @@ td {
     color: orange;
 }
 
+.denied {
+    color: red;
+}
+
 .info-icon {
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
@@ -47,6 +90,24 @@ td {
 
 .info-icon:hover {
     transform: scale(1.2);
+}
+
+/* Toggle Filter Button */
+.toggle-filter-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    display: inline-flex;
+    align-items: center;
+}
+
+.toggle-filter-button:hover {
+    background-color: #2980b9;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.3);
 }
 
 /* Modal Styles */
@@ -64,10 +125,10 @@ td {
 
 .modal-content {
     background-color: #2b2b2b;
-    padding: 20px;
+    padding: 25px;
     border-radius: 8px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
-    max-width: 500px;
+    max-width: 600px;
     width: 100%;
     max-height: 80vh;
     overflow-y: auto;
@@ -77,29 +138,24 @@ td {
 
 .modal-content h2 {
     color: #3498db;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    font-size: 22px;
 }
 
 .modal-content p {
     color: #e0e0e0;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    font-size: 16px;
 }
 
-.modal-loading {
-    color: #fff;
-    text-align: center;
-    padding: 20px;
-}
-
-/* Close "X" icon */
 .modal-close-icon {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
+    top: 15px;
+    right: 15px;
+    font-size: 28px;
     color: #e74c3c;
     cursor: pointer;
-    transition: color 0.3s ease;
+    transition: color 0.3s;
 }
 
 .modal-close-icon:hover {
@@ -108,10 +164,10 @@ td {
 
 /* Button Container */
 .button-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
     gap: 10px;
     margin-top: 20px;
+    flex-wrap: wrap;
 }
 
 /* Icon Button Styles */
@@ -119,18 +175,21 @@ td {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
+    padding: 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s, box-shadow 0.3s;
     width: 60px;
     height: 50px;
     font-size: 16px;
     color: #fff;
 }
 
-/* Styles for each specific button */
+.icon-btn:hover {
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.3);
+}
+
 .issue-replacement-btn {
     background-color: #3498db;
 }
@@ -161,17 +220,4 @@ td {
 
 .deny-replacement-btn:hover {
     background-color: #c0392b;
-}
-/* Add this to your CSS */
-.denied {
-    color: red;
-}
-
-/* Retain existing styles */
-.resolved {
-    color: green;
-}
-
-.unresolved {
-    color: orange;
 }
