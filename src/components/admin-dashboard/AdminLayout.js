@@ -38,8 +38,12 @@ const AdminLayout = () => {
   return (
     <div className="admin-layout-container">
       <div className="sidebar">
+        <h2></h2>
         <h2>Admin Dashboard</h2>
         <ul>
+          <li className={isActive('/admin/statistics') ? 'active' : ''}>
+            <Link to="/admin/statistics">Statistics</Link> {/* New Statistics link */}
+          </li>
           <li className={isActive('/admin/products') ? 'active' : ''}>
             <Link to="/admin/products">Manage Products</Link>
           </li>
@@ -54,9 +58,6 @@ const AdminLayout = () => {
           </li>
           <li className={isActive('/admin/support-tickets') ? 'active' : ''}>
             <Link to="/admin/support-tickets">Support Tickets</Link>
-          </li>
-          <li className={isActive('/admin/statistics') ? 'active' : ''}>
-            <Link to="/admin/statistics">Statistics</Link> {/* New Statistics link */}
           </li>
         </ul>
       </div>
