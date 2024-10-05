@@ -147,7 +147,8 @@ const CreateTicket = () => {
       product_id: product,
       replacementsCountAsked: parseInt(replacementsCount, 10),
       status: "pending",
-      message: `${message}\nProof: ${imgurImageLink}`, // Include proof image link in the message
+      message: message,
+      image: imgurImageLink,
     };
     
     const ticketData = {
