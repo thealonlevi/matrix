@@ -27,6 +27,8 @@ const ManageUsers = () => {
 
         setStaffEmail(email);
         setStaffUserId(userId);
+        console.log("nigger: ", email, userId);
+
       } catch (error) {
         console.error('Error fetching staff attributes:', error);
         setError('Failed to fetch staff details. Please try again.');
@@ -107,14 +109,15 @@ const ManageUsers = () => {
       const amount = creditAmount[userId] || 0; // Get the amount from state
       console.log("Logging");
       // Log the request before modifying the credit
-      const logSuccess = await logRequest('Matrix_AddCredit', userId);
+      const logSuccess = await logRequest('Matrix_AddCredit', staffUserId);
       console.log(logSuccess);
       
       if (!logSuccess) {
         throw new Error('Failed to log the add credit request.');
       }
-
+      console.log("Adding credit..")
       await addCredit(staffEmail, staffUserId, users.find(user => user.userId === userId).email, amount);
+      console.log("Called function.")
       console.log(`Successfully added ${amount} credit to user ${userId}`);
       showNotification(`$${amount} credit added to ${users.find(user => user.userId === userId).email}`, 'success');
       handleActionSelect(userId, ''); // Reset action to 'Select Action'

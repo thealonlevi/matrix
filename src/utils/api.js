@@ -3,6 +3,7 @@
  */
 const generateRequestKey = (url, method, body) => {
   const bodyString = JSON.stringify(body || {});
+  console.log("Generated Request Key: ", bodyString);
   return `${method}:${url}:${bodyString}`;
 };
 
@@ -1205,6 +1206,7 @@ export const addCredit = async (staffEmail, staffUserId, userEmail, creditAmount
     user_email: userEmail,
     credit_amount: creditAmount,
   });
+  console.log("Hola")
 
   // Check if the request is a duplicate
   if (isDuplicateRequest(requestKey)) {
