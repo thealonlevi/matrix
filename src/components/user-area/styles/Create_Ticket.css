@@ -1,165 +1,121 @@
-/* Create_Ticket.css */
 html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden; /* Prevent body scroll */
-  }
-  
-  .create-ticket-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Full viewport height */
-    max-width: 100%;
-    padding: 0 10px; /* Reduced padding */
-    background-color: #1a1a1a;
-    color: #ffffff;
-    font-family: 'Roboto', sans-serif;
-  }
-  
-  .create-ticket-container h2 {
-    font-size: 1.2rem; /* Further reduced font size */
-    color: #61dafb;
-    margin-bottom: 10px; /* Reduced margin */
-    text-align: center;
-  }
-  
-  .instructions {
-    background-color: #2b2b2b;
-    padding: 8px; /* Reduced padding */
-    border-radius: 8px;
-    margin-bottom: 8px; /* Reduced margin */
-    font-size: 0.8rem; /* Reduced font size */
-    width: 100%;
-    text-align: center; /* Center the text */
-  }
-  
-  .instructions h3 {
-    color: #61dafb;
-    font-size: 0.9rem; /* Reduced font size */
-    margin-bottom: 5px; /* Reduced margin */
-  }
-  
-  .instructions ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .instructions li {
-    padding: 2px 0;
-    color: #b5b5b5;
-  }
-  
-  .form-group {
-    display: flex;
-    align-items: center;
-    margin-bottom: 8px; /* Reduced margin */
-    font-size: 0.8rem; /* Reduced font size */
-    width: 100%;
-  }
-  
-  .form-group label {
-    flex: 1;
-    color: #61dafb;
-  }
-  
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    flex: 2;
-    padding: 6px; /* Reduced padding */
-    background-color: #2b2b2b;
-    color: #ffffff;
-    border: 1px solid #444;
-    border-radius: 6px;
-    font-size: 0.85rem; /* Reduced font size */
-    transition: border 0.2s ease-in-out;
-    width: 100%;
-  }
-  
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus {
-    outline: none;
-    border: 1px solid #61dafb;
-  }
-  
-  .form-group svg {
-    margin-right: 5px;
-    color: #61dafb;
-  }
-  
-  button.submit-button {
-    width: 100%;
-    padding: 8px; /* Reduced padding */
-    font-size: 0.85rem; /* Reduced font size */
-    color: #ffffff;
-    background-color: #61dafb;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  button.submit-button:hover {
-    background-color: #4da5da;
-  }
-  
-  .error-message, .success-message {
-    text-align: center;
-    font-size: 0.8rem; /* Reduced font size */
-  }
-  
-  .error-message {
-    color: #e74c3c;
-  }
-  
-  .success-message {
-    color: #2ecc71;
-  }
-  
-  /* Center the form on the screen */
-  .create-ticket-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh; /* Ensure it takes up the full screen */
-  }
-  
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-y: auto; /* Enable vertical scroll */
+  overflow-x: hidden; /* Disable horizontal scroll */
+}
+
+.create-ticket-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 0 10px;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: 'Roboto', sans-serif;
+  max-width: 100%; /* Ensure it does not exceed the viewport width */
+}
+
+.ticket-form {
+  width: 100%;
+  max-width: 500px; /* Adjust width for better fit */
+  padding: 20px; /* Increase padding */
+  margin: 20px 10px; /* Add margin to prevent overflow */
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  overflow-y: auto; /* Allow form to scroll vertically */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+.instructions {
+  background-color: #2b2b2b;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  width: 100%;
+  text-align: center;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column; /* Ensure responsive layout */
+  align-items: flex-start;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.form-group label {
+  margin-bottom: 5px; /* Add space between label and input */
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  background-color: #2b2b2b;
+  color: #ffffff;
+  border: 1px solid #444;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border: 1px solid #61dafb; /* Highlight border on focus */
+}
+
+.custom-file-upload {
+  width: 100%; /* Ensure the custom file upload is full width */
+}
+
+.custom-file-upload .file-input {
+  width: 100%; /* Make the file input take full width */
+}
+
+.submit-button {
+  width: 100%;
+  padding: 12px; /* Increase padding */
+  font-size: 1rem;
+  background-color: #61dafb;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center; /* Center button text */
+}
+
+.submit-button:hover {
+  background-color: #4da5da;
+}
+
+/* Remove horizontal scroll */
+* {
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
   .ticket-form {
-    width: 100%;
-    max-width: 400px; /* Slightly reduced width */
-    margin: 0 auto; /* Ensure form is centered horizontally */
-    padding: 10px; /* Reduced padding */
-    background-color: #1a1a1a;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    max-width: 100%; /* Allow form to take full width */
   }
-  
-  /* Ensure the form stays responsive at different screen widths */
-  @media (min-width: 1024px) {
-    .ticket-form {
-      max-width: 350px; /* Slightly reduced width for larger screens */
-    }
+
+  .form-group {
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
-  @media (max-width: 768px) {
-    .create-ticket-container {
-      padding: 10px;
-      max-width: 100%;
-    }
-  
-    .form-group {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    .form-group label {
-      margin-bottom: 5px;
-    }
+
+  .form-group label {
+    margin-bottom: 5px;
   }
-  
+}
+

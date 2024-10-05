@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { submitSupportTicket, fetchUserOrders } from '../../utils/api';  // Assuming you have an API utility to fetch user orders
-import { FiFileText, FiShoppingCart, FiMessageSquare, FiCamera, FiHash } from 'react-icons/fi'; // Feather icons
-import './styles/Create_Ticket.css';  // Your CSS styles
+import { submitSupportTicket, fetchUserOrders } from '../../utils/api';
+import { FiFileText, FiShoppingCart, FiMessageSquare, FiCamera, FiHash } from 'react-icons/fi';
+import './styles/Create_Ticket.css';
 import { fetchUserAttributes } from 'aws-amplify/auth';
 import { getProductTitleById } from '../admin-dashboard/utils/adminUtils';
+import ImageUpload from '../admin-dashboard/ImageUpload';
 
 const CreateTicket = () => {
-  const [orderID, setOrderID] = useState('');  // To store the selected order ID
-  const [orders, setOrders] = useState([]);  // For storing fetched orders
-  const [productOptions, setProductOptions] = useState([]);  // To store the combined group and product names
+  const [orderID, setOrderID] = useState('');
+  const [orders, setOrders] = useState([]);
+  const [productOptions, setProductOptions] = useState([]);
   const [product, setProduct] = useState('');
   const [issue, setIssue] = useState('');
   const [replacementsCount, setReplacementsCount] = useState(0);
@@ -20,11 +21,19 @@ const CreateTicket = () => {
   const [userId, setUserId] = useState('');
   const [userEmail, setUserEmail] = useState('');
 
+  // Predefined list of issues
+  const issueOptions = [
+    'Invalid login',
+    'Missing points/card',
+    '2FA/not able to login',
+    'Locked',
+    'Other'
+  ];
+
   // Fetch user's previous orders and user attributes
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Fetch user attributes
         const userResponse = await fetchUserAttributes();
         const { email, sub: userId } = userResponse;
 
@@ -34,16 +43,15 @@ const CreateTicket = () => {
         console.log("User Email:", email);
         console.log("User ID:", userId);
 
-        // Fetch user orders from the API
         const response = await fetchUserOrders({
-          email: email,  // Pass user email
-          userId: userId,  // Pass user ID
+          email,
+          userId,
         });
 
         if (response.body) {
           const responseBody = JSON.parse(response.body);
           if (responseBody.orders) {
-            setOrders(responseBody.orders);  // Set orders in state
+            setOrders(responseBody.orders);
             console.log("Fetched Orders:", responseBody.orders);
           } else {
             setError('No orders found for this user.');
@@ -70,11 +78,9 @@ const CreateTicket = () => {
             const [groupId, productId] = item.product_id.split('/');
             let productTitle = await getProductTitleById(item.product_id);
 
-            // Log to debug the product title fetching
             console.log(`Fetching product title for product ID ${productId}`);
             console.log(`Product title fetched: ${productTitle}`);
 
-            // Fallback if productTitle is not fetched correctly
             if (!productTitle) {
               productTitle = `Product ID: ${productId}`;
             }
@@ -84,7 +90,7 @@ const CreateTicket = () => {
               title: `${productTitle}`
             };
           }));
-          setProductOptions(productOptions);  // Set the combined group and product names
+          setProductOptions(productOptions);
         }
       }
     };
@@ -92,32 +98,37 @@ const CreateTicket = () => {
     fetchTitlesForOrder();
   }, [orderID, orders]);
 
+  // Automatically select the single product if only one is available
+  useEffect(() => {
+    if (productOptions.length === 1) {
+      setProduct(productOptions[0].id); // Automatically set the single product ID
+    }
+  }, [productOptions]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
     setSuccess(false);
 
-    // Ticket data payload to be sent to the API
     const body = {
       orderID,
-      userEmail: userEmail,  // Actual user email from fetched attributes
+      userEmail,
       userId,
       issue,
-      product_id: product,  // Product ID as "groupID/productID"
+      product_id: product,
       replacementsCountAsked: parseInt(replacementsCount, 10),
       status: "pending",
-      message: `${message}\nProof: ${imgurImageLink}`,  // Use backticks for string interpolation
+      message: `${message}\nProof: ${imgurImageLink}`, // Include proof image link in the message
     };
     
     const ticketData = {
       body: JSON.stringify(body)
     };
-    console.log("Payload being sent to API:", body);  // Log the payload
+    console.log("Payload being sent to API:", body);
 
     try {
-      // Submit the ticket data using your API
-      const response = await submitSupportTicket(ticketData);  // API call to submit the ticket
+      const response = await submitSupportTicket(ticketData);
       console.log(response);
       setSuccess(true);
     } catch (error) {
@@ -137,7 +148,7 @@ const CreateTicket = () => {
           <ul>
             <li>Copy order ID from the Orders page.</li>
             <li>Select the product, issue, and provide necessary details.</li>
-            <li>Include proof images using Imgur and submit.</li>
+            <li>Include proof images and submit.</li>
           </ul>
         </div>
 
@@ -166,7 +177,7 @@ const CreateTicket = () => {
           </select>
         </div>
 
-        {/* Dropdown for Product (combined group and product names) */}
+        {/* Dropdown for Product */}
         <div className="form-group">
           <FiShoppingCart size={20} />
           <label htmlFor="product">Product</label>
@@ -185,17 +196,23 @@ const CreateTicket = () => {
           </select>
         </div>
 
-        {/* Issue Text Field */}
+        {/* Dropdown for Issue */}
         <div className="form-group">
           <FiMessageSquare size={20} />
           <label htmlFor="issue">Issue</label>
-          <input
-            type="text"
+          <select
             id="issue"
             value={issue}
             onChange={(e) => setIssue(e.target.value)}
             required
-          />
+          >
+            <option value="" disabled>Select an issue</option>
+            {issueOptions.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Replacements Count */}
@@ -211,17 +228,11 @@ const CreateTicket = () => {
           />
         </div>
 
-        {/* Imgur Image Link */}
+        {/* Image Upload Component */}
         <div className="form-group">
           <FiCamera size={20} />
-          <label htmlFor="imgurImageLink">Proof Images (Imgur link)</label>
-          <input
-            type="text"
-            id="imgurImageLink"
-            value={imgurImageLink}
-            onChange={(e) => setImgurImageLink(e.target.value)}
-            placeholder="https://imgur.com/..."
-          />
+          <label>Upload Proof Images (Optional)</label>
+          <ImageUpload onUploadSuccess={(url) => setImgurImageLink(url)} /> {/* Use ImageUpload for uploading proof images */}
         </div>
 
         {/* Message Text Area */}
