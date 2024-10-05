@@ -13,6 +13,7 @@ const CreateTicket = () => {
   const [product, setProduct] = useState('');
   const [issue, setIssue] = useState('');
   const [replacementsCount, setReplacementsCount] = useState(0);
+  const [maxReplacementsCount, setMaxReplacementsCount] = useState(0); // New state for max replacements count
   const [imgurImageLink, setImgurImageLink] = useState('');
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(false);
@@ -51,7 +52,12 @@ const CreateTicket = () => {
         if (response.body) {
           const responseBody = JSON.parse(response.body);
           if (responseBody.orders) {
-            setOrders(responseBody.orders);
+            const sortedOrders = responseBody.orders.sort((a, b) => {
+              const dateA = new Date(a.order_date);
+              const dateB = new Date(b.order_date);
+              return dateB - dateA; // Sort by descending date (latest first)
+            });
+            setOrders(sortedOrders);
             console.log("Fetched Orders:", responseBody.orders);
           } else {
             setError('No orders found for this user.');
@@ -87,7 +93,8 @@ const CreateTicket = () => {
 
             return {
               id: `${groupId}/${productId}`,
-              title: `${productTitle}`
+              title: `${productTitle}`,
+              quantity: item.quantity // Include the quantity for max replacement count
             };
           }));
           setProductOptions(productOptions);
@@ -102,8 +109,29 @@ const CreateTicket = () => {
   useEffect(() => {
     if (productOptions.length === 1) {
       setProduct(productOptions[0].id); // Automatically set the single product ID
+      setMaxReplacementsCount(productOptions[0].quantity); // Set the max replacement count
     }
   }, [productOptions]);
+
+  // Update max replacements count when a product is selected
+  useEffect(() => {
+    if (orderID && product) {
+      const selectedOrder = orders.find(order => order.orderId === orderID);
+      if (selectedOrder) {
+        const selectedProduct = selectedOrder.order_contents.find(item => item.product_id === product);
+        if (selectedProduct) {
+          setMaxReplacementsCount(selectedProduct.quantity);
+        }
+      }
+    }
+  }, [orderID, product, orders]);
+
+  const handleReplacementsChange = (e) => {
+    const value = e.target.value === '' ? '' : parseInt(e.target.value, 10); // Handle empty string input
+    if (value === '' || (value <= maxReplacementsCount && value >= 0)) {
+      setReplacementsCount(value);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -223,8 +251,10 @@ const CreateTicket = () => {
             type="number"
             id="replacementsCount"
             value={replacementsCount}
-            onChange={(e) => setReplacementsCount(e.target.value)}
+            onChange={handleReplacementsChange}
             required
+            min="0"
+            max={maxReplacementsCount}
           />
         </div>
 
