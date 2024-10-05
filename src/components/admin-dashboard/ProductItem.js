@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import editIcon from '../../assets/icons/edit.png';
 import deleteIcon from '../../assets/icons/trash.png';
 import stockIcon from '../../assets/icons/box.png';
-import expandIcon from '../../assets/icons/plus.png';
-import collapseIcon from '../../assets/icons/subtract.png';
-import detachIcon from '../../assets/icons/detach.png'; // Add an icon for detaching
+import detachIcon from '../../assets/icons/detach.png';
 
 const ProductItem = ({
   product,
@@ -14,11 +12,10 @@ const ProductItem = ({
   handleDelete,
   handleToggleVisibility,
   handleAppendProduct,
-  handleDetachProduct, // Add the detach handler
+  handleDetachProduct,
   expandedGroups,
   products,
 }) => {
-    
   const [productIdToAdd, setProductIdToAdd] = useState('');
 
   const groupProducts = product.product_group || [];
@@ -27,13 +24,12 @@ const ProductItem = ({
     e.preventDefault();
     if (productIdToAdd) {
       handleAppendProduct(product.product_id, productIdToAdd);
-      setProductIdToAdd(''); // Clear the input field after adding
+      setProductIdToAdd(''); // Clear input
     } else {
       alert('Please select a product to add.');
     }
   };
 
-  // Render available stock for both standalone and group products
   const renderStockInfo = (product) => {
     return product.available_stock_count !== undefined ? product.available_stock_count : 'N/A';
   };
@@ -43,21 +39,19 @@ const ProductItem = ({
       <div
         key={product.product_id}
         className={`admin-product-item ${isGroup ? 'admin-group-item' : ''}`}
+        onClick={isGroup ? () => toggleGroupExpansion(product.product_id) : undefined}
+        style={{ cursor: isGroup ? 'pointer' : 'default' }}
       >
         <p>{product.product_id}</p>
         <p>
           {product.product_title}
-          {isGroup && <span className='group-label'>Group</span>}
+          {isGroup}
         </p>
         <p>{product.product_category}</p>
         <p>{isGroup ? '' : `$${product.product_price}`}</p>
-        <p>{renderStockInfo(product)}</p> {/* Display stock info for standalone products */}
+        <p>{renderStockInfo(product)}</p>
         <p>
-          <a
-            href={product.product_img_url}
-            target='_blank'
-            rel='noopener noreferrer'
-          >
+          <a href={product.product_img_url} target='_blank' rel='noopener noreferrer'>
             View Image
           </a>
         </p>
@@ -66,42 +60,19 @@ const ProductItem = ({
             type='checkbox'
             checked={product.visible !== false}
             onChange={() => handleToggleVisibility(product.product_id)}
+            onClick={(e) => e.stopPropagation()}
           />
         </div>
-        <div className='admin-action-buttons'>
-          {isGroup && (
-            <button
-              onClick={() => toggleGroupExpansion(product.product_id)}
-              className='admin-expand-button'
-              title="Expand/Collapse Group"
-            >
-              <img
-                src={isExpanded ? collapseIcon : expandIcon}
-                alt='Expand/Collapse'
-                className='admin-icon'
-              />
-            </button>
-          )}
-          <a
-            href={`/admin/modifyproduct/${product.product_id}`}
-            className='admin-edit-link'
-            title="Edit Product"
-          >
+        <div className='admin-action-buttons' onClick={(e) => e.stopPropagation()}>
+          {isGroup}
+          <a href={`/admin/modifyproduct/${product.product_id}`} className='admin-edit-link' title="Edit Product">
             <img src={editIcon} alt='Edit' className='admin-icon' />
           </a>
-          <button
-            onClick={() => handleDelete(product.product_id)}
-            className='admin-delete-button'
-            title="Delete Product"
-          >
+          <button onClick={() => handleDelete(product.product_id)} className='admin-delete-button' title="Delete Product">
             <img src={deleteIcon} alt='Delete' className='admin-icon' />
           </button>
           {!isGroup && (
-            <a
-              href={`/admin/modifystock/${product.product_id}`}
-              className='admin-stock-link'
-              title="Manage Stock"
-            >
+            <a href={`/admin/modifystock/${product.product_id}`} className='admin-stock-link' title="Manage Stock">
               <img src={stockIcon} alt='Manage Stock' className='admin-icon' />
             </a>
           )}
@@ -120,13 +91,9 @@ const ProductItem = ({
               <p>{groupProduct.product_title}</p>
               <p>{groupProduct.product_category}</p>
               <p>${groupProduct.product_price}</p>
-              <p>{renderStockInfo(groupProduct)}</p> {/* Display stock info for group products */}
+              <p>{renderStockInfo(groupProduct)}</p>
               <p>
-                <a
-                  href={groupProduct.product_img_url}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
+                <a href={groupProduct.product_img_url} target='_blank' rel='noopener noreferrer'>
                   View Image
                 </a>
               </p>
@@ -135,54 +102,33 @@ const ProductItem = ({
                   type='checkbox'
                   checked={groupProduct.visible !== false}
                   onChange={() => handleToggleVisibility(`${product.product_id}/${groupProduct.product_id}`)}
+                  onClick={(e) => e.stopPropagation()}
                 />
               </div>
-              <div className='admin-action-buttons'>
-                <a
-                  href={`/admin/modifyproduct/${product.product_id}/${groupProduct.product_id}`}
-                  className='admin-edit-link'
-                  title="Edit Group Product"
-                >
+              <div className='admin-action-buttons' onClick={(e) => e.stopPropagation()}>
+                <a href={`/admin/modifyproduct/${product.product_id}/${groupProduct.product_id}`} className='admin-edit-link' title="Edit Group Product">
                   <img src={editIcon} alt='Edit' className='admin-icon' />
                 </a>
-                <button
-                  onClick={() => handleDelete(`${product.product_id}/${groupProduct.product_id}`)}
-                  className='admin-delete-button'
-                  title="Delete Group Product"
-                >
+                <button onClick={() => handleDelete(`${product.product_id}/${groupProduct.product_id}`)} className='admin-delete-button' title="Delete Group Product">
                   <img src={deleteIcon} alt='Delete' className='admin-icon' />
                 </button>
-                <a
-                  href={`/admin/modifystock/${groupProduct.product_id}`}
-                  className='admin-stock-link'
-                  title="Manage Group Product Stock"
-                >
+                <a href={`/admin/modifystock/${groupProduct.product_id}`} className='admin-stock-link' title="Manage Group Product Stock">
                   <img src={stockIcon} alt='Manage Stock' className='admin-icon' />
                 </a>
-                <button
-                  onClick={() => handleDetachProduct(product.product_id, groupProduct.product_id)}
-                  className='admin-detach-button'
-                  title="Detach from Group"
-                >
+                <button onClick={() => handleDetachProduct(product.product_id, groupProduct.product_id)} className='admin-detach-button' title="Detach from Group">
                   <img src={detachIcon} alt='Detach' className='admin-icon' />
                 </button>
               </div>
             </div>
           ))}
-          <form onSubmit={handleAddProduct} className='admin-add-product-to-group-form'>
-            <select
-              value={productIdToAdd}
-              onChange={(e) => setProductIdToAdd(e.target.value)}
-              className='admin-add-product-input'
-            >
+          <form onSubmit={handleAddProduct} className='admin-add-product-to-group-form' onClick={(e) => e.stopPropagation()}>
+            <select value={productIdToAdd} onChange={(e) => setProductIdToAdd(e.target.value)} className='admin-add-product-input'>
               <option value=''>Select Product to Add</option>
-              {products
-                .filter((prod) => !Array.isArray(prod.product_group)) // Exclude groups
-                .map((prod) => (
-                  <option key={prod.product_id} value={prod.product_id}>
-                    {`${prod.product_id} - ${prod.product_title}`}
-                  </option>
-                ))}
+              {products.filter((prod) => !Array.isArray(prod.product_group)).map((prod) => (
+                <option key={prod.product_id} value={prod.product_id}>
+                  {`${prod.product_id} - ${prod.product_title}`}
+                </option>
+              ))}
             </select>
             <button type='submit' className='admin-add-product-button'>
               Add Product to Group
