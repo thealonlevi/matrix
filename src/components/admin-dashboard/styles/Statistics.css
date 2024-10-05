@@ -1,0 +1,63 @@
+.statistics-page {
+    background-color: #1a1a2e;
+    color: #f5f6fa;
+    padding: 40px;
+    border-radius: 15px;
+    max-width: 800px;
+    margin: 50px auto;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.statistics-page h1 {
+    font-size: 36px;
+    color: #00a8ff;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.statistics-page h2 {
+    font-size: 24px;
+    color: #00d2d3;
+    font-weight: 500;
+    margin: 15px 0;
+}
+
+.statistics-page h2 span {
+    font-size: 26px;
+    color: #ffdd59;
+    font-weight: 700;
+}
+
+.statistics-page p {
+    font-size: 20px;
+    color: #dcdde1;
+}
+
+.error-message {
+    color: #e84118;
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+.statistics-page div {
+    background-color: #162447;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-size: 22px;
+    color: #00d2d3;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.statistics-page div:hover {
+    background-color: #0f3460;
+    color: #ffdd59;
+    transition: all 0.3s ease-in-out;
+}
+
+.statistics-page p {
+    margin: 10px 0;
+}
