@@ -1,40 +1,36 @@
-// src/components/Admin/ManageUsers.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchUserAttributes } from 'aws-amplify/auth';  // Fetch user attributes
-import { fetchAllUsers, userInfoUtil, addCredit, removeCredit, logRequest } from '../../utils/api'; // Import necessary API functions
-import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import checkAdminPermission
-import { useNotification } from './utils/Notification'; // Import notification hook
-import './styles/ManageUsers.css'; // Import relevant styles
+import { fetchUserAttributes } from 'aws-amplify/auth';
+import { fetchAllUsers, userInfoUtil, addCredit, removeCredit, logRequest } from '../../utils/api';
+import { checkAdminPermission } from './utils/checkAdminPermissions';
+import { useNotification } from './utils/Notification';
+import './styles/ManageUsers.css';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');  // State to hold the search term
+  const [filteredUsers, setFilteredUsers] = useState([]);  // Filtered users based on search
   const [selectedAction, setSelectedAction] = useState({});
   const [creditAmount, setCreditAmount] = useState({});
-  const [staffEmail, setStaffEmail] = useState(''); // For staff email
-  const [staffUserId, setStaffUserId] = useState(''); // For staff user ID
+  const [staffEmail, setStaffEmail] = useState('');
+  const [staffUserId, setStaffUserId] = useState('');
   const navigate = useNavigate();
-  const { showNotification } = useNotification(); // Notification hook
+  const { showNotification } = useNotification();
 
-  // Fetch staff attributes (email and user ID)
   useEffect(() => {
     const fetchStaffAttributes = async () => {
       try {
         const userResponse = await fetchUserAttributes();
         const { email, sub: userId } = userResponse;
-
         setStaffEmail(email);
         setStaffUserId(userId);
-        console.log("nigger: ", email, userId);
-
       } catch (error) {
         console.error('Error fetching staff attributes:', error);
         setError('Failed to fetch staff details. Please try again.');
       }
     };
-
     fetchStaffAttributes();
   }, []);
 
@@ -42,12 +38,12 @@ const ManageUsers = () => {
   const fetchUsers = async () => {
     try {
       const fetchedUsers = await fetchAllUsers();
-      // Ensure credit is set to 0 if not present
       const usersWithCredit = fetchedUsers.map(user => ({
         ...user,
-        credits: user.credits || 0, // Use the 'credits' field
+        credits: user.credits || 0,
       }));
       setUsers(usersWithCredit);
+      setFilteredUsers(usersWithCredit);  // Initialize filtered users
     } catch (error) {
       console.error('Failed to fetch users:', error);
       setError('Failed to fetch users. Please check the console for details.');
@@ -59,37 +55,28 @@ const ManageUsers = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        // Check if the user has admin permissions
         const hasPermission = await checkAdminPermission();
         if (!hasPermission) {
           throw new Error('Access denied: Admin permissions required.');
         }
-        // Fetch users if the user has admin permissions
         await fetchUsers();
       } catch (error) {
         console.error('Error during ManageUsers initialization:', error.message);
         setError(error.message);
-        // Redirect the user to the home page or login page if they don't have permissions
         navigate('/');
       }
     };
-
     init();
   }, [navigate]);
 
   // Handle role modification
   const handleRoleChange = async (userId, newRole) => {
-    console.log(`Modify role for user ${userId} to ${newRole}`);
     try {
-      // Update user role using userInfoUtil
       await userInfoUtil('POST', {
         email: users.find(user => user.userId === userId).email,
         role: newRole,
       });
-
-      // Update the users state to reflect the change
       setUsers(users.map(user => (user.userId === userId ? { ...user, role: newRole } : user)));
-      console.log(`User role updated successfully for ${userId} to ${newRole}`);
     } catch (error) {
       console.error('Failed to update user role:', error);
       setError('Failed to update user role. Please check the console for details.');
@@ -99,34 +86,24 @@ const ManageUsers = () => {
   // Handle user deletion
   const handleDeleteUser = (userId) => {
     console.log(`Delete user ${userId}`);
-    // Here you'd call another API function to delete the user in your backend
   };
 
   // Handle credit addition
   const handleAddCredit = async (userId) => {
-    console.log(`Add credit to user ${userId}`);
     try {
-      const amount = creditAmount[userId] || 0; // Get the amount from state
-      console.log("Logging");
-      // Log the request before modifying the credit
+      const amount = creditAmount[userId] || 0;
       const logSuccess = await logRequest('Matrix_AddCredit', staffUserId);
-      console.log(logSuccess);
-      
       if (!logSuccess) {
         throw new Error('Failed to log the add credit request.');
       }
-      console.log("Adding credit..")
       await addCredit(staffEmail, staffUserId, users.find(user => user.userId === userId).email, amount);
-      console.log("Called function.")
-      console.log(`Successfully added ${amount} credit to user ${userId}`);
       showNotification(`$${amount} credit added to ${users.find(user => user.userId === userId).email}`, 'success');
-      handleActionSelect(userId, ''); // Reset action to 'Select Action'
-      // Update user credit
+      handleActionSelect(userId, '');
       setUsers(users.map(user => (
         user.userId === userId 
           ? { 
               ...user, 
-              credits: String((parseFloat(user.credits) || 0) + parseFloat(amount))  // Ensure both are floats and sum them, then convert to string
+              credits: String((parseFloat(user.credits) || 0) + parseFloat(amount))  
             } 
           : user
       )));      
@@ -139,21 +116,15 @@ const ManageUsers = () => {
 
   // Handle credit removal
   const handleRemoveCredit = async (userId) => {
-    console.log(`Remove credit from user ${userId}`);
     try {
-      const amount = creditAmount[userId] || 0; // Get the amount from state
-
-      // Log the request before modifying the credit
+      const amount = creditAmount[userId] || 0;
       const logSuccess = await logRequest('Matrix_RemoveCredit', userId);
       if (!logSuccess) {
         throw new Error('Failed to log the remove credit request.');
       }
-
       await removeCredit(staffEmail, staffUserId, users.find(user => user.userId === userId).email, amount);
-      console.log(`Successfully removed ${amount} credit from user ${userId}`);
       showNotification(`$${amount} credit removed from ${users.find(user => user.userId === userId).email}`, 'success');
-      handleActionSelect(userId, ''); // Reset action to 'Select Action'
-      // Update user credit
+      handleActionSelect(userId, '');
       setUsers(users.map(user => (user.userId === userId ? { ...user, credits: Math.max(0, user.credits - amount) } : user)));
     } catch (error) {
       console.error('Failed to remove credit:', error);
@@ -172,9 +143,32 @@ const ManageUsers = () => {
     setCreditAmount({ ...creditAmount, [userId]: amount });
   };
 
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    const value = e.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    // Filter users based on search term (by email or user ID)
+    const filtered = users.filter(user => 
+      user.email.toLowerCase().includes(value) || 
+      user.userId.toLowerCase().includes(value)
+    );
+    setFilteredUsers(filtered);
+  };
+
   return (
     <div className="manage-users-container">
       <h1 className="manage-users-title">Manage Users</h1>
+      
+      {/* Search Bar */}
+      <input
+        type="text"
+        placeholder="Search by email or user ID"
+        value={searchTerm}
+        onChange={handleSearchChange}
+        className="search-bar"
+      />
+
       {loading ? (
         <p>Loading users...</p>
       ) : error ? (
@@ -192,7 +186,7 @@ const ManageUsers = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => (
+            {filteredUsers.map((user, index) => (
               <tr key={user.userId}>
                 <td>{index + 1}</td>
                 <td>{user.email}</td>

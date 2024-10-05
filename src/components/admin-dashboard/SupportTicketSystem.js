@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchSupportTickets, issueReplacement, addCreditViaTicket, logRequest, resolveOrDenyTicket } from '../../utils/api'; // Added getProductTitleById import
+import { fetchSupportTickets, issueReplacement, addCreditViaTicket, logRequest, resolveOrDenyTicket } from '../../utils/api';
 import { FaInfoCircle, FaTimes, FaExchangeAlt, FaDollarSign, FaBan, FaCheckCircle } from 'react-icons/fa'; 
 import { fetchUserAttributes } from 'aws-amplify/auth';
 import Modal from 'react-modal';
@@ -221,6 +221,7 @@ const SupportTicketSystem = () => {
           <tr>
             <th>Order ID</th>
             <th>Email</th>
+            <th>Issue</th> {/* New column for Issue */}
             <th>Status</th>
             <th>Modified</th>
             <th>Action</th>
@@ -231,6 +232,7 @@ const SupportTicketSystem = () => {
             <tr key={ticket.ticket_id}>
               <td>{ticket.orderID}</td>
               <td>{ticket.userEmail}</td>
+              <td>{ticket.issue}</td> {/* Display the issue */}
               <td className={
                 ticket.status === 'resolved' ? 'resolved' :
                 ticket.status === 'denied' ? 'denied' : 'unresolved'
@@ -262,10 +264,11 @@ const SupportTicketSystem = () => {
             <h2>Ticket Details</h2>
             <p><strong>Order ID:</strong> {selectedTicket.orderID}</p>
             <p><strong>Email:</strong> {selectedTicket.userEmail}</p>
+            <p><strong>Issue:</strong> {selectedTicket.issue}</p> {/* Show issue in the modal as well */}
             <p><strong>Status:</strong> {selectedTicket.status}</p>
             <p><strong>Last Modified:</strong> {selectedTicket.lastModificationDate}</p>
             <p><strong>Ticket ID:</strong> {selectedTicket.ticket_id}</p>
-            <p><strong>Product Name:</strong> {productTitle}</p> {/* Display product title */}
+            <p><strong>Product Name:</strong> {productTitle}</p> 
             <p><strong>Operator:</strong> {operatorEmail}</p>
             <p><strong>Creation Date:</strong> {selectedTicket.creationDate}</p>
             <div className="button-container">
