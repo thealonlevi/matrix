@@ -28,7 +28,7 @@ import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
 import SupportTicketSystem from './components/admin-dashboard/SupportTicketSystem';
 import CreateTicket from './components/user-area/Create_Ticket';
-
+import Statistics from './components/admin-dashboard/Statistics'; // Import Statistics component
 
 // Function to get the current authenticated user
 async function currentAuthenticatedUser() {
@@ -100,6 +100,7 @@ const AppContent = () => {
           <Route path="users" element={<ManageUsers />} /> {/* Route for Manage Users */}
           <Route path="staff" element={<ManageStaff />} /> {/* Route for Manage Staff */}
           <Route path="support-tickets" element={<SupportTicketSystem />} />
+          <Route path="statistics" element={<Statistics />} /> {/* Route for Statistics */}
         </Route>
 
         {/* User Area routes */}

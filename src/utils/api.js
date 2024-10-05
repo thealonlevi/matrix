@@ -1543,3 +1543,28 @@ export const resolveOrDenyTicket = async (resolveDenyData) => {
     throw error;  // Rethrow the error to handle in the calling component
   }
 };
+
+// Define constant for the Matrix_FetchAllTimeRevenue API URL
+const FETCH_ALL_TIME_REVENUE_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchAllTimeRevenue';
+
+/**
+ * Function to fetch the all-time total revenue from the Matrix_FetchAllTimeRevenue API.
+ * @returns {Promise<Object>} - Resolves with the API response data containing total revenue or rejects with an error message.
+ */
+export const fetchAllTimeRevenue = async () => {
+  try {
+    const response = await fetch(FETCH_ALL_TIME_REVENUE_API_URL, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch all-time revenue.');
+    }
+
+    const result = await response.json();
+    return result;  // Return the result for further handling
+  } catch (error) {
+    console.error('Error fetching all-time revenue:', error);
+    throw error;  // Rethrow the error to handle in the calling component
+  }
+};

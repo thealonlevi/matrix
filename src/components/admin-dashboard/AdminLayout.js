@@ -6,29 +6,25 @@ import { fetchAndStoreProductList } from '../../utils/utils';
 import { useNavigate } from 'react-router-dom'; // For redirection
 
 const AdminLayout = () => {
-  const [loading, setLoading] = useState(true); // Add a loading state
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
-  const navigate = useNavigate(); // For navigation
+  const navigate = useNavigate();
 
   const isActive = (path) => location.pathname.startsWith(path);
 
   useEffect(() => {
     const init = async () => {
       try {
-        // Check if the user has admin permissions
         const hasPermission = await checkAdminPermission();
         if (!hasPermission) {
-          navigate('/'); // Redirect to the main page
+          navigate('/');
           throw new Error('Access denied: Admin permissions required.');
         }
-
-        // If the user has permission, initialize the product list
         await fetchAndStoreProductList();
-        console.log('Product list fetched and stored successfully.');
       } catch (error) {
         console.error('Error during AdminLayout initialization:', error.message);
       } finally {
-        setLoading(false); // Set loading to false once check is done
+        setLoading(false);
       }
     };
 
@@ -36,14 +32,12 @@ const AdminLayout = () => {
   }, [navigate]);
 
   if (loading) {
-    // While loading (checking permissions), render nothing or a loader
-    return null; // You could also return a spinner or a loading message if desired
+    return null; 
   }
 
   return (
     <div className="admin-layout-container">
       <div className="sidebar">
-        <h2></h2>
         <h2>Admin Dashboard</h2>
         <ul>
           <li className={isActive('/admin/products') ? 'active' : ''}>
@@ -56,10 +50,13 @@ const AdminLayout = () => {
             <Link to="/admin/users">Manage Users</Link>
           </li>
           <li className={isActive('/admin/staff') ? 'active' : ''}>
-            <Link to="/admin/staff">Manage Staff</Link> {/* New Manage Staff link */}
+            <Link to="/admin/staff">Manage Staff</Link>
           </li>
           <li className={isActive('/admin/support-tickets') ? 'active' : ''}>
             <Link to="/admin/support-tickets">Support Tickets</Link>
+          </li>
+          <li className={isActive('/admin/statistics') ? 'active' : ''}>
+            <Link to="/admin/statistics">Statistics</Link> {/* New Statistics link */}
           </li>
         </ul>
       </div>
