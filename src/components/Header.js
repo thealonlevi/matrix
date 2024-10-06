@@ -15,7 +15,6 @@ import {
 import '../styles/Header.css';
 import { fetchAndStoreProductList } from '../utils/utils';
 import { useNotification } from './admin-dashboard/utils/Notification'; // Use the hook to manage notifications
-import { fetchUserAttributes } from 'aws-amplify/auth';
 import { updateUserTimestamp } from '../utils/api';
 
 const Header = ({ user, handleLogout }) => {
@@ -38,8 +37,7 @@ const Header = ({ user, handleLogout }) => {
 
     const updateTimestamp = async () => {
       try {
-        const { email } = await fetchUserAttributes();
-        await updateUserTimestamp(email, false); // Update only the LastActiveTimestamp
+        await updateUserTimestamp(false); // Update only the LastActiveTimestamp
       } catch (error) {
         console.error('Failed to update user timestamp:', error);
       }

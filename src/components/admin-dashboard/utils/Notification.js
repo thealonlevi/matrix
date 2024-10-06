@@ -50,7 +50,7 @@ const NotificationProvider = ({ children }) => {
   const cleanUpExpiredNotifications = () => {
     setNotifications((prevNotifications) => {
       const now = Date.now();
-      const updatedNotifications = prevNotifications.filter((notification) => now - notification.timestamp < 30000); // 30 seconds expiration
+      const updatedNotifications = prevNotifications.filter((notification) => now - notification.timestamp < 5000); // 30 seconds expiration
 
       // Update sessionStorage
       sessionStorage.setItem('notifications', JSON.stringify(updatedNotifications));

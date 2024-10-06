@@ -1,6 +1,7 @@
 /**
  * Utility function to generate a unique request key based on URL, method, and body.
  */
+import { fetchUserAttributes } from 'aws-amplify/auth';
 const generateRequestKey = (url, method, body) => {
   const bodyString = JSON.stringify(body || {});
   console.log("Generated Request Key: ", bodyString);
@@ -1588,7 +1589,8 @@ const debounce = (func, wait = 5000) => {
 };
 
 // Wrap the updateUserTimestamp function with debounce
-export const updateUserTimestamp = debounce(async (email, login = false) => {
+export const updateUserTimestamp = debounce(async (login = false) => {
+  const { email } = await fetchUserAttributes();
   const requestKey = generateRequestKey(UPDATE_USER_TIMESTAMP_API_URL, 'POST', {
     email,
     login,
