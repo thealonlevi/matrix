@@ -294,3 +294,36 @@
     background-color: #2b334a; /* Hover effect for table rows */
   }
   
+  /* Message Box Styling */
+.message-box {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+  
+  /* History Container Styling */
+  .history-container {
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: #34495e;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #3d4451;
+    margin-bottom: 20px;
+  }
+  
+  .history-item {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-bottom: 1px solid #3d4451;
+  }
+  
+  .history-item p {
+    margin: 5px 0;
+  }
+  

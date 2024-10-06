@@ -248,13 +248,26 @@ const SupportTicketSystem = () => {
             <h2>Ticket Details</h2>
             <p><strong>Order ID:</strong> {selectedTicket.orderID}</p>
             <p><strong>Email:</strong> {selectedTicket.userEmail}</p>
+            <p><strong>Product Name:</strong> {productTitle}</p>
             <p><strong>Issue:</strong> {selectedTicket.issue}</p>
             <p><strong>Status:</strong> {selectedTicket.status}</p>
-            <p><strong>Last Modified:</strong> {selectedTicket.lastModificationDate}</p>
-            <p><strong>Ticket ID:</strong> {selectedTicket.ticket_id}</p>
-            <p><strong>Product Name:</strong> {productTitle}</p>
-            <p><strong>Operator:</strong> {operatorEmail}</p>
             <p><strong>Creation Date:</strong> {selectedTicket.creationDate}</p>
+            <p><strong>Replacements Asked:</strong> {selectedTicket.replacementsCountAsked || 0}</p>
+            <p><strong>Message:</strong></p>
+            <div className="message-box">{selectedTicket.message || 'N/A'}</div>
+            <p><strong>History:</strong></p>
+            <div className="history-container">
+              {selectedTicket.history?.map((historyItem, index) => (
+                <div key={index} className="history-item">
+                  <p><strong>Action:</strong> {historyItem.action}</p>
+                  <p><strong>Operator:</strong> {historyItem.operator}</p>
+                  <p><strong>Timestamp:</strong> {historyItem.timestamp}</p>
+                  {historyItem.new_status && <p><strong>New Status:</strong> {historyItem.new_status}</p>}
+                  {historyItem.exported_stock && <p><strong>Exported Stock:</strong> {historyItem.exported_stock}</p>}
+                  {historyItem.quantity && <p><strong>Quantity:</strong> {historyItem.quantity}</p>}
+                </div>
+              ))}
+            </div>
             <div className="button-container">
               <button onClick={openReplacementModal} className="icon-btn issue-replacement-btn">
                 <FaExchangeAlt size={20} />
