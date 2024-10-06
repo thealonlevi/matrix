@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchSupportTickets } from '../../utils/api';
-import { FaInfoCircle, FaTimes, FaExchangeAlt, FaDollarSign, FaBan, FaCheckCircle, FaSearch } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight, FaInfoCircle, FaTimes, FaExchangeAlt, FaDollarSign, FaBan, FaCheckCircle, FaSearch } from 'react-icons/fa';
 import Modal from 'react-modal';
 import './styles/SupportTicketSystem.css';
 import { getProductTitleById } from './utils/adminUtils';
@@ -29,6 +29,8 @@ const SupportTicketSystem = () => {
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [isResolving, setIsResolving] = useState(false); 
+  const [currentPage, setCurrentPage] = useState(1); // Track current page
+  const ticketsPerPage = 15; // Number of tickets per page
 
   const [searchEmail, setSearchEmail] = useState('');
   const [searchOrderId, setSearchOrderId] = useState('');
@@ -88,7 +90,26 @@ const SupportTicketSystem = () => {
       );
     });
     setFilteredTickets(filtered);
+    setCurrentPage(1);
   }, [searchEmail, searchOrderId, searchUserId, searchProductName, searchStatus, searchIssue, tickets, productTitle]);
+
+  // Pagination logic: Calculate start and end indices for the tickets to display
+  const indexOfLastTicket = currentPage * ticketsPerPage;
+  const indexOfFirstTicket = indexOfLastTicket - ticketsPerPage;
+  const currentTickets = filteredTickets.slice(indexOfFirstTicket, indexOfLastTicket);
+  const totalPages = Math.ceil(filteredTickets.length / ticketsPerPage); // Calculate total pages
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   const toggleFilters = () => {
     setFiltersVisible(!filtersVisible);
@@ -234,7 +255,7 @@ const SupportTicketSystem = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredTickets.map((ticket) => (
+          {currentTickets.map((ticket) => (
             <tr key={ticket.ticket_id} className={ticket.status === 'pending' ? 'pending-row' : ''}>
               <td>{ticket.orderID}</td>
               <td>{ticket.userEmail}</td>
@@ -247,7 +268,20 @@ const SupportTicketSystem = () => {
             </tr>
           ))}
         </tbody>
+
       </table>
+      {/* Pagination Controls */}
+      <div className="pagination-controls">
+        <button className="pagination-button" onClick={prevPage} disabled={currentPage === 1}>
+          <FaArrowLeft /> Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button className="pagination-button" onClick={nextPage} disabled={currentPage === totalPages}>
+          Next <FaArrowRight />
+        </button>
+      </div>
 
       <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className="modal-content" overlayClassName="modal-overlay" contentLabel="Ticket Details Modal">
         {selectedTicket ? (
