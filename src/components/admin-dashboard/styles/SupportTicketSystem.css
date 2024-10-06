@@ -1,223 +1,296 @@
 /* General Styles */
 .support-ticket-system {
+    padding: 40px;
+    background-color: #181a24; /* Darker background for contrast */
+    color: #e0e6ed;
+    border-radius: 12px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  }
+  
+  .support-ticket-system h2 {
+    color: #00a8ff; /* Bright title color */
+    font-weight: 700;
+    margin-bottom: 30px;
+  }
+  
+  /* Filters Section */
+  .filter-section {
+    background-color: #242b3d;
     padding: 20px;
-    background-color: #1a1a1a;
-    color: #e0e0e0;
-    border-radius: 8px;
-    font-family: 'Arial', sans-serif;
-}
-
-.support-ticket-system h2 {
-    color: #3498db;
-    font-weight: 600;
-    margin-bottom: 20px;
-}
-
-/* Filters Section */
-.filter-section {
-    background-color: #2a2a2a;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.5);
-}
-
-.filter-section input, 
-.filter-section select {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #444;
-    background-color: #1f1f1f;
-    color: #e0e0e0;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  .filter-section input,
+  .filter-section select {
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #3d4451;
+    background-color: #1e2132;
+    color: #ffffff;
     transition: border-color 0.3s;
-}
-
-.filter-section input:focus, 
-.filter-section select:focus {
-    border-color: #3498db;
+    font-size: 15px;
+  }
+  
+  .filter-section input:focus,
+  .filter-section select:focus {
+    border-color: #00a8ff;
     outline: none;
-}
-
-/* Table Styles */
-table {
+  }
+  
+  /* Table Styles */
+  table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0 10px; /* Space between rows */
     margin-top: 20px;
-}
-
-th, td {
-    padding: 14px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
+  }
+  
+  th,
+  td {
+    padding: 18px 20px;
     border-bottom: 1px solid #333;
     text-align: left;
-    font-size: 14px;
-}
-
-th {
-    background-color: #2b2b2b;
-    color: #fff;
+    font-size: 15px;
+  }
+  
+  th {
+    background-color: #3c475b;
+    color: #ffffff;
     text-transform: uppercase;
-    font-weight: bold;
-}
-
-td {
-    background-color: #1f1f1f;
+    font-weight: 700;
+  }
+  
+  td {
+    background-color: #2e364a;
+    border: 1px solid #2e364a;
     transition: background-color 0.3s;
-}
-
-td:hover {
-    background-color: #333;
-}
-
-.resolved {
-    color: green;
-}
-
-.unresolved {
-    color: orange;
-}
-
-.denied {
-    color: red;
-}
-
-.info-icon {
+  }
+  
+  td:hover {
+    background-color: #384257;
+  }
+  
+  /* Row Hover Effect */
+  tbody tr:hover td {
+    background-color: #3b455d;
+  }
+  
+  .resolved {
+    color: #2ecc71; /* Green for resolved */
+  }
+  
+  .unresolved {
+    color: #f39c12; /* Orange for unresolved */
+  }
+  
+  .denied {
+    color: #e74c3c; /* Red for denied */
+  }
+  
+  .info-icon {
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
-}
-
-.info-icon:hover {
+  }
+  
+  .info-icon:hover {
     transform: scale(1.2);
-}
-
-/* Toggle Filter Button */
-.toggle-filter-button {
+    color: #3498db;
+  }
+  
+  /* Toggle Filter Button */
+  .toggle-filter-button {
     background-color: #3498db;
     color: white;
     border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
+    padding: 12px 20px;
+    border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s, box-shadow 0.3s;
     display: inline-flex;
     align-items: center;
-}
-
-.toggle-filter-button:hover {
-    background-color: #2980b9;
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.3);
-}
-
-/* Modal Styles */
-.modal-overlay {
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .toggle-filter-button:hover {
+    background-color: #2e86c1;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Modal Styles */
+  .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.85); /* Darker overlay */
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.modal-content {
-    background-color: #2b2b2b;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
-    max-width: 600px;
+  }
+  
+  .modal-content {
+    background-color: #333c4d;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    max-width: 650px;
     width: 100%;
     max-height: 80vh;
     overflow-y: auto;
     border: 1px solid #555;
     position: relative;
-}
-
-.modal-content h2 {
-    color: #3498db;
-    margin-bottom: 15px;
-    font-size: 22px;
-}
-
-.modal-content p {
-    color: #e0e0e0;
-    margin-bottom: 12px;
+  }
+  
+  .modal-content h2 {
+    color: #00a8ff;
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
+  
+  .modal-content p {
+    color: #e0e6ed;
+    margin-bottom: 18px;
     font-size: 16px;
-}
-
-.modal-close-icon {
+  }
+  
+  .modal-close-icon {
     position: absolute;
     top: 15px;
     right: 15px;
-    font-size: 28px;
+    font-size: 26px;
     color: #e74c3c;
     cursor: pointer;
     transition: color 0.3s;
-}
-
-.modal-close-icon:hover {
+  }
+  
+  .modal-close-icon:hover {
     color: #c0392b;
-}
-
-/* Button Container */
-.button-container {
+  }
+  
+  /* Button Container */
+  .button-container {
     display: flex;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 15px;
+    margin-top: 30px;
     flex-wrap: wrap;
-}
-
-/* Icon Button Styles */
-.icon-btn {
+  }
+  
+  /* Icon Button Styles */
+  .icon-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px;
+    padding: 14px;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s, box-shadow 0.3s;
-    width: 60px;
-    height: 50px;
-    font-size: 16px;
-    color: #fff;
-}
-
-.icon-btn:hover {
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.3);
-}
-
-.issue-replacement-btn {
+    width: 70px;
+    height: 60px;
+    font-size: 18px;
+    color: #ffffff;
+  }
+  
+  .icon-btn:hover {
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4);
+  }
+  
+  .issue-replacement-btn {
     background-color: #3498db;
-}
-
-.issue-replacement-btn:hover {
+  }
+  
+  .issue-replacement-btn:hover {
     background-color: #2980b9;
-}
-
-.credit-btn {
+  }
+  
+  .credit-btn {
     background-color: #f1c40f;
-}
-
-.credit-btn:hover {
+  }
+  
+  .credit-btn:hover {
     background-color: #f39c12;
-}
-
-.resolve-btn {
+  }
+  
+  .resolve-btn {
     background-color: #27ae60;
-}
-
-.resolve-btn:hover {
+  }
+  
+  .resolve-btn:hover {
     background-color: #229954;
-}
-
-.deny-replacement-btn {
+  }
+  
+  .deny-replacement-btn {
     background-color: #e74c3c;
-}
-
-.deny-replacement-btn:hover {
+  }
+  
+  .deny-replacement-btn:hover {
     background-color: #c0392b;
-}
+  }
+  /* Add this to your SupportTicketSystem.css */
+
+/* Highlighted Row for Pending Tickets */
+.pending-row {
+    background-color: #2f3640; /* Darker background for pending rows */
+    color: #e1e1e1; /* Text color for contrast */
+    border-left: 4px solid #f39c12; /* Orange border for pending */
+  }
+  
+  .pending-row td {
+    font-weight: bold; /* Bolder font for pending rows */
+  }
+  
+  .denied-row {
+    color: #e74c3c; /* Red color for denied status */
+  }
+  
+  .resolved-row {
+    color: #2ecc71; /* Green color for resolved status */
+  }
+  
+  .info-icon {
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .info-icon:hover {
+    transform: scale(1.2);
+  }
+  
+  /* General Table Row Styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  th,
+  td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #444;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #2d3a4d; /* Table header background */
+    color: #ffffff;
+    text-transform: uppercase;
+  }
+  
+  td {
+    background-color: #1f2937; /* Default table cell background */
+    transition: background-color 0.3s;
+  }
+  
+  tbody tr:hover td {
+    background-color: #2b334a; /* Hover effect for table rows */
+  }
+  

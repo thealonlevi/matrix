@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchAllTimeRevenue } from '../../utils/api';
+import './styles/Statistics.css';
 
 const Statistics = () => {
   const [totalRevenue, setTotalRevenue] = useState(null);
@@ -7,13 +8,14 @@ const Statistics = () => {
   const [weeklyRevenue, setWeeklyRevenue] = useState(null);
   const [monthlyRevenue, setMonthlyRevenue] = useState(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getRevenue = async () => {
+      setLoading(true);
       try {
         const result = await fetchAllTimeRevenue();
-        const parsedBody = JSON.parse(result.body); // Parse the body to extract all revenue types
-        console.log(parsedBody); // Log the parsed result
+        const parsedBody = JSON.parse(result.body);
         setTotalRevenue(parsedBody.total_revenue);
         setDailyRevenue(parsedBody.daily_revenue);
         setWeeklyRevenue(parsedBody.weekly_revenue);
@@ -21,46 +23,40 @@ const Statistics = () => {
       } catch (error) {
         console.error('Error fetching revenues:', error);
         setError('Failed to fetch revenues');
+      } finally {
+        setLoading(false);
       }
     };
 
     getRevenue();
   }, []);
 
+  if (loading) {
+    return <p>Loading revenue statistics...</p>;
+  }
+
   return (
     <div className="statistics-page">
-      <h1>Revenue Statistics</h1>
-      {error && <p className="error-message">{error}</p>}
-      <div>
-        {totalRevenue !== null ? (
-          <h2>Total Revenue: ${totalRevenue}</h2>
-        ) : (
-          <p>Loading total revenue...</p>
-        )}
-      </div>
-      <div>
-        {dailyRevenue !== null ? (
-          <h2>Daily Revenue: ${dailyRevenue}</h2>
-        ) : (
-          <p>Loading daily revenue...</p>
-        )}
-      </div>
-      <div>
-        {weeklyRevenue !== null ? (
-          <h2>Weekly Revenue: ${weeklyRevenue}</h2>
-        ) : (
-          <p>Loading weekly revenue...</p>
-        )}
-      </div>
-      <div>
-        {monthlyRevenue !== null ? (
-          <h2>Monthly Revenue: ${monthlyRevenue}</h2>
-        ) : (
-          <p>Loading monthly revenue...</p>
-        )}
-      </div>
+      <h1 className="page-title">Revenue Statistics</h1>
+      {error ? (
+        <p className="error-message">{error}</p>
+      ) : (
+        <div className="revenue-container">
+          <RevenueCard label="Total Revenue" value={totalRevenue} />
+          <RevenueCard label="Daily Revenue" value={dailyRevenue} />
+          <RevenueCard label="Weekly Revenue" value={weeklyRevenue} />
+          <RevenueCard label="Monthly Revenue" value={monthlyRevenue} />
+        </div>
+      )}
     </div>
   );
 };
+
+const RevenueCard = ({ label, value }) => (
+  <div className="revenue-card">
+    <h2 className="revenue-title">{label}</h2>
+    <p className="revenue-value">${value}</p>
+  </div>
+);
 
 export default Statistics;

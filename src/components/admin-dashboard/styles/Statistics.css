@@ -1,63 +1,56 @@
-.statistics-page {
-    background-color: #1a1a2e;
-    color: #f5f6fa;
-    padding: 40px;
-    border-radius: 15px;
-    max-width: 800px;
-    margin: 50px auto;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-    text-align: center;
-}
+/* Statistics.css */
 
-.statistics-page h1 {
-    font-size: 36px;
+.statistics-page {
+    background-color: #10132e; /* Darker background for the page */
+    color: #f5f6fa;
+    padding: 60px; /* Consistent padding */
+    border-radius: 20px;
+    max-width: 1200px; /* Fixed width for static layout */
+    margin: 50px auto;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6); /* Stronger shadow effect */
+  }
+  
+  .page-title {
+    font-size: 42px;
     color: #00a8ff;
     font-weight: 700;
-    margin-bottom: 30px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-}
-
-.statistics-page h2 {
-    font-size: 24px;
-    color: #00d2d3;
-    font-weight: 500;
-    margin: 15px 0;
-}
-
-.statistics-page h2 span {
-    font-size: 26px;
-    color: #ffdd59;
-    font-weight: 700;
-}
-
-.statistics-page p {
+    margin-bottom: 40px;
+  }
+  
+  .revenue-container {
+    display: flex; /* Use fixed flex layout */
+    justify-content: space-between;
+    gap: 30px; /* Even spacing between cards */
+  }
+  
+  .revenue-card {
+    background-color: #1e1e40; /* Card color */
+    width: 250px; /* Fixed width */
+    height: 150px; /* Fixed height */
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    text-align: center;
+  }
+  
+  .revenue-title {
     font-size: 20px;
-    color: #dcdde1;
-}
-
-.error-message {
+    font-weight: 600;
+    color: #00d2ff;
+    margin-bottom: 15px;
+  }
+  
+  .revenue-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2ecc71; /* Green for revenue values */
+    margin: 0;
+  }
+  
+  .error-message {
     color: #e84118;
     font-size: 18px;
     margin-top: 20px;
-}
-
-.statistics-page div {
-    background-color: #162447;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    font-size: 22px;
-    color: #00d2d3;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.statistics-page div:hover {
-    background-color: #0f3460;
-    color: #ffdd59;
-    transition: all 0.3s ease-in-out;
-}
-
-.statistics-page p {
-    margin: 10px 0;
-}
+  }
+  
