@@ -227,7 +227,7 @@ const SupportTicketSystem = () => {
         </thead>
         <tbody>
           {filteredTickets.map((ticket) => (
-            <tr key={ticket.ticket_id}>
+            <tr key={ticket.ticket_id} className={ticket.status === 'pending' ? 'pending-row' : ''}>
               <td>{ticket.orderID}</td>
               <td>{ticket.userEmail}</td>
               <td>{ticket.issue}</td>
