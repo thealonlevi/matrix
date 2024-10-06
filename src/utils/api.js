@@ -1568,3 +1568,67 @@ export const fetchAllTimeRevenue = async () => {
     throw error;  // Rethrow the error to handle in the calling component
   }
 };
+
+// Define constant for the Matrix_UpdateUserTimestamp API URL
+const UPDATE_USER_TIMESTAMP_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_UserActivityUpdater';
+
+/**
+ * Function to update user timestamps (LastActiveTimestamp and/or LastLoginDate).
+ * @param {string} email - The email of the user to update.
+ * @param {boolean} login - Whether this update includes login or only activity.
+ * @returns {Promise<Object>} - Resolves with a success message or skips the request if duplicate.
+ */
+// Utility function to debounce API calls
+const debounce = (func, wait = 5000) => {
+  let timeout;
+  return (...args) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+};
+
+// Wrap the updateUserTimestamp function with debounce
+export const updateUserTimestamp = debounce(async (email, login = false) => {
+  const requestKey = generateRequestKey(UPDATE_USER_TIMESTAMP_API_URL, 'POST', {
+    email,
+    login,
+  });
+  console.log("Trying: ", requestKey);
+
+  // Check if the request is a duplicate without throwing an error
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    return; // Skip further execution if duplicate found
+  }
+
+  try {
+    storeRequestInLocalStorage(requestKey);
+
+    const response = await fetch(UPDATE_USER_TIMESTAMP_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email,
+        login: login,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
+    }
+
+    const data = await response.json();
+    console.log(data);
+
+    if (data.statusCode === 200) {
+      return data;  // Return the success message
+    } else {
+      throw new Error(data.message || 'Failed to update user timestamp.');
+    }
+  } catch (error) {
+    console.error('Error updating user timestamp:', error);
+    throw new Error('Failed to update user timestamp. Please try again later.');
+  }
+}, 5000); // Wait for 5 seconds before making another API call

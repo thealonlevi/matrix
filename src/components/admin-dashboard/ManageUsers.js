@@ -196,7 +196,7 @@ const ManageUsers = () => {
                 <td>{index + 1}</td>
                 <td>{user.email}</td>
                 <td>{user.credits}</td>
-                <td>{user.LastLoginDate ? new Date(user.LastLoginDate).toLocaleString() : 'N/A'}</td>
+                <td>{user.LastActiveTimestamp ? new Date(user.LastActiveTimestamp).toLocaleString() : 'N/A'}</td>
                 <td>
                   <select
                     value={user.role || 'user'}

@@ -15,10 +15,12 @@ import {
 import '../styles/Header.css';
 import { fetchAndStoreProductList } from '../utils/utils';
 import { useNotification } from './admin-dashboard/utils/Notification'; // Use the hook to manage notifications
+import { fetchUserAttributes } from 'aws-amplify/auth';
+import { updateUserTimestamp } from '../utils/api';
 
 const Header = ({ user, handleLogout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { showNotification } = useNotification(); // Get showNotification function from context
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     console.log('Header component mounted.');
@@ -34,23 +36,29 @@ const Header = ({ user, handleLogout }) => {
       }
     };
 
-    initializeProductList();
+    const updateTimestamp = async () => {
+      try {
+        const { email } = await fetchUserAttributes();
+        await updateUserTimestamp(email, false); // Update only the LastActiveTimestamp
+      } catch (error) {
+        console.error('Failed to update user timestamp:', error);
+      }
+    };
 
-    // Function to check and display notifications only once
+    initializeProductList();
+    updateTimestamp();
+
     const checkForNotifications = () => {
       console.log('Checking for notifications in sessionStorage...');
       const storedNotifications = JSON.parse(sessionStorage.getItem('notifications')) || [];
       console.log('Stored Notifications:', storedNotifications);
 
-      // Display notifications from sessionStorage only once
       storedNotifications.forEach(({ message, type }) => showNotification(message, type));
-
-      // Clear notifications from sessionStorage after displaying them once
       sessionStorage.removeItem('notifications');
     };
 
     checkForNotifications(); // Initial check
-  }, []); // Empty dependency array to run only once
+  }, [showNotification]);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -62,7 +70,6 @@ const Header = ({ user, handleLogout }) => {
         <Link to="/" className="header-logo-link">
           <img src="/assets/images/logo.png" alt="Logo" className="header-logo" />
         </Link>
-        {/* Links visible on larger screens */}
         <div className="header-left-nav-links header-desktop-only">
           <Link to="/" className="header-nav-link">
             <FaHome className="header-icon" />
@@ -75,7 +82,6 @@ const Header = ({ user, handleLogout }) => {
         </div>
       </div>
 
-      {/* All links for mobile menu and smaller screens */}
       <nav className={`header-right-nav-links ${menuOpen ? 'open' : ''}`}>
         <Link to="/" className="header-nav-link header-mobile-only" onClick={toggleMenu}>
           <FaHome className="header-icon" />
@@ -85,7 +91,6 @@ const Header = ({ user, handleLogout }) => {
           <FaStar className="header-icon" />
           Reviews
         </Link>
-        {/* This new Create Ticket link */}
         <Link to="/Create_Ticket" className="header-nav-link" onClick={toggleMenu}>
           <FaEnvelopeOpenText className="header-icon" />
           Create Ticket
@@ -116,7 +121,7 @@ const Header = ({ user, handleLogout }) => {
               onClick={() => {
                 handleLogout();
                 toggleMenu();
-                showNotification('Logged out successfully', 'success'); // Show success notification
+                showNotification('Logged out successfully', 'success');
               }}
             >
               <FaSignOutAlt className="header-icon" />
