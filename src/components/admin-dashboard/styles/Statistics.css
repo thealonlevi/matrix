@@ -1,56 +1,59 @@
-/* Statistics.css */
+/* src/components/styles/Statistics.css */
 
 .statistics-page {
-    background-color: #10132e; /* Darker background for the page */
-    color: #f5f6fa;
-    padding: 60px; /* Consistent padding */
-    border-radius: 20px;
-    max-width: 1200px; /* Fixed width for static layout */
-    margin: 50px auto;
-    text-align: center;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6); /* Stronger shadow effect */
+    padding: 40px;
+    background-color: #181a24;
+    color: #e0e6ed;
+    border-radius: 12px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    max-width: 1200px;
+    margin: 40px auto;
   }
   
   .page-title {
-    font-size: 42px;
     color: #00a8ff;
     font-weight: 700;
-    margin-bottom: 40px;
-  }
-  
-  .revenue-container {
-    display: flex; /* Use fixed flex layout */
-    justify-content: space-between;
-    gap: 30px; /* Even spacing between cards */
-  }
-  
-  .revenue-card {
-    background-color: #1e1e40; /* Card color */
-    width: 250px; /* Fixed width */
-    height: 150px; /* Fixed height */
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    margin-bottom: 30px;
     text-align: center;
   }
   
+  .revenue-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .revenue-card {
+    background-color: #242b3d;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .revenue-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.6);
+  }
+  
   .revenue-title {
+    color: #ffffff;
     font-size: 20px;
-    font-weight: 600;
-    color: #00d2ff;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
   }
   
   .revenue-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: #2ecc71; /* Green for revenue values */
-    margin: 0;
+    color: #f1c40f;
+    font-size: 24px;
+    font-weight: 600;
   }
   
   .error-message {
-    color: #e84118;
+    color: #e74c3c;
     font-size: 18px;
+    text-align: center;
     margin-top: 20px;
   }
   

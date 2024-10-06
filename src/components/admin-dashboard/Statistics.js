@@ -1,6 +1,9 @@
+// src/components/Statistics.js
+
 import React, { useState, useEffect } from 'react';
 import { fetchAllTimeRevenue } from '../../utils/api';
 import './styles/Statistics.css';
+import LoadingScreen from '../LoadingScreen';
 
 const Statistics = () => {
   const [totalRevenue, setTotalRevenue] = useState(null);
@@ -32,7 +35,11 @@ const Statistics = () => {
   }, []);
 
   if (loading) {
-    return <p>Loading revenue statistics...</p>;
+    return (
+      <div style={{ position: 'relative', height: '100vh' }}>
+        <LoadingScreen message="Loading revenue statistics..." size="large" />
+      </div>
+    );
   }
 
   return (
@@ -55,7 +62,7 @@ const Statistics = () => {
 const RevenueCard = ({ label, value }) => (
   <div className="revenue-card">
     <h2 className="revenue-title">{label}</h2>
-    <p className="revenue-value">${value}</p>
+    <p className="revenue-value">${value ? value.toFixed(2) : 'N/A'}</p>
   </div>
 );
 

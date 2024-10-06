@@ -1,9 +1,12 @@
+// src/components/AdminOrders.js
+
 import React, { useState, useEffect, useRef } from 'react';
 import './styles/AdminOrders.css';
 import { useNavigate } from 'react-router-dom';
 import { fetchOrdersCache } from '../../utils/api'; // Import fetchOrdersCache from api.js
 import { checkPermissionAndFetchData } from './utils/adminUtils'; // Import checkPermissionAndFetchData if it is used from adminUtils
 import ReactPaginate from 'react-paginate';
+import LoadingScreen from '../LoadingScreen';
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -22,37 +25,22 @@ const AdminOrders = () => {
 
       // Use the fetchOrdersCache function from api.js
       const serverResponse = await fetchOrdersCache(requestBody);
-      console.log("ORDERS");
-      console.log(serverResponse);
 
       if (serverResponse.status === 'updated') {
-        // Update the local storage with new timestamp and orders data
         localStorage.setItem('ORDERS_DATABASE_TIMESTAMP', serverResponse.timestamp);
         localStorage.setItem('ORDERS_DATABASE', JSON.stringify(serverResponse.data));
 
-        // Directly use the array as it is
-        const sortedOrders = serverResponse.data.sort((a, b) => {
-          const dateA = new Date(a.order_date);
-          const dateB = new Date(b.order_date);
-          return dateB - dateA;
-        });
-
+        const sortedOrders = serverResponse.data.sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
         setOrders(sortedOrders);
         updateOrderUserIdList(sortedOrders);
       } else {
         const storedOrders = JSON.parse(localStorage.getItem('ORDERS_DATABASE') || '[]');
-
-        const sortedOrders = storedOrders.sort((a, b) => {
-          const dateA = new Date(a.order_date);
-          const dateB = new Date(b.order_date);
-          return dateB - dateA;
-        });
-
+        const sortedOrders = storedOrders.sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
         setOrders(sortedOrders);
       }
     } catch (error) {
-      console.error("Failed to fetch orders. Please check the console for details:", error);
-      setError("Failed to fetch orders. Please check the console for details.");
+      console.error('Failed to fetch orders. Please check the console for details:', error);
+      setError('Failed to fetch orders. Please check the console for details.');
     } finally {
       setLoading(false);
     }
@@ -132,9 +120,11 @@ const AdminOrders = () => {
     <div className="admin-orders-container">
       <h1 className="admin-orders-title">Orders</h1>
       {loading ? (
-        <p>Loading orders...</p>
+        <div className="loading-screen-container">
+          <LoadingScreen message="Loading orders data..." size="large" />
+        </div>
       ) : error ? (
-        <p className="error">{error}</p>
+        <p className="error-message">{error}</p>
       ) : (
         <>
           <table className="orders-table">
@@ -151,14 +141,16 @@ const AdminOrders = () => {
             </thead>
             <tbody>
               {displayOrders.map((order, index) => (
-                <tr key={`${order.orderId}-${index}`} onClick={() => handleRowClick(order.orderId)} className="clickable-row">
+                <tr
+                  key={`${order.orderId}-${index}`}
+                  onClick={() => handleRowClick(order.orderId)}
+                  className="clickable-row"
+                >
                   <td>{orders.length - (currentPage * ordersPerPage + index)}</td>
                   <td>{order.user_email || 'N/A'}</td>
                   <td>{order.orderId}</td>
                   <td>{`$${order.final_price || '0.00'}`}</td>
-                  <td className="status">
-                    {getStatusBullet(order.payment_status)}
-                  </td>
+                  <td className="status">{getStatusBullet(order.payment_status)}</td>
                   <td>{order.payment_method || 'Unknown'}</td>
                   <td>{order.order_date ? new Date(order.order_date).toLocaleString() : 'Invalid Date'}</td>
                 </tr>

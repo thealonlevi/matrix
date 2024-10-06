@@ -11,6 +11,7 @@ import {
 } from './utils/productutils';
 import { appendProductToGroup, detachProductFromGroup } from './utils/groupUtils';
 import { useNotification } from './utils/Notification';
+import LoadingScreen from '../LoadingScreen'; // Import the LoadingScreen component
 
 const ManageProducts = () => {
   const [products, setProducts] = useState([]);
@@ -97,7 +98,11 @@ const ManageProducts = () => {
   };
 
   if (loading) {
-    return <p className='admin-loading'>Loading products...</p>;
+    return (
+      <div className="loading-screen-container">
+        <LoadingScreen message="Loading products..." size="large" />
+      </div>
+    );
   }
 
   if (error) {
@@ -133,14 +138,14 @@ const ManageProducts = () => {
             <ProductItem
               key={product.product_id}
               product={product}
-              products={products} 
+              products={products}
               isGroup={Array.isArray(product.product_group)}
               isExpanded={expandedGroups.includes(product.product_id)}
               toggleGroupExpansion={toggleGroupExpansionHandler}
               handleDelete={handleDelete}
               handleToggleVisibility={handleToggleVisibility}
               handleAppendProduct={handleAppendProduct}
-              handleDetachProduct={handleDetachProduct} 
+              handleDetachProduct={handleDetachProduct}
               expandedGroups={expandedGroups}
             />
           ))

@@ -4,6 +4,7 @@ import { useNotification } from './utils/Notification'; // Notification hook
 import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import admin permission check
 import './styles/ManageStaff.css'; // Import relevant styles
 import { FiEdit } from 'react-icons/fi'; // Import the edit icon from react-icons
+import LoadingScreen from '../LoadingScreen'; // Import the LoadingScreen component
 import { useNavigate } from 'react-router-dom'; // For redirection
 
 const ManageStaff = () => {
@@ -82,7 +83,11 @@ const ManageStaff = () => {
   };
 
   if (loading) {
-    return <div className="manage-staff-container">Loading staff data...</div>;
+    return (
+      <div style={{ position: 'relative', height: '100vh' }}>
+        <LoadingScreen message="Loading staff data..." size="large" />
+      </div>
+    );
   }
 
   if (error) {

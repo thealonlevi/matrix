@@ -5,13 +5,14 @@ import { fetchAllUsers, userInfoUtil, addCredit, removeCredit, logRequest } from
 import { checkAdminPermission } from './utils/checkAdminPermissions';
 import { useNotification } from './utils/Notification';
 import './styles/ManageUsers.css';
+import LoadingScreen from '../LoadingScreen'; // Import the LoadingScreen component
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');  // State to hold the search term
-  const [filteredUsers, setFilteredUsers] = useState([]);  // Filtered users based on search
+  const [searchTerm, setSearchTerm] = useState(''); // State to hold the search term
+  const [filteredUsers, setFilteredUsers] = useState([]); // Filtered users based on search
   const [selectedAction, setSelectedAction] = useState({});
   const [creditAmount, setCreditAmount] = useState({});
   const [staffEmail, setStaffEmail] = useState('');
@@ -43,7 +44,7 @@ const ManageUsers = () => {
         credits: user.credits || 0,
       }));
       setUsers(usersWithCredit);
-      setFilteredUsers(usersWithCredit);  // Initialize filtered users
+      setFilteredUsers(usersWithCredit); // Initialize filtered users
     } catch (error) {
       console.error('Failed to fetch users:', error);
       setError('Failed to fetch users. Please check the console for details.');
@@ -77,15 +78,17 @@ const ManageUsers = () => {
         role: newRole,
       });
       setUsers(users.map(user => (user.userId === userId ? { ...user, role: newRole } : user)));
+      showNotification(`Role updated to ${newRole} for user ID: ${userId}`, 'success');
     } catch (error) {
       console.error('Failed to update user role:', error);
       setError('Failed to update user role. Please check the console for details.');
+      showNotification('Failed to update user role. Please check the console for details.', 'error');
     }
   };
-
-  // Handle user deletion
-  const handleDeleteUser = (userId) => {
-    console.log(`Delete user ${userId}`);
+  
+   // Handle user deletion
+   const handleDeleteUser = (userId) => {
+    console.log('Delete user ${userId}');
   };
 
   // Handle credit addition
@@ -106,7 +109,7 @@ const ManageUsers = () => {
               credits: String((parseFloat(user.credits) || 0) + parseFloat(amount))  
             } 
           : user
-      )));      
+      )));
     } catch (error) {
       console.error('Failed to add credit:', error);
       setError('Failed to add credit. Please check the console for details.');
@@ -170,7 +173,9 @@ const ManageUsers = () => {
       />
 
       {loading ? (
-        <p>Loading users...</p>
+        <div style={{ position: 'relative', height: '100vh' }}>
+          <LoadingScreen message="Loading users..." size="large" />
+        </div>
       ) : error ? (
         <p className="error">{error}</p>
       ) : (
