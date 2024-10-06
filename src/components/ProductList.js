@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import '../styles/ProductList.css';
 import ShoppingCartIcon from '../assets/icons/white_shopping_cart.png';
 import RedEyeIcon from '../assets/icons/red_eye.png';
@@ -10,51 +10,36 @@ const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null); // State for selected product
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     console.log('Starting to fetch products...');
-
+    
     const fetchProducts = async () => {
       try {
         const data = await getProductList(); // Use API utility function to fetch product list
         console.log('Fetched product list:', data);
 
         if (data) {
-          // Ensure that every product has a product_description, even if it's just an empty string
-          const productsWithDescriptions = data.map((product, index) => {
-            console.log(`Processing product at index ${index}:`, product);
-
-            // Log the full structure of the product for debugging
-            console.log('Full product structure:', product);
-
-            return {
-              ...product,
-              product_description: product.product_description || '', // Default to empty string if undefined
-              visible: product.visible !== undefined ? product.visible : true // Default to true if undefined
-            };
-          });
+          const productsWithDescriptions = data.map((product) => ({
+            ...product,
+            product_description: product.product_description || '', // Default to empty string if undefined
+            visible: product.visible !== undefined ? product.visible : true // Default to true if undefined
+          }));
 
           // Filter out products that are not visible
           const visibleProducts = productsWithDescriptions.filter(product => product.visible);
           setProducts(visibleProducts);
-          console.log('Visible products set in state:', visibleProducts);
 
           // Save the visible products to local storage
           localStorage.setItem('visible_products', JSON.stringify(visibleProducts));
-          console.log('Visible products saved to local storage.');
-
-          // Save product titles to local storage for use in other components
-          const productTitles = visibleProducts.reduce((acc, product) => {
-            acc[product.product_id] = product.product_title;
-            return acc;
-          }, {});
-          localStorage.setItem('product_titles', JSON.stringify(productTitles));
-          console.log('Product titles saved to local storage.');
         } else {
           console.warn('No data found in the response.');
         }
       } catch (error) {
         console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -62,40 +47,29 @@ const ProductList = () => {
   }, []);
 
   const handleOpenModal = (product) => {
-    console.log('Opening modal for product:', product);
     setSelectedProduct(product); // Set the selected product
     setIsModalOpen(true); // Open the modal
   };
 
   const handleCloseModal = () => {
-    console.log('Closing modal');
     setIsModalOpen(false); // Close the modal
     setSelectedProduct(null); // Clear the selected product
   };
 
-  // Function to calculate the price range for a group
-  const getPriceRange = (group) => {
-    console.log('Calculating price range for group:', group);
-    const prices = group.map(p => {
-      const price = p.product_price;
-      console.log('Individual price in group:', price);
-      return price;
-    });
-
+  // Function to calculate the price range for a group (memoized)
+  const getPriceRange = useMemo(() => (group) => {
+    const prices = group.map(p => p.product_price);
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
-    console.log(`Calculated price range: $${minPrice} - $${maxPrice}`);
     return `$${minPrice} - $${maxPrice}`;
-  };
+  }, []);
 
-  // Function to calculate total stock for a product group
-  const getTotalStock = (group) => {
-    console.log('Calculating total stock for group:', group);
-    return group.reduce((total, product) => {
-      const stock = product.available_stock_count || 0; // Use stock count if available, else default to 0
-      return total + stock;
-    }, 0);
-  };
+  // Function to calculate total stock for a product group (memoized)
+  const getTotalStock = useMemo(() => (group) => {
+    return group.reduce((total, product) => total + (product.available_stock_count || 0), 0);
+  }, []);
+
+  if (loading) return <p>Loading products...</p>;
 
   return (
     <div className="product-list">
@@ -103,8 +77,6 @@ const ProductList = () => {
         products.map((product, index) => {
           // Check if the product has a product_group array
           const isGroup = Array.isArray(product.product_group);
-          console.log(`Rendering product at index ${index}:`, product);
-          console.log('Is this product a group?', isGroup);
 
           const price = isGroup 
             ? getPriceRange(product.product_group)
@@ -115,9 +87,6 @@ const ProductList = () => {
           const stock = isGroup 
             ? getTotalStock(product.product_group)
             : (product.available_stock_count !== undefined ? product.available_stock_count : '0');
-
-          console.log(`Final price for rendering:`, price);
-          console.log(`Final stock for rendering:`, stock);
 
           return (
             <div

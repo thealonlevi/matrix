@@ -5,7 +5,6 @@ import { logRequest as logRequestApi, fetchProductDetails, modifyOrderStatusSQS,
 export const logRequest = async (functionName, productId) => {
   try {
     const response = await logRequestApi(functionName, productId); // Use the logRequest function from api.js
-
     return true;
   } catch (error) {
     console.error('Error logging the request:', error);
@@ -38,17 +37,50 @@ export const getUserIdForOrder = (orderId) => {
   }
 };
 
-// Check permissions and fetch data securely
+// Global variables to manage permission state
+let hasPermissionCached = null;
+let permissionCheckInProgress = false; // Flag to prevent concurrent permission checks
+
+// Check permissions and fetch data securely with permission caching
 export const checkPermissionAndFetchData = async (fetchCallback, logFunctionName, logProductId) => {
-  const hasPermission = await checkAdminPermission();
-  if (!hasPermission) {
-    throw new Error('Access denied: Admin permissions required.');
+  if (hasPermissionCached !== null) {
+    // If we already have the cached permission value, use it.
+    if (!hasPermissionCached) throw new Error('Access denied: Admin permissions required.');
+  } else {
+    // If a permission check is already in progress, wait for it to complete.
+    if (permissionCheckInProgress) {
+      await new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (!permissionCheckInProgress) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 50); // Poll every 50ms to check if the permission check is complete
+      });
+    }
+
+    // Check again if permission was cached after waiting
+    if (hasPermissionCached === null) {
+      permissionCheckInProgress = true;
+      try {
+        const hasPermission = await checkAdminPermission();
+        hasPermissionCached = hasPermission; // Cache the permission result
+        if (!hasPermission) throw new Error('Access denied: Admin permissions required.');
+      } catch (error) {
+        hasPermissionCached = false;
+        console.error('Failed to check permissions:', error);
+        throw error;
+      } finally {
+        permissionCheckInProgress = false; // Reset the flag once permission check is complete
+      }
+    } else {
+      // If permission is cached after waiting, check again
+      if (!hasPermissionCached) throw new Error('Access denied: Admin permissions required.');
+    }
   }
 
   const logged = await logRequest(logFunctionName, logProductId);
-  if (!logged) {
-    throw new Error('Failed to log the request');
-  }
+  if (!logged) throw new Error('Failed to log the request');
 
   return await fetchCallback();
 };

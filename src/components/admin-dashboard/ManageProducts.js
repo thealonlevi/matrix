@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import './styles/ManageProducts.css';
 import { checkAdminPermission } from './utils/checkAdminPermissions';
 import { fetchProducts, deleteProduct, toggleProductVisibility } from './utils/api';
@@ -20,27 +20,31 @@ const ManageProducts = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { showNotification } = useNotification();
+  const permissionChecked = useRef(false); // Add a ref to track if permission has been checked
 
   useEffect(() => {
     const verifyAccessAndFetchProducts = async () => {
-      const hasPermission = await checkAdminPermission();
+      if (permissionChecked.current) return; // If permission has been checked, skip the function
 
-      if (!hasPermission) {
-        setError('Page not found.');
-        showNotification('Access denied. Redirecting...', 'error');
-        setTimeout(() => {
-          navigate('/');
-        }, 2000);
-      } else {
-        try {
+      try {
+        const hasPermission = await checkAdminPermission();
+        permissionChecked.current = true; // Mark permission as checked
+
+        if (!hasPermission) {
+          setError('Page not found.');
+          showNotification('Access denied. Redirecting...', 'error');
+          setTimeout(() => {
+            navigate('/');
+          }, 2000);
+        } else {
           const sortedProducts = await fetchProducts();
           setProducts(sortedProducts);
-        } catch (error) {
-          setError(error.message);
-          showNotification(`Error fetching products: ${error.message}`, 'error');
-        } finally {
-          setLoading(false);
         }
+      } catch (error) {
+        setError(error.message);
+        showNotification(`Error fetching products: ${error.message}`, 'error');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -49,16 +53,24 @@ const ManageProducts = () => {
 
   const handleDelete = useCallback(
     async (productId) => {
-      await handleDeleteProduct(productId, products, setProducts, setError, deleteProduct);
-      showNotification(`Product with ID ${productId} deleted successfully.`, 'success');
+      try {
+        await handleDeleteProduct(productId, products, setProducts, setError, deleteProduct);
+        showNotification(`Product with ID ${productId} deleted successfully.`, 'success');
+      } catch (error) {
+        showNotification(`Error deleting product: ${error.message}`, 'error');
+      }
     },
     [products, showNotification]
   );
 
   const handleToggleVisibility = useCallback(
     async (productId) => {
-      await handleToggleProductVisibility(productId, products, setProducts, setError, toggleProductVisibility);
-      showNotification(`Product visibility toggled for ID ${productId}.`, 'info');
+      try {
+        await handleToggleProductVisibility(productId, products, setProducts, setError, toggleProductVisibility);
+        showNotification(`Product visibility toggled for ID ${productId}.`, 'info');
+      } catch (error) {
+        showNotification(`Error toggling visibility: ${error.message}`, 'error');
+      }
     },
     [products, showNotification]
   );
@@ -66,10 +78,10 @@ const ManageProducts = () => {
   const handleAppendProduct = useCallback(
     async (groupId, productId) => {
       try {
-        const response = await appendProductToGroup(groupId, productId);
+        await appendProductToGroup(groupId, productId);
         showNotification(`Product with ID ${productId} added to group ${groupId} successfully.`, 'success');
-        const sortedProducts = await fetchProducts();
-        setProducts(sortedProducts);
+        const updatedProducts = await fetchProducts();
+        setProducts(updatedProducts);
       } catch (error) {
         setError(`Error adding product: ${error.message}`);
         showNotification(`Error adding product: ${error.message}`, 'error');
@@ -81,10 +93,10 @@ const ManageProducts = () => {
   const handleDetachProduct = useCallback(
     async (groupId, productId) => {
       try {
-        const response = await detachProductFromGroup(groupId, productId);
+        await detachProductFromGroup(groupId, productId);
         showNotification(`Product with ID ${productId} detached from group ${groupId} successfully.`, 'success');
-        const sortedProducts = await fetchProducts();
-        setProducts(sortedProducts);
+        const updatedProducts = await fetchProducts();
+        setProducts(updatedProducts);
       } catch (error) {
         setError(`Error detaching product: ${error.message}`);
         showNotification(`Error detaching product: ${error.message}`, 'error');
@@ -93,9 +105,12 @@ const ManageProducts = () => {
     [showNotification]
   );
 
-  const toggleGroupExpansionHandler = (groupId) => {
-    toggleGroupExpansion(groupId, expandedGroups, setExpandedGroups);
-  };
+  const toggleGroupExpansionHandler = useCallback(
+    (groupId) => {
+      toggleGroupExpansion(groupId, expandedGroups, setExpandedGroups);
+    },
+    [expandedGroups]
+  );
 
   if (loading) {
     return (

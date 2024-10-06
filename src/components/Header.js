@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FaHome,
@@ -20,18 +20,20 @@ import { updateUserTimestamp } from '../utils/api';
 const Header = ({ user, handleLogout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { showNotification } = useNotification();
+  const hasFetchedProducts = useRef(false); // Track if the product list has been fetched
 
   useEffect(() => {
-    console.log('Header component mounted.');
-
     const initializeProductList = async () => {
-      console.log('Initializing product list...');
-      try {
-        await fetchAndStoreProductList();
-        console.log('Product list fetched and stored successfully.');
-      } catch (error) {
-        console.error('Failed to initialize product list:', error);
-        showNotification('Failed to initialize product list', 'error'); // Show error notification
+      if (!hasFetchedProducts.current) {
+        hasFetchedProducts.current = true; // Prevent further API calls
+
+        try {
+          await fetchAndStoreProductList();
+          console.log('Product list fetched and stored successfully.');
+        } catch (error) {
+          console.error('Failed to initialize product list:', error);
+          showNotification('Failed to initialize product list', 'error'); // Show error notification
+        }
       }
     };
 
@@ -47,10 +49,7 @@ const Header = ({ user, handleLogout }) => {
     updateTimestamp();
 
     const checkForNotifications = () => {
-      console.log('Checking for notifications in sessionStorage...');
       const storedNotifications = JSON.parse(sessionStorage.getItem('notifications')) || [];
-      console.log('Stored Notifications:', storedNotifications);
-
       storedNotifications.forEach(({ message, type }) => showNotification(message, type));
       sessionStorage.removeItem('notifications');
     };

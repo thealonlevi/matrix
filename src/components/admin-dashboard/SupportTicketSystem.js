@@ -28,6 +28,7 @@ const SupportTicketSystem = () => {
   const [productTitle, setProductTitle] = useState('');
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [filteredTickets, setFilteredTickets] = useState([]);
+  const [isResolving, setIsResolving] = useState(false); 
 
   const [searchEmail, setSearchEmail] = useState('');
   const [searchOrderId, setSearchOrderId] = useState('');
@@ -38,6 +39,8 @@ const SupportTicketSystem = () => {
 
   const { showNotification } = useNotification(); // Notification hook
   const initRef = useRef(false);
+
+  
 
   useEffect(() => {
     const loadTickets = async () => {
@@ -161,6 +164,9 @@ const SupportTicketSystem = () => {
   };
 
   const handleResolveOrDeny = async (status) => {
+    if (!selectedTicket || isResolving) return; // Prevent re-entry if already resolving
+    setIsResolving(true); // Set the flag to true
+
     if (!selectedTicket) return;
     try {
       await handleResolveDeny({
@@ -177,8 +183,10 @@ const SupportTicketSystem = () => {
       setFilteredTickets(updatedTickets);
 
       showNotification(`Ticket ${status} successfully.`, 'success');
+      setIsResolving(false); // Reset the flag to false
       closeModal(); // Close modal after resolving/denying
     } catch (error) {
+      setIsResolving(false); // Reset the flag to false
       showNotification(`Failed to ${status} ticket. Please try again.`, 'error');
     }
   };

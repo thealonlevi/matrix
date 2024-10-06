@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { fetchAllStaff, modifyStaff } from '../../utils/api'; // Import necessary API functions
 import { useNotification } from './utils/Notification'; // Notification hook
 import { checkAdminPermission } from './utils/checkAdminPermissions'; // Import admin permission check
@@ -8,34 +8,41 @@ import LoadingScreen from '../LoadingScreen'; // Import the LoadingScreen compon
 import { useNavigate } from 'react-router-dom'; // For redirection
 
 const ManageStaff = () => {
-  const [staff, setStaff] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [selectedStaffJSON, setSelectedStaffJSON] = useState(null); // For storing the raw JSON data
-  const [modifiedJSON, setModifiedJSON] = useState(''); // For storing the modified JSON
+  const [staff, setStaff] = useState([]); // Store staff list
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(''); // Error state
+  const [selectedStaffJSON, setSelectedStaffJSON] = useState(null); // For storing the raw JSON data of selected staff
+  const [modifiedJSON, setModifiedJSON] = useState(''); // For storing the modified JSON for editing
   const { showNotification } = useNotification(); // Notification hook
   const navigate = useNavigate(); // For navigation
+
+  const permissionChecked = useRef(false); // Ref to track permission check status
 
   // Fetch staff data and check admin permission on component mount
   useEffect(() => {
     const verifyAccessAndFetchStaff = async () => {
-      const hasPermission = await checkAdminPermission();
+      if (permissionChecked.current) return; // Skip if permission already checked
 
-      if (!hasPermission) {
-        setError('Page not found.');
-        showNotification('Access denied. Redirecting...', 'error');
-        setTimeout(() => {
-          navigate('/');
-        }, 2000);
-      } else {
-        try {
+      try {
+        setLoading(true); // Start loading
+        const hasPermission = await checkAdminPermission();
+        permissionChecked.current = true; // Mark permission as checked
+
+        if (!hasPermission) {
+          setError('Page not found.');
+          showNotification('Access denied. Redirecting...', 'error');
+          setTimeout(() => {
+            navigate('/'); // Redirect after delay
+          }, 2000);
+        } else {
+          // Fetch staff data if permission is granted
           const staffList = await fetchAllStaff();
-          console.log(staffList);
 
+          // Format staff data for display
           const formattedStaffList = staffList.map(staffMember => ({
             raw: staffMember, // Store the unformatted JSON data
             email: staffMember.email,
-            createdAt: new Date(staffMember.created_at).toLocaleString(),  // Convert to a readable date
+            createdAt: new Date(staffMember.created_at).toLocaleString(),
             creditLimit: staffMember.credit_limit,
             issuedCreditsTotal: staffMember.issued_credits_total,
             lastLogin: new Date(staffMember.last_login).toLocaleString(),
@@ -44,14 +51,13 @@ const ManageStaff = () => {
             userId: staffMember.user_id
           }));
 
-          setStaff(formattedStaffList);
-          console.log(formattedStaffList);
-        } catch (err) {
-          console.error('Failed to load staff data:', err);
-          setError('Failed to load staff data. Please try again later.');
-        } finally {
-          setLoading(false);
+          setStaff(formattedStaffList); // Set formatted staff list
         }
+      } catch (err) {
+        console.error('Failed to load staff data:', err);
+        setError('Failed to load staff data. Please try again later.');
+      } finally {
+        setLoading(false); // Stop loading
       }
     };
 
@@ -59,28 +65,43 @@ const ManageStaff = () => {
   }, [navigate, showNotification]);
 
   // Handle the edit click to show raw JSON data
-  const handleEditClick = (staffJSON) => {
+  const handleEditClick = useCallback((staffJSON) => {
     setSelectedStaffJSON(staffJSON); // Set the selected staff's raw JSON data
     setModifiedJSON(JSON.stringify(staffJSON, null, 2)); // Pre-fill the text area with formatted JSON
-  };
+  }, []);
 
   // Close the JSON modal
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setSelectedStaffJSON(null); // Clear the selected JSON data
-  };
+  }, []);
 
   // Handle the save click to update staff data
-  const handleSaveClick = async () => {
+  const handleSaveClick = useCallback(async () => {
     try {
       const parsedJSON = JSON.parse(modifiedJSON); // Parse the modified JSON string
       await modifyStaff(parsedJSON); // Call modifyStaff API with the updated JSON
       showNotification('Staff information updated successfully.', 'success');
+
       setSelectedStaffJSON(null); // Close the modal after saving
+
+      // Fetch and update staff data
+      const updatedStaffList = await fetchAllStaff();
+      setStaff(updatedStaffList.map(staffMember => ({
+        raw: staffMember,
+        email: staffMember.email,
+        createdAt: new Date(staffMember.created_at).toLocaleString(),
+        creditLimit: staffMember.credit_limit,
+        issuedCreditsTotal: staffMember.issued_credits_total,
+        lastLogin: new Date(staffMember.last_login).toLocaleString(),
+        permissions: Array.isArray(staffMember.permissions) ? staffMember.permissions.join(', ') : staffMember.permissions,
+        role: staffMember.role,
+        userId: staffMember.user_id
+      })));
     } catch (error) {
       console.error('Failed to update staff information:', error);
       showNotification('Failed to update staff information.', 'error');
     }
-  };
+  }, [modifiedJSON, showNotification]);
 
   if (loading) {
     return (
