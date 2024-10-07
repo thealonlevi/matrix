@@ -16,19 +16,20 @@ import ModifyStockForm from './components/admin-dashboard/ModifyStockForm';
 import CreateGroupForm from './components/admin-dashboard/CreateGroupForm';
 import AdminOrders from './components/admin-dashboard/AdminOrders';
 import OrderDetails from './components/admin-dashboard/OrderDetails';
-import ManageUsers from './components/admin-dashboard/ManageUsers'; // Import ManageUsers component
-import ManageStaff from './components/admin-dashboard/ManageStaff'; // Import ManageStaff component
+import ManageUsers from './components/admin-dashboard/ManageUsers';
+import ManageStaff from './components/admin-dashboard/ManageStaff';
 import CartPage from './components/cart/CartPage';
 import { CartProvider } from './components/cart/CartContext';
-import UserArea from './components/user-area/UserArea'; // Import UserArea component
-import UserOrders from './components/user-area/UserOrders'; // Import UserOrders component
-import UserOrderDetails from './components/user-area/UserOrderDetails'; // Import UserOrderDetails component
+import UserArea from './components/user-area/UserArea';
+import UserOrders from './components/user-area/UserOrders';
+import UserOrderDetails from './components/user-area/UserOrderDetails';
 import { NotificationProvider, useNotification } from './components/admin-dashboard/utils/Notification';
 import './App.css';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
 import SupportTicketSystem from './components/admin-dashboard/SupportTicketSystem';
 import CreateTicket from './components/user-area/Create_Ticket';
-import Statistics from './components/admin-dashboard/Statistics'; // Import Statistics component
+import Statistics from './components/admin-dashboard/Statistics';
+import CartWidget from './components/userSystem/CartWidget'; // Import CartWidget component
 
 // Function to get the current authenticated user
 async function currentAuthenticatedUser() {
@@ -71,6 +72,8 @@ const AppContent = () => {
   return (
     <div className="App">
       <Header user={user} handleLogout={handleLogout} />
+      {/* Show CartWidget only on the "/" path */}
+      {location.pathname === '/' && <CartWidget />} {/* Render CartWidget when path is "/" */}
       <Routes>
         <Route
           path="/"
@@ -93,27 +96,27 @@ const AppContent = () => {
           <Route path="createproduct" element={<CreateProductForm />} />
           <Route path="creategroup" element={<CreateGroupForm />} />
           <Route path="modifyproduct/:productId" element={<ModifyProductForm />} />
-          <Route path="modifyproduct/:groupId/:productId" element={<ModifyProductForm />} /> {/* Support for group/productId format */}
+          <Route path="modifyproduct/:groupId/:productId" element={<ModifyProductForm />} />
           <Route path="modifystock/:productId" element={<ModifyStockForm />} />
-          <Route path="orders" element={<AdminOrders />} /> {/* Route for Admin Orders */}
+          <Route path="orders" element={<AdminOrders />} />
           <Route path="orders/:orderId" element={<OrderDetails />} />
-          <Route path="users" element={<ManageUsers />} /> {/* Route for Manage Users */}
-          <Route path="staff" element={<ManageStaff />} /> {/* Route for Manage Staff */}
+          <Route path="users" element={<ManageUsers />} />
+          <Route path="staff" element={<ManageStaff />} />
           <Route path="support-tickets" element={<SupportTicketSystem />} />
-          <Route path="statistics" element={<Statistics />} /> {/* Route for Statistics */}
+          <Route path="statistics" element={<Statistics />} />
         </Route>
 
         {/* User Area routes */}
-        <Route path="/user-area" element={<UserArea />} /> {/* User Area Route */}
+        <Route path="/user-area" element={<UserArea />} />
         <Route
           path="/user-area/orders"
           element={<UserOrders userEmail={user.email} userId={user.userId} />}
-        /> {/* User Orders Route */}
+        />
         <Route
           path="/user-area/orders/:orderId"
           element={<UserOrderDetails />}
-        /> {/* User Order Details Route */}
-        
+        />
+
         {/* New global route for Create Ticket */}
         <Route path="/Create_Ticket" element={<CreateTicket />} />
       </Routes>
