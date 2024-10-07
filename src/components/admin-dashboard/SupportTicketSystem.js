@@ -1,7 +1,7 @@
+// src/components/admin-dashboard/SupportTicketSystem.js
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchSupportTickets } from '../../utils/api';
-import { FaArrowLeft, FaArrowRight, FaInfoCircle, FaTimes, FaExchangeAlt, FaDollarSign, FaBan, FaCheckCircle, FaSearch } from 'react-icons/fa';
-import Modal from 'react-modal';
+import { FaArrowLeft, FaArrowRight, FaInfoCircle, FaSearch } from 'react-icons/fa';
 import './styles/SupportTicketSystem.css';
 import { getProductTitleById } from './utils/adminUtils';
 import { useNotification } from './utils/Notification';
@@ -12,6 +12,7 @@ import {
   handleCredit,
   handleResolveDeny,
 } from './utils/ticketUtils';
+import { TicketDetailsModal, CreditModal, ReplacementModal } from './ticket-system/TicketModals';
 
 const SupportTicketSystem = () => {
   const [tickets, setTickets] = useState([]);
@@ -28,9 +29,9 @@ const SupportTicketSystem = () => {
   const [productTitle, setProductTitle] = useState('');
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [filteredTickets, setFilteredTickets] = useState([]);
-  const [isResolving, setIsResolving] = useState(false); 
-  const [currentPage, setCurrentPage] = useState(1); // Track current page
-  const ticketsPerPage = 15; // Number of tickets per page
+  const [isResolving, setIsResolving] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ticketsPerPage = 15;
 
   const [searchEmail, setSearchEmail] = useState('');
   const [searchOrderId, setSearchOrderId] = useState('');
@@ -39,10 +40,8 @@ const SupportTicketSystem = () => {
   const [searchStatus, setSearchStatus] = useState('');
   const [searchIssue, setSearchIssue] = useState('');
 
-  const { showNotification } = useNotification(); // Notification hook
+  const { showNotification } = useNotification();
   const initRef = useRef(false);
-
-  
 
   useEffect(() => {
     const loadTickets = async () => {
@@ -66,7 +65,6 @@ const SupportTicketSystem = () => {
         setOperatorUserId(userId);
         setOperatorEmail(userEmail);
       } catch (error) {
-        console.error('Error fetching operator info:', error);
         showNotification('Failed to fetch operator information.', 'error');
       }
     };
@@ -93,75 +91,16 @@ const SupportTicketSystem = () => {
     setCurrentPage(1);
   }, [searchEmail, searchOrderId, searchUserId, searchProductName, searchStatus, searchIssue, tickets, productTitle]);
 
-  // Pagination logic: Calculate start and end indices for the tickets to display
-  const indexOfLastTicket = currentPage * ticketsPerPage;
-  const indexOfFirstTicket = indexOfLastTicket - ticketsPerPage;
-  const currentTickets = filteredTickets.slice(indexOfFirstTicket, indexOfLastTicket);
-  const totalPages = Math.ceil(filteredTickets.length / ticketsPerPage); // Calculate total pages
-
-  const nextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const toggleFilters = () => {
-    setFiltersVisible(!filtersVisible);
-  };
-
   const openModal = async (ticket) => {
     setSelectedTicket(ticket);
     const title = await getProductTitleById(ticket.product_id);
-    const productTitle = title ? title : `Product ID: ${ticket.product_id}`;
-    setProductTitle(productTitle);
+    setProductTitle(title || `Product ID: ${ticket.product_id}`);
     setModalIsOpen(true);
   };
 
   const closeModal = () => {
     setModalIsOpen(false);
     setSelectedTicket(null);
-  };
-
-  const openCreditModal = () => {
-    setCreditModalIsOpen(true);
-  };
-
-  const closeCreditModal = () => {
-    setCreditModalIsOpen(false);
-    setCreditAmount('');
-  };
-
-  const openReplacementModal = () => {
-    setReplacementModalIsOpen(true);
-  };
-
-  const closeReplacementModal = () => {
-    setReplacementModalIsOpen(false);
-    setReplacementQuantity('');
-  };
-
-  const handleReplacement = async () => {
-    if (!selectedTicket) return;
-    try {
-      await handleIssueReplacement({
-        userEmail: selectedTicket.userEmail,
-        ticket_id: selectedTicket.ticket_id,
-        operator: operatorEmail,
-        product_id: selectedTicket.product_id,
-        quantity: parseInt(replacementQuantity, 10),
-        orderID: selectedTicket.orderID,
-      });
-      showNotification('Replacement issued successfully.', 'success');
-      closeReplacementModal();
-    } catch (error) {
-      showNotification('Failed to issue replacement. Please try again.', 'error');
-    }
   };
 
   const handleAddCredit = async () => {
@@ -178,36 +117,51 @@ const SupportTicketSystem = () => {
         operatorUserId
       );
       showNotification('Credit added successfully.', 'success');
-      closeCreditModal();
+      setCreditModalIsOpen(false);
+      setCreditAmount('');
     } catch (error) {
       showNotification('Failed to add credit. Please try again.', 'error');
     }
   };
 
-  const handleResolveOrDeny = async (status) => {
-    if (!selectedTicket || isResolving) return; // Prevent re-entry if already resolving
-    setIsResolving(true); // Set the flag to true
-
+  const handleReplacement = async () => {
     if (!selectedTicket) return;
+    try {
+      await handleIssueReplacement({
+        userEmail: selectedTicket.userEmail,
+        ticket_id: selectedTicket.ticket_id,
+        operator: operatorEmail,
+        product_id: selectedTicket.product_id,
+        quantity: parseInt(replacementQuantity, 10),
+        orderID: selectedTicket.orderID,
+      });
+      showNotification('Replacement issued successfully.', 'success');
+      setReplacementModalIsOpen(false);
+      setReplacementQuantity('');
+    } catch (error) {
+      showNotification('Failed to issue replacement. Please try again.', 'error');
+    }
+  };
+
+  const handleResolveOrDeny = async (status) => {
+    if (!selectedTicket || isResolving) return;
+    setIsResolving(true);
     try {
       await handleResolveDeny({
         ticket_id: selectedTicket.ticket_id,
         status,
         staff_email: operatorEmail,
       });
-      
-      // Update ticket status in the UI
       const updatedTickets = tickets.map((ticket) =>
         ticket.ticket_id === selectedTicket.ticket_id ? { ...ticket, status } : ticket
       );
       setTickets(updatedTickets);
       setFilteredTickets(updatedTickets);
-
       showNotification(`Ticket ${status} successfully.`, 'success');
-      setIsResolving(false); // Reset the flag to false
-      closeModal(); // Close modal after resolving/denying
+      setIsResolving(false);
+      closeModal();
     } catch (error) {
-      setIsResolving(false); // Reset the flag to false
+      setIsResolving(false);
       showNotification(`Failed to ${status} ticket. Please try again.`, 'error');
     }
   };
@@ -216,7 +170,7 @@ const SupportTicketSystem = () => {
     <div className="support-ticket-system">
       <h2>Support Ticket System</h2>
 
-      <button className="toggle-filter-button" onClick={toggleFilters}>
+      <button className="toggle-filter-button" onClick={() => setFiltersVisible(!filtersVisible)}>
         <FaSearch /> {filtersVisible ? 'Hide Filters' : 'Show Filters'}
       </button>
 
@@ -255,7 +209,7 @@ const SupportTicketSystem = () => {
           </tr>
         </thead>
         <tbody>
-          {currentTickets.map((ticket) => (
+          {filteredTickets.slice((currentPage - 1) * ticketsPerPage, currentPage * ticketsPerPage).map((ticket) => (
             <tr key={ticket.ticket_id} className={ticket.status === 'pending' ? 'pending-row' : ''}>
               <td>{ticket.orderID}</td>
               <td>{ticket.userEmail}</td>
@@ -268,99 +222,52 @@ const SupportTicketSystem = () => {
             </tr>
           ))}
         </tbody>
-
       </table>
+
       {/* Pagination Controls */}
       <div className="pagination-controls">
-        <button className="pagination-button" onClick={prevPage} disabled={currentPage === 1}>
+        <button className="pagination-button" onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
           <FaArrowLeft /> Previous
         </button>
         <span>
-          Page {currentPage} of {totalPages}
+          Page {currentPage} of {Math.ceil(filteredTickets.length / ticketsPerPage)}
         </span>
-        <button className="pagination-button" onClick={nextPage} disabled={currentPage === totalPages}>
+        <button
+          className="pagination-button"
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(filteredTickets.length / ticketsPerPage)))}
+          disabled={currentPage === Math.ceil(filteredTickets.length / ticketsPerPage)}
+        >
           Next <FaArrowRight />
         </button>
       </div>
 
-      <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className="modal-content" overlayClassName="modal-overlay" contentLabel="Ticket Details Modal">
-        {selectedTicket ? (
-          <div>
-            <FaTimes className="modal-close-icon" onClick={closeModal} />
-            <h2>Ticket Details</h2>
-            <p><strong>Order ID:</strong> {selectedTicket.orderID}</p>
-            <p><strong>Email:</strong> {selectedTicket.userEmail}</p>
-            <p><strong>Product Name:</strong> {productTitle}</p>
-            <p><strong>Issue:</strong> {selectedTicket.issue}</p>
-            <p><strong>Status:</strong> {selectedTicket.status}</p>
-            <p><strong>Creation Date:</strong> {selectedTicket.creationDate}</p>
-            <p><strong>Replacements Asked:</strong> {selectedTicket.replacementsCountAsked || 0}</p>
-            <p><strong>Message:</strong></p>
-            <div className="message-box">{selectedTicket.message || 'N/A'}</div>
-            <p><strong>History:</strong></p>
-            <div className="history-container">
-              {selectedTicket.history?.map((historyItem, index) => (
-                <div key={index} className="history-item">
-                  <p><strong>Action:</strong> {historyItem.action}</p>
-                  <p><strong>Operator:</strong> {historyItem.operator}</p>
-                  <p><strong>Timestamp:</strong> {historyItem.timestamp}</p>
-                  {historyItem.new_status && <p><strong>New Status:</strong> {historyItem.new_status}</p>}
-                  {historyItem.exported_stock && <p><strong>Exported Stock:</strong> {historyItem.exported_stock}</p>}
-                  {historyItem.quantity && <p><strong>Quantity:</strong> {historyItem.quantity}</p>}
-                </div>
-              ))}
-            </div>
-            <div className="button-container">
-              <button onClick={openReplacementModal} className="icon-btn issue-replacement-btn">
-                <FaExchangeAlt size={20} />
-              </button>
-              <button onClick={openCreditModal} className="icon-btn credit-btn">
-                <FaDollarSign size={20} />
-              </button>
-              {selectedTicket.status === 'pending' && (
-                <>
-                  <button className="icon-btn resolve-btn" onClick={() => handleResolveOrDeny('resolved')}>
-                    <FaCheckCircle size={20} />
-                  </button>
-                  <button className="icon-btn deny-replacement-btn" onClick={() => handleResolveOrDeny('denied')}>
-                    <FaBan size={20} />
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        ) : (
-          <p>Loading ticket details...</p>
-        )}
-      </Modal>
-
-      <Modal isOpen={creditModalIsOpen} onRequestClose={closeCreditModal} className="modal-content" overlayClassName="modal-overlay" contentLabel="Credit Modal">
-        <FaTimes className="modal-close-icon" onClick={closeCreditModal} />
-        <h2>Add Credit</h2>
-        <p>How much credit would you like to add?</p>
-        <input type="number" value={creditAmount} onChange={(e) => setCreditAmount(e.target.value)} min="0.01" step="0.01" />
-        <div className="button-container">
-          <button onClick={handleAddCredit} className="confirm-btn">
-            Confirm
-          </button>
-        </div>
-      </Modal>
-
-      <Modal isOpen={replacementModalIsOpen} onRequestClose={closeReplacementModal} className="modal-content" overlayClassName="modal-overlay" contentLabel="Replacement Modal">
-        <FaTimes className="modal-close-icon" onClick={closeReplacementModal} />
-        <h2>Issue Replacement</h2>
-        <p>How many replacements would you like to issue?</p>
-        <input type="number" value={replacementQuantity} onChange={(e) => setReplacementQuantity(e.target.value)} min="1" />
-        <div className="button-container">
-          <button onClick={handleReplacement} className="confirm-btn">
-            Confirm
-          </button>
-        </div>
-      </Modal>
+      {/* Modals */}
+      <TicketDetailsModal
+        modalIsOpen={modalIsOpen}
+        closeModal={closeModal}
+        selectedTicket={selectedTicket}
+        productTitle={productTitle}
+        handleResolveOrDeny={handleResolveOrDeny}
+        openCreditModal={() => setCreditModalIsOpen(true)}
+        openReplacementModal={() => setReplacementModalIsOpen(true)}
+        isResolving={isResolving}
+      />
+      <CreditModal
+        creditModalIsOpen={creditModalIsOpen}
+        closeCreditModal={() => setCreditModalIsOpen(false)}
+        creditAmount={creditAmount}
+        setCreditAmount={setCreditAmount}
+        handleAddCredit={handleAddCredit}
+      />
+      <ReplacementModal
+        replacementModalIsOpen={replacementModalIsOpen}
+        closeReplacementModal={() => setReplacementModalIsOpen(false)}
+        replacementQuantity={replacementQuantity}
+        setReplacementQuantity={setReplacementQuantity}
+        handleReplacement={handleReplacement}
+      />
     </div>
   );
 };
-
-Modal.setAppElement('#root');
 
 export default SupportTicketSystem;
