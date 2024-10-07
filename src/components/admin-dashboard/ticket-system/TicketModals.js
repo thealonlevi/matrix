@@ -25,6 +25,7 @@ import {
 import { MdEditNote } from 'react-icons/md'; // Import pencil with paper icon
 import Modal from 'react-modal';
 import { insertTicketNote } from '../../../utils/api';
+import { TicketOrderDetailsModal } from './TicketOrderDetailsModal'; // Import the new Order Details Modal
 import './TicketModals.css';
 
 // Ticket Details Modal
@@ -39,6 +40,7 @@ export const TicketDetailsModal = ({
   isResolving,
 }) => {
   const [addNoteModalOpen, setAddNoteModalOpen] = useState(false);
+  const [orderDetailsModalOpen, setOrderDetailsModalOpen] = useState(false); // New state for Order Details Modal
   const [newNoteContent, setNewNoteContent] = useState('');
 
   // Function to handle note submission
@@ -67,7 +69,14 @@ export const TicketDetailsModal = ({
           <FaTimes className="modal-close-icon" onClick={closeModal} />
           <h2>Ticket Details</h2>
           <p>
-            <FaClipboardList /> <strong>Order ID:</strong> {selectedTicket.orderID}
+            <FaClipboardList /> <strong>Order ID:</strong>{' '}
+            <a
+              href="#"
+              onClick={() => setOrderDetailsModalOpen(true)}
+              className="order-id-link"
+            >
+              {selectedTicket.orderID}
+            </a>
           </p>
           <p>
             <FaEnvelope /> <strong>Email:</strong> {selectedTicket.userEmail}
@@ -199,6 +208,13 @@ export const TicketDetailsModal = ({
               </button>
             </div>
           </Modal>
+
+          {/* New Order Details Modal */}
+          <TicketOrderDetailsModal
+            orderDetailsModalIsOpen={orderDetailsModalOpen}
+            closeOrderDetailsModal={() => setOrderDetailsModalOpen(false)}
+            orderId={selectedTicket.orderID} // Pass Order ID here
+          />
         </div>
       ) : (
         <p>Loading ticket details...</p>

@@ -1,0 +1,176 @@
+/* src/components/admin-dashboard/ticket-system/styles/TicketOrderDetailsModal.css */
+
+.order-details-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75); /* Slightly lighter overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.order-details-modal-content {
+    background-color: #1a1e30; /* Match existing dark theme */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+    max-width: 700px;
+    width: 100%;
+    max-height: 80vh; /* Increased height for more data */
+    overflow-y: auto;
+    position: relative;
+    color: #f0f2f5; /* Light text for readability */
+}
+
+/* Modal Header Styling */
+.order-details-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.order-details-modal-header h2 {
+    font-size: 24px;
+    color: #aad4ff; /* Light blue color for titles */
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.order-details-modal-header h2 svg {
+    margin-right: 10px; /* Space between icon and text */
+}
+
+.modal-close-icon {
+    cursor: pointer;
+    color: #ff4d4d;
+    transition: color 0.2s;
+}
+
+.modal-close-icon:hover {
+    color: #ff3333; /* Hover effect for close icon */
+}
+
+.order-details-modal-body p {
+    color: #dfe4ea; /* Lighter shade of grey */
+    margin-bottom: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* Order Contents and Fulfillment History Lists */
+.order-details-modal-body ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin: 10px 0;
+}
+
+.order-details-modal-body ul li {
+    color: #dfe4ea; /* Text color for list items */
+    margin-bottom: 8px;
+    padding: 8px;
+    background-color: #2b334a;
+    border-radius: 6px;
+}
+
+/* Individual Items Styling */
+.order-item, .fulfillment-entry {
+    padding: 10px;
+    background-color: #2b334a;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s ease;
+}
+
+.order-item:hover, .fulfillment-entry:hover {
+    background-color: #344563;
+}
+
+.order-details-modal-body strong {
+    color: #aad4ff; /* Highlighted light blue for strong elements */
+}
+
+/* Fulfillment Item and Stock Styling */
+.fulfillment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.fulfillment-label {
+    font-weight: bold;
+    color: #aad4ff;
+}
+
+.fulfillment-content {
+    flex: 1;
+    margin-left: 10px;
+    background-color: #1a1e30;
+    padding: 8px;
+    border-radius: 6px;
+    color: #f0f2f5; /* Light text for readability */
+}
+
+.fulfillment-stock {
+    word-break: break-word;
+}
+
+/* Timestamp Styling */
+.timestamp {
+    font-size: 13px;
+    color: #a9b7c6;
+    margin-top: 8px;
+    background-color: #1a1e30;
+    padding: 8px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* Close Modal Button */
+.close-modal-button {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.close-modal-button:hover {
+    background-color: #2980b9; /* Slightly darker on hover */
+}
+
+/* Responsive Styling */
+@media (max-width: 600px) {
+    .order-details-modal-content {
+        padding: 20px;
+    }
+
+    .order-details-modal-header h2 {
+        font-size: 20px;
+    }
+
+    .order-details-modal-body p {
+        font-size: 14px;
+    }
+
+    .order-details-modal-body ul li {
+        font-size: 14px;
+    }
+
+    .order-item, .fulfillment-entry {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
