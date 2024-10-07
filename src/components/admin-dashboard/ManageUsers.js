@@ -17,6 +17,9 @@ const ManageUsers = () => {
   const [creditAmount, setCreditAmount] = useState({});
   const [staffEmail, setStaffEmail] = useState('');
   const [staffUserId, setStaffUserId] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null); // For modal
+  const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility state
+
   const navigate = useNavigate();
   const { showNotification } = useNotification();
 
@@ -85,10 +88,10 @@ const ManageUsers = () => {
       showNotification('Failed to update user role. Please check the console for details.', 'error');
     }
   };
-  
-   // Handle user deletion
-   const handleDeleteUser = (userId) => {
-    console.log('Delete user ${userId}');
+
+  // Handle user deletion
+  const handleDeleteUser = (userId) => {
+    console.log(`Delete user ${userId}`);
   };
 
   // Handle credit addition
@@ -159,10 +162,22 @@ const ManageUsers = () => {
     setFilteredUsers(filtered);
   };
 
+  // Handle user click to open modal
+  const handleUserClick = (user) => {
+    setSelectedUser(user); // Set the selected user
+    setIsModalVisible(true); // Show the modal
+  };
+
+  // Close the modal
+  const closeModal = () => {
+    setIsModalVisible(false); // Hide the modal
+    setSelectedUser(null); // Clear the selected user
+  };
+
   return (
     <div className="manage-users-container">
       <h1 className="manage-users-title">Manage Users</h1>
-      
+
       {/* Search Bar */}
       <input
         type="text"
@@ -192,7 +207,7 @@ const ManageUsers = () => {
           </thead>
           <tbody>
             {filteredUsers.map((user, index) => (
-              <tr key={user.userId}>
+              <tr key={user.userId} onClick={() => handleUserClick(user)}>
                 <td>{index + 1}</td>
                 <td>{user.email}</td>
                 <td>{user.credits}</td>
@@ -257,6 +272,25 @@ const ManageUsers = () => {
             ))}
           </tbody>
         </table>
+      )}
+
+      {/* Modal for showing user details */}
+      {isModalVisible && selectedUser && (
+        <div className="modal" onClick={closeModal}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <span className="close" onClick={closeModal}>&times;</span>
+            <h2>User Information</h2>
+            <p><strong>Email:</strong> {selectedUser.email}</p>
+            <p><strong>Credits:</strong> {selectedUser.credits}</p>
+            <p>
+              <strong>Last Login:</strong>{' '}
+              {selectedUser.LastActiveTimestamp
+                ? new Date(selectedUser.LastActiveTimestamp).toLocaleString()
+                : 'N/A'}
+            </p>
+            <p><strong>Role:</strong> {selectedUser.role}</p>
+          </div>
+        </div>
       )}
     </div>
   );
