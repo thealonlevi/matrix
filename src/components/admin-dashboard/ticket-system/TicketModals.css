@@ -1,0 +1,164 @@
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8); /* Darker overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  /* Modal Content */
+  .modal-content {
+    background-color: #16181f; /* Even darker background for modal */
+    padding: 20px 30px; /* Further reduced padding */
+    border-radius: 8px; /* More compact corners */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+    max-width: 450px; /* Narrower width */
+    width: 100%;
+    max-height: 70vh;
+    overflow-y: auto;
+    border: none; /* Removed border */
+    position: relative;
+  }
+  
+  /* Modal Header */
+  .modal-content h2 {
+    color: #1abc9c; /* Changed to a brighter color */
+    margin-bottom: 10px; /* Less margin */
+    font-size: 20px; /* Reduced font size */
+    font-weight: 600; /* Semi-bold */
+    text-align: center; /* Center-aligned text */
+  }
+  
+  /* Modal Paragraphs */
+  .modal-content p {
+    color: #ced6e0; /* Lighter text color */
+    margin-bottom: 8px; /* Less margin */
+    font-size: 13px; /* Smaller font size */
+    line-height: 1.5;
+  }
+  
+  /* Modal Close Icon */
+  .modal-close-icon {
+    position: absolute;
+    top: 10px; /* Adjusted positioning */
+    right: 10px; /* Adjusted positioning */
+    font-size: 20px; /* Reduced size */
+    color: #ff6b6b; /* Changed color to a lighter red */
+    background-color: #2d3436; /* Added a background color */
+    padding: 5px;
+    border-radius: 50%; /* Circular background */
+    cursor: pointer;
+    transition: color 0.3s, background-color 0.3s;
+  }
+  
+  .modal-close-icon:hover {
+    color: #ffffff; /* White color on hover */
+    background-color: #d63031; /* Darker red background */
+  }
+  
+  /* Message Box */
+  .message-box {
+    background-color: #101217; /* Darker background for message box */
+    color: #dfe6e9; /* Lighter text color */
+    padding: 10px; /* Further reduced padding */
+    border-radius: 6px;
+    margin-bottom: 10px; /* Less margin */
+    font-size: 13px; /* Smaller font size */
+    max-height: 100px; /* Reduced height */
+    overflow-y: auto;
+  }
+  
+  /* History Container */
+  .history-container {
+    max-height: 120px; /* Reduced height */
+    overflow-y: auto;
+    background-color: #20232b; /* Darker background */
+    padding: 10px;
+    border-radius: 6px; /* Less rounded */
+    margin-bottom: 12px; /* Less margin */
+    border: none;
+  }
+  
+  .history-item {
+    margin-bottom: 6px; /* Less margin between items */
+    padding: 6px 8px;
+    background-color: #262a33; /* Darker item background */
+    border-radius: 4px; /* Compact border radius */
+  }
+  
+  .history-item p {
+    margin: 2px 0;
+    color: #dfe6e9; /* Light text color */
+  }
+  
+  /* Button Container */
+  .button-container {
+    display: flex;
+    gap: 10px; /* Further reduced gap */
+    margin-top: 15px; /* Less margin */
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  /* Icon Button Styles */
+  .icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px; /* Reduced padding */
+    border: none;
+    border-radius: 4px; /* Smaller radius */
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    width: 50px; /* Narrower button */
+    height: 45px; /* Shorter button */
+    font-size: 14px; /* Smaller font */
+    color: #ffffff;
+  }
+  
+  .icon-btn:hover {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* Issue Replacement Button */
+  .issue-replacement-btn {
+    background-color: #3498db;
+  }
+  
+  .issue-replacement-btn:hover {
+    background-color: #2980b9;
+  }
+  
+  /* Credit Button */
+  .credit-btn {
+    background-color: #f1c40f;
+  }
+  
+  .credit-btn:hover {
+    background-color: #f39c12;
+  }
+  
+  /* Resolve Button */
+  .resolve-btn {
+    background-color: #27ae60;
+  }
+  
+  .resolve-btn:hover {
+    background-color: #229954;
+  }
+  
+  /* Deny Replacement Button */
+  .deny-replacement-btn {
+    background-color: #e74c3c;
+  }
+  
+  .deny-replacement-btn:hover {
+    background-color: #c0392b;
+  }
+  

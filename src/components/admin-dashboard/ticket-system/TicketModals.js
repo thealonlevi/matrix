@@ -1,6 +1,24 @@
 // src/components/admin-dashboard/ticket-system/TicketModals.js
 import React from 'react';
-import { FaTimes, FaExchangeAlt, FaDollarSign, FaBan, FaCheckCircle } from 'react-icons/fa';
+import {
+  FaUser,
+  FaClock,
+  FaBox,
+  FaCartPlus,
+  FaTimes,
+  FaEdit,
+  FaExchangeAlt,
+  FaDollarSign,
+  FaCheckCircle,
+  FaBan,
+  FaSave,
+  FaEnvelope,
+  FaShoppingCart,
+  FaClipboardList,
+  FaCalendarAlt,
+  FaInfoCircle,
+  FaHistory,
+} from 'react-icons/fa';
 import Modal from 'react-modal';
 import './TicketModals.css';
 
@@ -26,25 +44,61 @@ export const TicketDetailsModal = ({
       <div>
         <FaTimes className="modal-close-icon" onClick={closeModal} />
         <h2>Ticket Details</h2>
-        <p><strong>Order ID:</strong> {selectedTicket.orderID}</p>
-        <p><strong>Email:</strong> {selectedTicket.userEmail}</p>
-        <p><strong>Product Name:</strong> {productTitle}</p>
-        <p><strong>Issue:</strong> {selectedTicket.issue}</p>
-        <p><strong>Status:</strong> {selectedTicket.status}</p>
-        <p><strong>Creation Date:</strong> {selectedTicket.creationDate}</p>
-        <p><strong>Replacements Asked:</strong> {selectedTicket.replacementsCountAsked || 0}</p>
-        <p><strong>Message:</strong></p>
+        <p>
+          <FaClipboardList /> <strong>Order ID:</strong> {selectedTicket.orderID}
+        </p>
+        <p>
+          <FaEnvelope /> <strong>Email:</strong> {selectedTicket.userEmail}
+        </p>
+        <p>
+          <FaShoppingCart /> <strong>Product Name:</strong> {productTitle}
+        </p>
+        <p>
+          <FaInfoCircle /> <strong>Issue:</strong> {selectedTicket.issue}
+        </p>
+        <p>
+          <FaCheckCircle /> <strong>Status:</strong> {selectedTicket.status}
+        </p>
+        <p>
+          <FaCalendarAlt /> <strong>Creation Date:</strong> {selectedTicket.creationDate}
+        </p>
+        <p>
+          <FaCartPlus /> <strong>Replacements Asked:</strong> {selectedTicket.replacementsCountAsked || 0}
+        </p>
+        <p>
+          <FaEdit /> <strong>Message:</strong>
+        </p>
         <div className="message-box">{selectedTicket.message || 'N/A'}</div>
-        <p><strong>History:</strong></p>
+        <p>
+          <FaHistory /> <strong>History:</strong>
+        </p>
         <div className="history-container">
           {selectedTicket.history?.map((historyItem, index) => (
             <div key={index} className="history-item">
-              <p><strong>Action:</strong> {historyItem.action}</p>
-              <p><strong>Operator:</strong> {historyItem.operator}</p>
-              <p><strong>Timestamp:</strong> {historyItem.timestamp}</p>
-              {historyItem.new_status && <p><strong>New Status:</strong> {historyItem.new_status}</p>}
-              {historyItem.exported_stock && <p><strong>Exported Stock:</strong> {historyItem.exported_stock}</p>}
-              {historyItem.quantity && <p><strong>Quantity:</strong> {historyItem.quantity}</p>}
+              <p>
+                <FaEdit /> <strong>Action:</strong> {historyItem.action}
+              </p>
+              <p>
+                <FaUser /> <strong>Operator:</strong> {historyItem.operator}
+              </p>
+              <p>
+                <FaClock /> <strong>Timestamp:</strong> {historyItem.timestamp}
+              </p>
+              {historyItem.new_status && (
+                <p>
+                  <FaExchangeAlt /> <strong>New Status:</strong> {historyItem.new_status}
+                </p>
+              )}
+              {historyItem.exported_stock && (
+                <p>
+                  <FaBox /> <strong>Exported Stock:</strong> {historyItem.exported_stock}
+                </p>
+              )}
+              {historyItem.quantity && (
+                <p>
+                  <FaCartPlus /> <strong>Quantity:</strong> {historyItem.quantity}
+                </p>
+              )}
             </div>
           ))}
         </div>
@@ -97,7 +151,9 @@ export const CreditModal = ({
     contentLabel="Credit Modal"
   >
     <FaTimes className="modal-close-icon" onClick={closeCreditModal} />
-    <h2>Add Credit</h2>
+    <h2>
+      <FaDollarSign /> Add Credit
+    </h2>
     <p>How much credit would you like to add?</p>
     <input
       type="number"
@@ -108,7 +164,7 @@ export const CreditModal = ({
     />
     <div className="button-container">
       <button onClick={handleAddCredit} className="confirm-btn">
-        Confirm
+        <FaSave /> Confirm
       </button>
     </div>
   </Modal>
@@ -130,7 +186,9 @@ export const ReplacementModal = ({
     contentLabel="Replacement Modal"
   >
     <FaTimes className="modal-close-icon" onClick={closeReplacementModal} />
-    <h2>Issue Replacement</h2>
+    <h2>
+      <FaExchangeAlt /> Issue Replacement
+    </h2>
     <p>How many replacements would you like to issue?</p>
     <input
       type="number"
@@ -140,7 +198,7 @@ export const ReplacementModal = ({
     />
     <div className="button-container">
       <button onClick={handleReplacement} className="confirm-btn">
-        Confirm
+        <FaSave /> Confirm
       </button>
     </div>
   </Modal>
