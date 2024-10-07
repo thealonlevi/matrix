@@ -1,91 +1,137 @@
-.admin-container {
+/* src/styles/AdminLayout.css */
+
+/* Global Font Settings */
+body {
+    font-family: 'Inter', sans-serif; /* Inter font for a more modern look */
+  }
+  
+  .admin-container {
     display: flex;
     min-height: 100vh;
-    background-color: #181a24; /* Darker background for better contrast */
-}
-
-.sidebar {
-    width: 250px;
-    background-color: #242b3d; /* Sidebar background matching the theme */
-    color: #e0e6ed; /* Lighter text color for better readability */
-    padding: 20px;
-    position: fixed; /* Fixed positioning for the sidebar */
+    background-color: #0c0e15; /* Slightly darker overall background */
+  }
+  
+  /* Sidebar Styling */
+  .sidebar {
+    width: 240px;
+    background: linear-gradient(145deg, #1b1e2b, #141621); /* Slight gradient for depth */
+    color: #d5d7e0; /* Lighter text for readability */
+    padding: 30px 15px;
+    position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
     display: flex;
-    flex-direction: column; /* Ensures content is aligned vertically */
-    z-index: 900; /* Ensure the header is above the sidebar */
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.7); /* Enhanced shadow for better depth */
-    border-right: 1px solid #3a3f4a; /* Add a subtle border on the right */
-}
-
-.sidebar h2 {
-    color: #3da1ff; /* Brighter blue for more emphasis */
-    margin-bottom: 20px;
-    font-size: 1.8em; /* Slightly larger font size for better readability */
-    font-weight: bold; /* Make the title stand out more */
-}
-
-.sidebar ul {
-    list-style-type: none;
+    flex-direction: column;
+    border-right: 1px solid #2e3242;
+    box-shadow: 6px 0 15px rgba(0, 0, 0, 0.4); /* Enhanced shadow for depth */
+    z-index: 1000;
+  }
+  
+  /* Sidebar Title Styling */
+  .sidebar h2 {
+    color: #6aaeff; /* Brighter blue for title */
+    margin-bottom: 30px;
+    font-size: 1.9em;
+    font-weight: 800;
+    letter-spacing: 1px; /* Increased letter spacing */
+    text-align: center;
+    text-shadow: 1px 1px 6px rgba(106, 174, 255, 0.3); /* Subtle text shadow */
+  }
+  
+  /* Sidebar List Container */
+  .sidebar ul {
+    list-style: none;
     padding: 0;
-    flex-grow: 1; /* Allows the list to take up available space */
-}
-
-.sidebar ul li {
+    margin: 0;
+    flex-grow: 1;
+  }
+  
+  /* Sidebar List Items */
+  .sidebar ul li {
     margin: 20px 0;
-}
-
-.sidebar ul li a {
-    color: #b0bec5; /* Lighter link color for better contrast */
+  }
+  
+  /* Sidebar Link Styling */
+  .sidebar ul li a {
+    color: #c4cad4;
     text-decoration: none;
-    font-weight: bold;
-    padding: 12px 15px; /* Increased padding for better spacing */
-    display: block; /* Make the link a block element for full-width clickability */
-    border-radius: 6px; /* Slightly more rounded corners */
-    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
-}
-
-.sidebar ul li a:hover {
-    color: #ffffff; /* Hover color */
-    background-color: #2b334a; /* Hover background color */
-    box-shadow: 0px 0px 10px rgba(43, 51, 74, 0.5); /* Add subtle shadow on hover */
-}
-
-.sidebar ul li a.active {
-    color: #ffffff; /* Active link text color */
-    background-color: #3a7bd5; /* Brighter blue for the active state */
-    font-weight: bold; /* Bold text for active link */
-    text-decoration: none; /* Remove underline */
-    border-left: 6px solid #ffffff; /* Thicker left border to highlight active state */
-    padding-left: 14px; /* Adjust padding to accommodate left border */
-    box-shadow: 0px 0px 15px rgba(58, 123, 213, 0.8); /* Add more pronounced glow to active link */
-    cursor: default; /* Change the cursor to default to indicate it’s not a typical link */
-}
-
-.sidebar ul li.active {
-    background-color: #1f2738; /* Slightly darker background to highlight active item */
-    border-radius: 8px; /* Rounding for a softer appearance */
-}
-
-.sidebar ul li.active > a {
-    pointer-events: none; /* Disable clicking on the active link to prevent reloads */
-}
-
-.main-content {
-    flex: 1;
-    padding: 25px; /* Slightly increased padding for better spacing */
-    margin-left: 250px; /* Adjust margin to make space for the fixed sidebar */
-    background-color: #202433; /* Darker main content background for better contrast */
+    font-size: 16px;
+    font-weight: 500;
+    padding: 14px 18px; /* Slightly larger padding */
+    display: block; /* Full width clickable */
+    border-radius: 10px; /* Softer corners */
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+  }
+  
+  /* Sidebar Link Hover State */
+  .sidebar ul li a:hover {
+    background: #2b334a; /* Slightly brighter background on hover */
     color: #ffffff;
-    overflow-y: auto; /* Allows scrolling if content overflows */
-    box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.7); /* Subtle shadow for depth */
-}
-
-.main-content h1 {
-    margin-top: 0;
-    color: #3da1ff; /* Brighter header color matching the primary blue */
-    font-size: 2em; /* Increase font size for better visibility */
-    text-shadow: 1px 1px 5px rgba(58, 123, 213, 0.5); /* Add subtle text shadow */
-}
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.2); /* Glow effect on hover */
+    box-shadow: 0 4px 10px rgba(43, 51, 74, 0.7); /* Add shadow effect */
+  }
+  
+  /* Sidebar Active Link State */
+  .sidebar ul li a.active {
+    color: #ffffff;
+    background: #3d4b6c; /* Use a distinct color for active link */
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(106, 174, 255, 0.5); /* Add shadow to active text */
+    border-left: 6px solid #6aaeff; /* Thicker left border for active link */
+    box-shadow: inset 0 0 10px rgba(106, 174, 255, 0.3); /* Inner shadow for active state */
+    cursor: default; /* Disable pointer cursor for active link */
+  }
+  
+  /* Active Link Hover Effect */
+  .sidebar ul li a.active:hover {
+    background: #34415b;
+    color: #ffffff;
+  }
+  
+  /* Main Content Area */
+  .main-content {
+    margin-left: 240px;
+    padding: 35px;
+    background-color: #11131a; /* Slightly different dark background */
+    color: #e0e6ed;
+    box-shadow: inset 0px 0px 20px rgba(0, 0, 0, 0.7); /* Subtle shadow for depth */
+  }
+  
+  /* Main Content Header */
+  .main-content h1 {
+    font-size: 2.2em;
+    color: #6aaeff; /* Brighter header color matching sidebar */
+    font-weight: 700;
+    text-shadow: 1px 1px 8px rgba(106, 174, 255, 0.5); /* Subtle text shadow */
+    margin-bottom: 25px;
+  }
+  
+  /* Responsive Sidebar for Small Screens */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 200px; /* Narrower sidebar on small screens */
+    }
+  
+    .main-content {
+      margin-left: 200px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .sidebar {
+      position: fixed;
+      left: -200px;
+      transition: left 0.3s ease;
+    }
+  
+    .sidebar.open {
+      left: 0;
+    }
+  
+    .main-content {
+      margin-left: 0;
+    }
+  }
+  
