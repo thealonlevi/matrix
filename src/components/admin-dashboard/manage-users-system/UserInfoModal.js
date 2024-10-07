@@ -1,16 +1,39 @@
 import React, { useState } from 'react';
-import { FaUser, FaClock, FaStickyNote, FaDesktop, FaGlobe, FaList, FaHistory, FaIdCard, FaServer } from 'react-icons/fa';
+import { FaTimes, FaSave, FaUser, FaClock, FaStickyNote, FaDesktop, FaGlobe, FaList, FaHistory, FaServer } from 'react-icons/fa';
 import { MdEditNote } from 'react-icons/md';
-import StaffNotesModal from './StaffNotesModal';
+import Modal from 'react-modal';
 import './UserInfoModal.css';
+import { insertUserNote } from '../../../utils/api';
+import { getProductTitleById } from '../utils/adminUtils'; // Function to get product titles by ID
 
 const UserInfoModal = ({ isModalVisible, closeModal, selectedUser }) => {
-  const [isStaffNotesVisible, setIsStaffNotesVisible] = useState(false);
+  const [addNoteModalOpen, setAddNoteModalOpen] = useState(false);
+  const [newNoteContent, setNewNoteContent] = useState('');
+
+  // Function to handle note submission
+  const handleNoteSubmit = async () => {
+    try {
+      const userEmail = selectedUser.email;
+      await insertUserNote(userEmail, newNoteContent);
+      setNewNoteContent('');
+      setAddNoteModalOpen(false);
+      alert('Note added successfully!');
+    } catch (error) {
+      console.error('Failed to add note:', error);
+    }
+  };
 
   if (!isModalVisible || !selectedUser) return null;
 
-  // Safe access to metrics.fqoq, handle undefined cases
-  const fqoq = selectedUser.metrics && selectedUser.metrics.fqoq ? selectedUser.metrics.fqoq : {};
+  // Extract FQOQ metrics dynamically from selectedUser object and convert keys to product titles
+  const fqoqMetrics = Object.keys(selectedUser)
+    .filter(key => key.startsWith('metrics.fqoq.'))
+    .reduce((result, key) => {
+      const productId = key.replace('metrics.fqoq.', ''); // Get the product ID
+      const productTitle = getProductTitleById(productId) || productId; // Convert ID to title
+      result[productTitle] = selectedUser[key]; // Use product title as the key
+      return result;
+    }, {});
 
   return (
     <div className="userInfoModal-overlay" onClick={closeModal}>
@@ -35,85 +58,74 @@ const UserInfoModal = ({ isModalVisible, closeModal, selectedUser }) => {
         {/* Geolocation Data */}
         <h3 className="userInfoModal-sectionTitle">Geolocation Data:</h3>
         <p className="userInfoModal-info"><FaGlobe /> <strong>IP Address:</strong> {selectedUser.GeolocationData.ip}</p>
-        <p className="userInfoModal-info"><FaGlobe /> <strong>City:</strong> {selectedUser.GeolocationData.city}</p>
-        <p className="userInfoModal-info"><FaGlobe /> <strong>Country:</strong> {selectedUser.GeolocationData.country}</p>
-
-        {/* IP Address History */}
-        <h3 className="userInfoModal-sectionTitle">IP Address History:</h3>
-        {selectedUser.IPAddresses && selectedUser.IPAddresses.length > 0 ? (
-          <ul className="userInfoModal-info">
-            {selectedUser.IPAddresses.map((ip, index) => (
-              <li key={index}>{ip.S}</li>
-            ))}
-          </ul>
-        ) : (
-          <p>No IP Addresses recorded.</p>
-        )}
 
         {/* Metrics (Faulty Quantity to Ordered Quantity Ratios) */}
         <h3 className="userInfoModal-sectionTitle">Metrics (FQOQ Ratios):</h3>
-        <p className="userInfoModal-info"><FaList /> <strong>Product 20/27:</strong> {fqoq['20/27'] || 'N/A'}</p>
-        <p className="userInfoModal-info"><FaList /> <strong>Product 21/73:</strong> {fqoq['21/73'] || 'N/A'}</p>
-
-        {/* Order History */}
-        <h3 className="userInfoModal-sectionTitle">Order History:</h3>
-        {selectedUser.OrderHistory && selectedUser.OrderHistory.length > 0 ? (
+        {Object.keys(fqoqMetrics).length > 0 ? (
           <ul className="userInfoModal-info">
-            {selectedUser.OrderHistory.map((order, index) => (
-              <li key={index}><FaHistory /> {order.S}</li>
+            {Object.entries(fqoqMetrics).map(([key, value]) => (
+              <li key={key}><FaList /> <strong>{key}:</strong> {value}</li>
             ))}
           </ul>
+        ) : (
+          <p>No FQOQ metrics available.</p>
+        )}
+
+        {/* Order History - Scrollable Box */}
+        <h3 className="userInfoModal-sectionTitle">Order History:</h3>
+        {selectedUser.OrderHistory && selectedUser.OrderHistory.length > 0 ? (
+          <div className="order-history-container">
+            <ul className="userInfoModal-info order-history-list">
+              {selectedUser.OrderHistory.map((order, index) => (
+                <li key={index}><FaHistory /> {order}</li>
+              ))}
+            </ul>
+          </div>
         ) : (
           <p>No orders found.</p>
         )}
 
-        {/* User Notes */}
-        <h3 className="userInfoModal-sectionTitle">User Notes:</h3>
-        {selectedUser.user_notes && selectedUser.user_notes.length > 0 ? (
-          <ul className="userInfoModal-info">
-            {selectedUser.user_notes.map((note, index) => (
-              <li key={index}>
-                <p><FaUser /> <strong>Staff:</strong> {note.M && note.M.staff_email ? note.M.staff_email.S : 'N/A'}</p>
-                <p><FaClock /> <strong>Timestamp:</strong> {note.M && note.M.timestamp ? note.M.timestamp.S : 'N/A'}</p>
-                <div><FaStickyNote /> {note.M && note.M.note_content ? note.M.note_content.S : 'No Content'}</div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No user notes available.</p>
-        )}
-
-        {/* Staff Notes */}
-        <h3 className="userInfoModal-notesTitle">Staff Notes:</h3>
-        <div className="userInfoModal-notesContainer">
+        {/* Staff Notes Section */}
+        <h3 className="userInfoModal-sectionTitle">Staff Notes:</h3>
+        <div className="notes-container">
           {selectedUser.staff_notes && selectedUser.staff_notes.length > 0 ? (
-            <ul>
-              {selectedUser.staff_notes.map((note, index) => (
-                <li key={index}>
-                  <p><FaUser /> <strong>Staff:</strong> {note.M && note.M.staff_email ? note.M.staff_email.S : 'N/A'}</p>
-                  <p><FaClock /> <strong>Timestamp:</strong> {note.M && note.M.timestamp ? new Date(note.M.timestamp.S).toLocaleString() : 'N/A'}</p>
-                  <div><FaStickyNote /> {note.M && note.M.note_content ? note.M.note_content.S : 'No Content'}</div>
-                </li>
-              ))}
-            </ul>
+            selectedUser.staff_notes.map((note, index) => (
+              <div key={index} className="note-item">
+                <p><FaUser /> <strong>Staff:</strong> {note.staff_email}</p>
+                <p><FaClock /> <strong>Timestamp:</strong> {note.timestamp}</p>
+                <div className="note-content"><FaStickyNote /> {note.note_content}</div>
+              </div>
+            ))
           ) : (
-            <p>No staff notes available.</p>
+            <p>No notes added yet.</p>
           )}
-          <MdEditNote
-            size={30}
-            className="userInfoModal-addNoteIcon"
-            onClick={() => setIsStaffNotesVisible(true)}
-          />
+          {/* Clickable Pencil with Paper Icon for Adding Note */}
+          <MdEditNote size={24} className="add-note-icon" onClick={() => setAddNoteModalOpen(true)} />
         </div>
 
-        {/* Secondary modal for staff notes */}
-        {isStaffNotesVisible && (
-          <StaffNotesModal
-            isVisible={isStaffNotesVisible}
-            closeModal={() => setIsStaffNotesVisible(false)}
-            selectedUser={selectedUser}
+        {/* Add Note Modal */}
+        <Modal
+          isOpen={addNoteModalOpen}
+          onRequestClose={() => setAddNoteModalOpen(false)}
+          className="modal-content"
+          overlayClassName="modal-overlay"
+          contentLabel="Add Note Modal"
+        >
+          <FaTimes className="modal-close-icon" onClick={() => setAddNoteModalOpen(false)} />
+          <h2><FaStickyNote /> Add Staff Note</h2>
+          <textarea
+            value={newNoteContent}
+            onChange={(e) => setNewNoteContent(e.target.value)}
+            placeholder="Enter your note here..."
+            rows="4"
+            className="note-textarea"
           />
-        )}
+          <div className="button-container">
+            <button onClick={handleNoteSubmit} className="confirm-btn">
+              <FaSave /> Submit Note
+            </button>
+          </div>
+        </Modal>
       </div>
     </div>
   );

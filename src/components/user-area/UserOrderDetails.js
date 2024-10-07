@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Button from '@mui/material/Button'; // Import MUI Button
 import './styles/UserOrderDetails.css'; // Import relevant styles
 
 const UserOrderDetails = () => {
@@ -57,25 +56,7 @@ const UserOrderDetails = () => {
         </>
       )}
 
-      <div className="button-section">
-        {/* MUI Buttons */}
-        <Button 
-          variant="contained" 
-          color="error"
-          size="large"
-          sx={{ marginRight: 2 }}
-        >
-          View Fulfillment History
-        </Button>
-
-        <Button 
-          variant="contained" 
-          color="primary"
-          size="large"
-        >
-          Back to Orders
-        </Button>
-      </div>
+      
     </div>
   );
 };

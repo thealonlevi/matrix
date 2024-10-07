@@ -66,84 +66,30 @@
     font-size: 15px;
 }
 
-/* Notes Section */
-.userInfoModal-notesTitle {
-    margin-top: 20px;
-    color: #e1d295;
-    font-size: 18px;
-    margin-bottom: 10px;
-}
-
-/* Notes Container */
-.userInfoModal-notesContainer {
+/* Scrollable Containers */
+.scrollable-container {
+    overflow-y: auto;
+    border: 1px solid #3e3b25;
     background-color: #3e3b25;
     border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 20px;
-    overflow-y: auto;
-    max-height: 200px;
-    position: relative;
-}
-
-/* Notes List */
-.userInfoModal-notesList {
-    list-style-type: none;
-    padding: 0;
-}
-
-/* Individual Note Item */
-.userInfoModal-noteItem {
-    margin-bottom: 10px;
     padding: 10px;
-    background-color: #554e23;
-    border-left: 4px solid #d2b23d;
-    border-radius: 5px;
-    border: none;
+    max-height: 150px;
+    margin-bottom: 20px;
 }
 
-/* Note Detail */
-.userInfoModal-noteDetail {
-    margin-bottom: 5px;
-    color: #e1d295;
-    font-size: 14px;
-}
-
-/* Note Content Styling */
-.userInfoModal-noteContent {
-    margin-top: 5px;
-    padding: 8px;
-    border-radius: 5px;
-    background-color: #4e4314;
-    color: #e1d295;
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-/* Add Note Pencil Icon */
-.userInfoModal-addNoteIcon {
-    color: #e1d295;
-    font-size: 24px;
-    cursor: pointer;
-    transition: color 0.3s;
-    position: absolute;
-    top: 10px;
-    right: 15px;
-}
-
-.userInfoModal-addNoteIcon:hover {
-    color: #ffffff;
-}
-
-/* Scrollbar for Notes Container */
+/* Consistent Scrollbar for Containers */
+.scrollable-container::-webkit-scrollbar,
 .userInfoModal-notesContainer::-webkit-scrollbar {
     width: 6px;
 }
 
+.scrollable-container::-webkit-scrollbar-thumb,
 .userInfoModal-notesContainer::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 3px;
 }
 
+.scrollable-container::-webkit-scrollbar-track,
 .userInfoModal-notesContainer::-webkit-scrollbar-track {
     background-color: transparent;
 }
@@ -164,19 +110,66 @@
     border-left: 4px solid #e1d295;
 }
 
+/* List Item Last Child */
 .userInfoModal-listItem:last-child {
     margin-bottom: 0;
 }
 
-/* Metrics Data */
-.userInfoModal-metricItem {
-    background-color: #2e2e2e;
-    padding: 8px;
-    border-radius: 4px;
+/* Order History Scrollable Container */
+.order-history-container {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #2f2f2f;
+}
+
+/* Order History List */
+.order-history-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.order-history-list li {
+    margin-bottom: 8px;
     color: #e1d295;
+}
+
+/* Note Items */
+.note-item {
     margin-bottom: 10px;
-    font-size: 14px;
+    padding: 10px;
+    background-color: #554e23;
     border-left: 4px solid #d2b23d;
+    border-radius: 5px;
+}
+
+/* Note Content Styling */
+.note-content {
+    margin-top: 5px;
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #4e4314;
+    color: #e1d295;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Add Note Pencil Icon */
+.add-note-icon {
+    color: #e1d295;
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.3s;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+}
+
+.add-note-icon:hover {
+    color: #ffffff;
 }
 
 /* Additional Spacing for Bottom Content */
