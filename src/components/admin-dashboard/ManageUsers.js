@@ -167,10 +167,12 @@ const ManageUsers = () => {
   const handleUserClick = (user) => {
     setSelectedUser(user); // Set the selected user
     setIsModalVisible(true); // Show the modal
+    console.log("visible")
   };
 
   // Close the modal
   const closeModal = () => {
+    console.log("Invisible")
     setIsModalVisible(false); // Hide the modal
     setSelectedUser(null); // Clear the selected user
   };

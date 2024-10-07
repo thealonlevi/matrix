@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { FaTimes, FaSave, FaUser, FaClock, FaStickyNote, FaDesktop, FaGlobe, FaList, FaHistory, FaServer } from 'react-icons/fa';
+import { FaServer, FaUser, FaClock, FaDollarSign, FaEnvelope, FaDesktop, FaGlobe, FaList, FaHistory, FaStickyNote, FaTimes, FaInfoCircle, FaSave } from 'react-icons/fa';
 import { MdEditNote } from 'react-icons/md';
 import Modal from 'react-modal';
 import './UserInfoModal.css';
 import { insertUserNote } from '../../../utils/api';
 import { getProductTitleById } from '../utils/adminUtils'; // Function to get product titles by ID
+
+// Ensure Modal is attached to the correct root element
+Modal.setAppElement('#root'); // Change this if your root ID is different
 
 const UserInfoModal = ({ isModalVisible, closeModal, selectedUser }) => {
   const [addNoteModalOpen, setAddNoteModalOpen] = useState(false);
@@ -36,70 +39,85 @@ const UserInfoModal = ({ isModalVisible, closeModal, selectedUser }) => {
     }, {});
 
   return (
-    <div className="userInfoModal-overlay" onClick={closeModal}>
-      <div className="userInfoModal-content" onClick={(e) => e.stopPropagation()}>
-        <span className="userInfoModal-close" onClick={closeModal}>&times;</span>
-        <h2 className="userInfoModal-title">User Information</h2>
+    <Modal
+      isOpen={isModalVisible}
+      onRequestClose={closeModal}
+      className="modal-content"
+      overlayClassName="modal-overlay"
+      contentLabel="User Information Modal"
+    >
+      <div>
+        <div className="modal-header">
+          <h2><FaUser /> User Information</h2>
+          <FaTimes className="modal-close-icon" onClick={closeModal} />
+        </div>
 
-        {/* Basic User Information */}
-        <p className="userInfoModal-info"><strong>Email:</strong> {selectedUser.email}</p>
-        <p className="userInfoModal-info"><strong>Credits:</strong> {selectedUser.credits}</p>
-        <p className="userInfoModal-info">
-          <strong>Last Login:</strong> {selectedUser.LastActiveTimestamp ? new Date(selectedUser.LastActiveTimestamp).toLocaleString() : 'N/A'}
-        </p>
-        <p className="userInfoModal-info"><strong>Role:</strong> {selectedUser.role}</p>
+        {/* User Information */}
+        <div className="modal-section">
+          <p><FaEnvelope /> <strong>Email:</strong> {selectedUser.email}</p>
+          <p><FaDollarSign /> <strong>Credits:</strong> {selectedUser.credits}</p>
+          <p><FaClock /> <strong>Last Login:</strong> {selectedUser.LastActiveTimestamp ? new Date(selectedUser.LastActiveTimestamp).toLocaleString() : 'N/A'}</p>
+          <p><FaUser /> <strong>Role:</strong> {selectedUser.role}</p>
+        </div>
 
         {/* Device Information */}
-        <h3 className="userInfoModal-sectionTitle">Device Information:</h3>
-        <p className="userInfoModal-info"><FaDesktop /> <strong>Device Type:</strong> {selectedUser.DeviceInformation.deviceType}</p>
-        <p className="userInfoModal-info"><FaServer /> <strong>Platform:</strong> {selectedUser.DeviceInformation.platform}</p>
-        <p className="userInfoModal-info"><FaGlobe /> <strong>User Agent:</strong> {selectedUser.DeviceInformation.userAgent}</p>
+        <h3 className="userInfoModal-sectionTitle"><FaDesktop /> Device Information</h3>
+        <div className="modal-section">
+          <p><FaDesktop /> <strong>Device Type:</strong> {selectedUser.DeviceInformation.deviceType}</p>
+          <p><FaServer /> <strong>Platform:</strong> {selectedUser.DeviceInformation.platform}</p>
+          <p><FaGlobe /> <strong>User Agent:</strong> {selectedUser.DeviceInformation.userAgent}</p>
+        </div>
 
         {/* Geolocation Data */}
-        <h3 className="userInfoModal-sectionTitle">Geolocation Data:</h3>
-        <p className="userInfoModal-info"><FaGlobe /> <strong>IP Address:</strong> {selectedUser.GeolocationData.ip}</p>
+        <h3 className="userInfoModal-sectionTitle"><FaGlobe /> Geolocation Data</h3>
+        <div className="modal-section">
+          <p><FaGlobe /> <strong>IP Address:</strong> {selectedUser.GeolocationData.ip}</p>
+        </div>
 
-        {/* Metrics (Faulty Quantity to Ordered Quantity Ratios) */}
-        <h3 className="userInfoModal-sectionTitle">Metrics (FQOQ Ratios):</h3>
-        {Object.keys(fqoqMetrics).length > 0 ? (
-          <ul className="userInfoModal-info">
-            {Object.entries(fqoqMetrics).map(([key, value]) => (
-              <li key={key}><FaList /> <strong>{key}:</strong> {value}</li>
-            ))}
-          </ul>
-        ) : (
-          <p>No FQOQ metrics available.</p>
-        )}
+        {/* Metrics */}
+        <h3 className="userInfoModal-sectionTitle"><FaList /> Metrics (FQOQ Ratios)</h3>
+        <div className="modal-section scrollable-container">
+          {Object.keys(fqoqMetrics).length > 0 ? (
+            <ul className="userInfoModal-info">
+              {Object.entries(fqoqMetrics).map(([key, value]) => (
+                <li key={key}><FaList /> <strong>{key}:</strong> {value}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>No FQOQ metrics available.</p>
+          )}
+        </div>
 
         {/* Order History - Scrollable Box */}
-        <h3 className="userInfoModal-sectionTitle">Order History:</h3>
-        {selectedUser.OrderHistory && selectedUser.OrderHistory.length > 0 ? (
-          <div className="order-history-container">
+        <h3 className="userInfoModal-sectionTitle"><FaHistory /> Order History</h3>
+        <div className="modal-section scrollable-container">
+          {selectedUser.OrderHistory && selectedUser.OrderHistory.length > 0 ? (
             <ul className="userInfoModal-info order-history-list">
               {selectedUser.OrderHistory.map((order, index) => (
                 <li key={index}><FaHistory /> {order}</li>
               ))}
             </ul>
-          </div>
-        ) : (
-          <p>No orders found.</p>
-        )}
+          ) : (
+            <p>No orders found.</p>
+          )}
+        </div>
 
-        {/* Staff Notes Section */}
-        <h3 className="userInfoModal-sectionTitle">Staff Notes:</h3>
-        <div className="notes-container">
+        {/* Staff Notes */}
+        <h3 className="userInfoModal-sectionTitle"><FaStickyNote /> Staff Notes</h3>
+        <div className="modal-section notes-container">
           {selectedUser.staff_notes && selectedUser.staff_notes.length > 0 ? (
             selectedUser.staff_notes.map((note, index) => (
               <div key={index} className="note-item">
                 <p><FaUser /> <strong>Staff:</strong> {note.staff_email}</p>
                 <p><FaClock /> <strong>Timestamp:</strong> {note.timestamp}</p>
-                <div className="note-content"><FaStickyNote /> {note.note_content}</div>
+                <div className="note-content">
+                  <FaStickyNote /> {note.note_content}
+                </div>
               </div>
             ))
           ) : (
             <p>No notes added yet.</p>
           )}
-          {/* Clickable Pencil with Paper Icon for Adding Note */}
           <MdEditNote size={24} className="add-note-icon" onClick={() => setAddNoteModalOpen(true)} />
         </div>
 
@@ -111,8 +129,10 @@ const UserInfoModal = ({ isModalVisible, closeModal, selectedUser }) => {
           overlayClassName="modal-overlay"
           contentLabel="Add Note Modal"
         >
-          <FaTimes className="modal-close-icon" onClick={() => setAddNoteModalOpen(false)} />
-          <h2><FaStickyNote /> Add Staff Note</h2>
+          <div className="modal-header">
+            <h2><FaStickyNote /> Add Staff Note</h2>
+            <FaTimes className="modal-close-icon" onClick={() => setAddNoteModalOpen(false)} />
+          </div>
           <textarea
             value={newNoteContent}
             onChange={(e) => setNewNoteContent(e.target.value)}
@@ -127,7 +147,7 @@ const UserInfoModal = ({ isModalVisible, closeModal, selectedUser }) => {
           </div>
         </Modal>
       </div>
-    </div>
+    </Modal>
   );
 };
 
