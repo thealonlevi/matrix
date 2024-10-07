@@ -49,6 +49,16 @@
     text-align: center;
 }
 
+/* Section Titles */
+.userInfoModal-sectionTitle {
+    color: #e1d295;
+    margin-top: 20px;
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
 /* Information Paragraph */
 .userInfoModal-info {
     color: #ced6e0;
@@ -56,7 +66,7 @@
     font-size: 15px;
 }
 
-/* Staff Notes Section */
+/* Notes Section */
 .userInfoModal-notesTitle {
     margin-top: 20px;
     color: #e1d295;
@@ -109,79 +119,22 @@
     line-height: 1.5;
 }
 
-/* Compose Note Container */
-.userInfoModal-composeNoteContainer {
-    background-color: #262a33;
-    border-radius: 8px;
-    padding: 20px;
-    margin-top: 20px;
-    position: relative;
-}
-
-/* Compose Note Title */
-.userInfoModal-composeNoteTitle {
-    color: #e1d295;
-    font-size: 18px;
-    margin-bottom: 10px;
-}
-
-/* Textarea for Note */
-.userInfoModal-noteTextarea {
-    width: 100%;
-    background-color: #101217;
-    color: #dfe6e9;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 10px;
-    font-size: 14px;
-    border: 1px solid #555;
-    resize: none;
-}
-
-/* Button Container */
-.userInfoModal-buttonContainer {
-    display: flex;
-    justify-content: flex-end;
-}
-
-/* Add Note Button */
-.userInfoModal-addNoteButton {
-    background-color: #3498db;
-    color: #ffffff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.userInfoModal-addNoteButton:hover {
-    background-color: #2980b9;
-}
-
 /* Add Note Pencil Icon */
 .userInfoModal-addNoteIcon {
-    color: #e1d295; /* Icon color */
-    font-size: 24px; /* Increased icon size */
+    color: #e1d295;
+    font-size: 24px;
     cursor: pointer;
     transition: color 0.3s;
     position: absolute;
-    top: 10px; /* Positioning relative to the container */
-    right: 15px; /* Positioning relative to the container */
+    top: 10px;
+    right: 15px;
 }
 
 .userInfoModal-addNoteIcon:hover {
-    color: #ffffff; /* White icon color on hover */
+    color: #ffffff;
 }
 
-/* No Notes Available */
-.userInfoModal-noNotes {
-    color: #dfe6e9;
-    text-align: center;
-    margin-top: 10px;
-}
-
-/* Transparent Scrollbar for Notes Container */
+/* Scrollbar for Notes Container */
 .userInfoModal-notesContainer::-webkit-scrollbar {
     width: 6px;
 }
@@ -193,4 +146,56 @@
 
 .userInfoModal-notesContainer::-webkit-scrollbar-track {
     background-color: transparent;
+}
+
+/* IP Addresses and Order History Lists */
+.userInfoModal-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.userInfoModal-listItem {
+    background-color: #2f2f2f;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #e1d295;
+    border-left: 4px solid #e1d295;
+}
+
+.userInfoModal-listItem:last-child {
+    margin-bottom: 0;
+}
+
+/* Metrics Data */
+.userInfoModal-metricItem {
+    background-color: #2e2e2e;
+    padding: 8px;
+    border-radius: 4px;
+    color: #e1d295;
+    margin-bottom: 10px;
+    font-size: 14px;
+    border-left: 4px solid #d2b23d;
+}
+
+/* Additional Spacing for Bottom Content */
+.userInfoModal-bottomSpacer {
+    margin-bottom: 20px;
+}
+
+/* Toggle Button for Order History */
+.userInfoModal-toggleButton {
+    background-color: #1abc9c;
+    color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    margin-top: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.userInfoModal-toggleButton:hover {
+    background-color: #16a085;
 }

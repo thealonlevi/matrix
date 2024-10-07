@@ -1,43 +1,24 @@
 import React, { useState } from 'react';
-import { insertUserNote } from '../../../utils/api';
-import { FaUser, FaClock, FaStickyNote } from 'react-icons/fa';
+import { FaUser, FaClock, FaStickyNote, FaDesktop, FaGlobe, FaList, FaHistory, FaIdCard, FaServer } from 'react-icons/fa';
 import { MdEditNote } from 'react-icons/md';
+import StaffNotesModal from './StaffNotesModal';
 import './UserInfoModal.css';
 
 const UserInfoModal = ({ isModalVisible, closeModal, selectedUser }) => {
-  const [newNoteContent, setNewNoteContent] = useState(''); // State to hold new note content
-  const [isSubmitting, setIsSubmitting] = useState(false); // State for submission status
-  const [isComposeVisible, setIsComposeVisible] = useState(false); // State to handle compose form visibility
+  const [isStaffNotesVisible, setIsStaffNotesVisible] = useState(false);
 
   if (!isModalVisible || !selectedUser) return null;
 
-  // Handle note submission
-  const handleNoteSubmit = async () => {
-    if (!newNoteContent.trim()) {
-      alert('Please enter a valid note.');
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      // Pass the selected user's email and the new note content to insertUserNote
-      await insertUserNote(selectedUser.email, newNoteContent);
-      alert('Note added successfully!');
-      setNewNoteContent(''); // Clear the note content after submission
-      setIsComposeVisible(false); // Hide the compose form
-    } catch (error) {
-      console.error('Failed to insert user note:', error);
-      alert('Failed to add note. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  // Safe access to metrics.fqoq, handle undefined cases
+  const fqoq = selectedUser.metrics && selectedUser.metrics.fqoq ? selectedUser.metrics.fqoq : {};
 
   return (
     <div className="userInfoModal-overlay" onClick={closeModal}>
       <div className="userInfoModal-content" onClick={(e) => e.stopPropagation()}>
         <span className="userInfoModal-close" onClick={closeModal}>&times;</span>
         <h2 className="userInfoModal-title">User Information</h2>
+
+        {/* Basic User Information */}
         <p className="userInfoModal-info"><strong>Email:</strong> {selectedUser.email}</p>
         <p className="userInfoModal-info"><strong>Credits:</strong> {selectedUser.credits}</p>
         <p className="userInfoModal-info">
@@ -45,46 +26,93 @@ const UserInfoModal = ({ isModalVisible, closeModal, selectedUser }) => {
         </p>
         <p className="userInfoModal-info"><strong>Role:</strong> {selectedUser.role}</p>
 
-        {/* Display Staff Notes */}
+        {/* Device Information */}
+        <h3 className="userInfoModal-sectionTitle">Device Information:</h3>
+        <p className="userInfoModal-info"><FaDesktop /> <strong>Device Type:</strong> {selectedUser.DeviceInformation.deviceType}</p>
+        <p className="userInfoModal-info"><FaServer /> <strong>Platform:</strong> {selectedUser.DeviceInformation.platform}</p>
+        <p className="userInfoModal-info"><FaGlobe /> <strong>User Agent:</strong> {selectedUser.DeviceInformation.userAgent}</p>
+
+        {/* Geolocation Data */}
+        <h3 className="userInfoModal-sectionTitle">Geolocation Data:</h3>
+        <p className="userInfoModal-info"><FaGlobe /> <strong>IP Address:</strong> {selectedUser.GeolocationData.ip}</p>
+        <p className="userInfoModal-info"><FaGlobe /> <strong>City:</strong> {selectedUser.GeolocationData.city}</p>
+        <p className="userInfoModal-info"><FaGlobe /> <strong>Country:</strong> {selectedUser.GeolocationData.country}</p>
+
+        {/* IP Address History */}
+        <h3 className="userInfoModal-sectionTitle">IP Address History:</h3>
+        {selectedUser.IPAddresses && selectedUser.IPAddresses.length > 0 ? (
+          <ul className="userInfoModal-info">
+            {selectedUser.IPAddresses.map((ip, index) => (
+              <li key={index}>{ip.S}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No IP Addresses recorded.</p>
+        )}
+
+        {/* Metrics (Faulty Quantity to Ordered Quantity Ratios) */}
+        <h3 className="userInfoModal-sectionTitle">Metrics (FQOQ Ratios):</h3>
+        <p className="userInfoModal-info"><FaList /> <strong>Product 20/27:</strong> {fqoq['20/27'] || 'N/A'}</p>
+        <p className="userInfoModal-info"><FaList /> <strong>Product 21/73:</strong> {fqoq['21/73'] || 'N/A'}</p>
+
+        {/* Order History */}
+        <h3 className="userInfoModal-sectionTitle">Order History:</h3>
+        {selectedUser.OrderHistory && selectedUser.OrderHistory.length > 0 ? (
+          <ul className="userInfoModal-info">
+            {selectedUser.OrderHistory.map((order, index) => (
+              <li key={index}><FaHistory /> {order.S}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No orders found.</p>
+        )}
+
+        {/* User Notes */}
+        <h3 className="userInfoModal-sectionTitle">User Notes:</h3>
+        {selectedUser.user_notes && selectedUser.user_notes.length > 0 ? (
+          <ul className="userInfoModal-info">
+            {selectedUser.user_notes.map((note, index) => (
+              <li key={index}>
+                <p><FaUser /> <strong>Staff:</strong> {note.M && note.M.staff_email ? note.M.staff_email.S : 'N/A'}</p>
+                <p><FaClock /> <strong>Timestamp:</strong> {note.M && note.M.timestamp ? note.M.timestamp.S : 'N/A'}</p>
+                <div><FaStickyNote /> {note.M && note.M.note_content ? note.M.note_content.S : 'No Content'}</div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No user notes available.</p>
+        )}
+
+        {/* Staff Notes */}
         <h3 className="userInfoModal-notesTitle">Staff Notes:</h3>
         <div className="userInfoModal-notesContainer">
           {selectedUser.staff_notes && selectedUser.staff_notes.length > 0 ? (
-            <ul className="userInfoModal-notesList">
+            <ul>
               {selectedUser.staff_notes.map((note, index) => (
-                <li key={index} className="userInfoModal-noteItem">
-                  <p className="userInfoModal-noteDetail"><FaUser /> <strong>Staff:</strong> {note.staff_email}</p>
-                  <p className="userInfoModal-noteDetail"><FaClock /> <strong>Timestamp:</strong> {new Date(note.timestamp).toLocaleString()}</p>
-                  <div className="userInfoModal-noteContent">
-                    <FaStickyNote /> {note.note_content}
-                  </div>
+                <li key={index}>
+                  <p><FaUser /> <strong>Staff:</strong> {note.M && note.M.staff_email ? note.M.staff_email.S : 'N/A'}</p>
+                  <p><FaClock /> <strong>Timestamp:</strong> {note.M && note.M.timestamp ? new Date(note.M.timestamp.S).toLocaleString() : 'N/A'}</p>
+                  <div><FaStickyNote /> {note.M && note.M.note_content ? note.M.note_content.S : 'No Content'}</div>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="userInfoModal-noNotes">No notes available.</p>
+            <p>No staff notes available.</p>
           )}
-          {/* Clickable Pencil with Paper Icon for Adding Note */}
-          <MdEditNote size={30} className="userInfoModal-addNoteIcon" onClick={() => setIsComposeVisible(true)} />
+          <MdEditNote
+            size={30}
+            className="userInfoModal-addNoteIcon"
+            onClick={() => setIsStaffNotesVisible(true)}
+          />
         </div>
 
-        {/* Compose Note Form */}
-        {isComposeVisible && (
-          <div className="userInfoModal-composeNoteContainer">
-            <h3 className="userInfoModal-composeNoteTitle">Add a Staff Note</h3>
-            <textarea
-              value={newNoteContent}
-              onChange={(e) => setNewNoteContent(e.target.value)}
-              placeholder="Enter your note here..."
-              rows="4"
-              className="userInfoModal-noteTextarea"
-              disabled={isSubmitting}
-            />
-            <div className="userInfoModal-buttonContainer">
-              <button onClick={handleNoteSubmit} className="userInfoModal-addNoteButton" disabled={isSubmitting}>
-                {isSubmitting ? 'Submitting...' : 'Add Note'}
-              </button>
-            </div>
-          </div>
+        {/* Secondary modal for staff notes */}
+        {isStaffNotesVisible && (
+          <StaffNotesModal
+            isVisible={isStaffNotesVisible}
+            closeModal={() => setIsStaffNotesVisible(false)}
+            selectedUser={selectedUser}
+          />
         )}
       </div>
     </div>

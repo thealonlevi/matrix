@@ -1,78 +1,62 @@
-/* src/components/user-area/styles/UserOrderDetails.css */
-
-.user-order-details-container {
-  max-width: 800px;
-  margin: 40px auto;
-  background-color: #1e1e2f;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  color: #f0f0f5;
-}
-
-.user-order-details-container h2 {
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #ffffff;
-  text-align: center;
-}
-
-.user-order-details-container ul {
-  list-style: none;
-  padding: 0;
-  margin: 20px 0;
-}
-
-.user-order-details-container ul li {
-  background-color: #252540;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  font-size: 16px;
+/* Adjust the entire order details section */
+.order-details-section {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  padding: 20px;
+  background-color: #1d1f27;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  color: #e1e1e1;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  width: 100%;
 }
 
-.user-order-details-container ul li strong {
-  color: #f9a826;
+/* Fix for the button layout issue */
+.order-additional-column {
+  padding: 0; /* Remove any unnecessary padding */
 }
 
-.user-order-details-container h3 {
+/* Container for buttons */
+.button-section {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Space between buttons */
   margin-top: 30px;
-  font-size: 20px;
-  color: #f9a826;
-  text-align: left;
+  width: 100%;
+  padding-top: 15px;
+  padding-left: 0;
+  border-top: none; /* Remove top border */
 }
 
-.user-order-details-container ul li .fulfillment-details {
-  font-size: 14px;
-  color: #d0d0d5;
+/* MUI Button styles */
+.MuiButton-root {
+  width: 200px; /* Set equal width for both buttons */
+  text-align: center;
+  padding: 12px 25px;
+  font-size: 15px;
+  font-weight: 600;
 }
 
-.user-order-details-container ul li .fulfillment-details strong {
-  color: #f0f0f5;
+/* Button hover effects */
+.view-fulfillment-btn:hover {
+  background-color: #c0392b;
+  box-shadow: 0 6px 12px rgba(231, 76, 60, 0.3);
 }
 
-.user-order-details-container li + li {
-  margin-top: 15px;
+.back-to-orders-btn:hover {
+  background-color: #007bbd;
+  box-shadow: 0 6px 12px rgba(0, 174, 239, 0.3);
 }
 
-/* Responsive Styles */
-@media (max-width: 600px) {
-  .user-order-details-container {
-    padding: 15px;
+/* Responsive layout for small screens */
+@media (max-width: 768px) {
+  .button-section {
+    flex-direction: column;
+    gap: 15px;
   }
 
-  .user-order-details-container h2 {
-    font-size: 20px;
-  }
-
-  .user-order-details-container ul li {
-    font-size: 14px;
-  }
-
-  .user-order-details-container h3 {
-    font-size: 18px;
+  .MuiButton-root {
+    width: 100%; /* Full width on mobile */
   }
 }

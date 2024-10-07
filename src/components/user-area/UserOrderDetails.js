@@ -1,6 +1,6 @@
-// src/components/user-area/UserOrderDetails.js
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import Button from '@mui/material/Button'; // Import MUI Button
 import './styles/UserOrderDetails.css'; // Import relevant styles
 
 const UserOrderDetails = () => {
@@ -33,6 +33,7 @@ const UserOrderDetails = () => {
         <li><strong>User ID:</strong> {orderDetails.userId}</li>
         <li><strong>User Email:</strong> {orderDetails.user_email}</li>
       </ul>
+
       <h3>Order Contents</h3>
       <ul>
         {orderDetails.order_contents.map((item, index) => (
@@ -41,13 +42,13 @@ const UserOrderDetails = () => {
           </li>
         ))}
       </ul>
+
       {orderDetails.fulfillment_history.length > 0 && (
         <>
           <h3>Fulfillment History</h3>
           <ul>
             {orderDetails.fulfillment_history.map((history, index) => (
               <li key={index}>
-                <strong>Product ID:</strong> {history.product_id} | 
                 <strong>Stock:</strong> {history.stock} | 
                 <strong>Timestamp:</strong> {new Date(history.timestamp).toLocaleString()}
               </li>
@@ -55,6 +56,26 @@ const UserOrderDetails = () => {
           </ul>
         </>
       )}
+
+      <div className="button-section">
+        {/* MUI Buttons */}
+        <Button 
+          variant="contained" 
+          color="error"
+          size="large"
+          sx={{ marginRight: 2 }}
+        >
+          View Fulfillment History
+        </Button>
+
+        <Button 
+          variant="contained" 
+          color="primary"
+          size="large"
+        >
+          Back to Orders
+        </Button>
+      </div>
     </div>
   );
 };
