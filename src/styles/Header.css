@@ -1,14 +1,15 @@
 /* src/styles/Header.css */
+
 .header-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  background-color: #1a1a1d;
+  padding: 12px 30px; /* Adjusted padding for a balanced look */
+  background-color: #151515; /* Darker background for contrast */
   position: sticky;
   top: 0;
   z-index: 1100;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Stronger shadow */
 }
 
 .header-logo-container {
@@ -29,27 +30,31 @@
 .header-left-nav-links {
   display: flex;
   align-items: center;
-  gap: 20px; /* Space between Shop and Reviews */
+  gap: 10px; /* Increased gap for better separation */
 }
 
 .header-right-nav-links {
   margin-right: 25px;
   display: flex;
   align-items: center;
-  gap: 20px; /* Space between the right links */
+  gap: 10px; /* Uniform spacing on both left and right nav links */
 }
 
 .header-nav-link {
-  color: #b3b3b3;
+  color: #b0b0b0; /* Slightly brighter for contrast */
   text-decoration: none;
   font-size: 18px;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+  padding: 8px 12px;
+  border-radius: 8px; /* Rounded corners */
 }
 
 .header-nav-link:hover {
   color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1); /* Background highlight on hover */
 }
 
 .header-icon {
@@ -60,35 +65,40 @@
 .header-logout-button {
   background: none;
   border: none;
-  color: #b3b3b3;
+  color: #b0b0b0;
   font-size: 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+  padding: 8px 12px;
+  border-radius: 8px; /* Consistent rounded corners */
 }
 
 .header-logout-button:hover {
   color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1); /* Hover effect similar to links */
 }
 
 .header-menu-icon {
-  font-size: 26px;
-  color: #fff;
-  background: none; /* No background */
+  font-size: 30px; /* Larger size for mobile visibility */
+  color: #ffffff;
+  background: none;
   border: none;
   cursor: pointer;
   margin-left: auto;
-  margin-right: 25px;
-  padding: 0; /* Ensure no padding */
-  outline: none; /* Remove outline */
+  padding: 5px;
+  outline: none;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.header-menu-icon:hover {
+  color: #b0b0b0; /* Slight color change on hover */
 }
 
 .header-menu-icon:focus,
 .header-menu-icon:active {
-  background: none; /* Ensure no background on focus or active state */
-  color: #fff; /* Maintain the same color */
-  outline: none; /* Remove focus outline */
+  outline: none;
 }
 
 .header-desktop-only {
@@ -105,41 +115,44 @@
   }
 
   .header-mobile-only {
-    display: flex; /* Show mobile links on smaller screens */
+    display: flex; /* Show mobile links */
   }
 
   .header-right-nav-links {
-    display: none; /* Hide right links on mobile */
+    display: none; /* Hide right links */
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 60px;
+    right: 0;
     background-color: #1a1a1d;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 300px;
+    border-radius: 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    width: 250px; /* Set width for the dropdown menu */
+    transform: translateY(-30px); /* Initial position for slide animation */
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
   }
 
   .header-right-nav-links.open {
-    display: flex; /* Show menu when open */
+    display: flex;
+    transform: translateY(0); /* Slide down when opened */
+    opacity: 1; /* Show the menu */
   }
 
   .header-menu-icon {
-    display: block; /* Show menu button on mobile */
+    display: block; /* Show menu button */
   }
 }
 
 @media (min-width: 769px) {
   .header-menu-icon {
-    display: none; /* Hide menu button on larger screens */
+    display: none; /* Hide menu button */
   }
 
   .header-right-nav-links {
-    justify-content: flex-end; /* Right align the right links */
+    justify-content: flex-end;
   }
 }
