@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchSupportTickets } from '../../utils/api';
 import { FaArrowLeft, FaArrowRight, FaInfoCircle, FaSearch } from 'react-icons/fa';
+import ReactPaginate from 'react-paginate';
 import './styles/SupportTicketSystem.css';
 import { getProductTitleById } from './utils/adminUtils';
 import { useNotification } from './utils/Notification';
@@ -30,8 +31,8 @@ const SupportTicketSystem = () => {
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [isResolving, setIsResolving] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const ticketsPerPage = 15;
+  const [currentPage, setCurrentPage] = useState(0);
+  const ticketsPerPage = 10; // Adjusted for pagination
 
   const [searchEmail, setSearchEmail] = useState('');
   const [searchOrderId, setSearchOrderId] = useState('');
@@ -88,7 +89,7 @@ const SupportTicketSystem = () => {
       );
     });
     setFilteredTickets(filtered);
-    setCurrentPage(1);
+    setCurrentPage(0);
   }, [searchEmail, searchOrderId, searchUserId, searchProductName, searchStatus, searchIssue, tickets, productTitle]);
 
   const openModal = async (ticket) => {
@@ -166,6 +167,10 @@ const SupportTicketSystem = () => {
     }
   };
 
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
   return (
     <div className="support-ticket-system">
       <h2>Support Ticket System</h2>
@@ -197,7 +202,7 @@ const SupportTicketSystem = () => {
         </div>
       )}
 
-      <table>
+      <table className="tickets-table">
         <thead>
           <tr>
             <th>Order ID</th>
@@ -209,7 +214,7 @@ const SupportTicketSystem = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredTickets.slice((currentPage - 1) * ticketsPerPage, currentPage * ticketsPerPage).map((ticket) => (
+          {filteredTickets.slice(currentPage * ticketsPerPage, (currentPage + 1) * ticketsPerPage).map((ticket) => (
             <tr key={ticket.ticket_id} className={ticket.status === 'pending' ? 'pending-row' : ''}>
               <td>{ticket.orderID}</td>
               <td>{ticket.userEmail}</td>
@@ -224,21 +229,21 @@ const SupportTicketSystem = () => {
         </tbody>
       </table>
 
-      {/* Pagination Controls */}
-      <div className="pagination-controls">
-        <button className="pagination-button" onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-          <FaArrowLeft /> Previous
-        </button>
-        <span>
-          Page {currentPage} of {Math.ceil(filteredTickets.length / ticketsPerPage)}
-        </span>
-        <button
-          className="pagination-button"
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(filteredTickets.length / ticketsPerPage)))}
-          disabled={currentPage === Math.ceil(filteredTickets.length / ticketsPerPage)}
-        >
-          Next <FaArrowRight />
-        </button>
+      {/* Pagination Controls using ReactPaginate */}
+      <div className="pagination-container">
+        <ReactPaginate
+          previousLabel={'← Previous'}
+          nextLabel={'Next →'}
+          breakLabel={'...'}
+          breakClassName={'break-me'}
+          pageCount={Math.ceil(filteredTickets.length / ticketsPerPage)}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={3}
+          onPageChange={handlePageClick}
+          containerClassName={'pagination'}
+          subContainerClassName={'pages pagination'}
+          activeClassName={'active'}
+        />
       </div>
 
       {/* Modals */}

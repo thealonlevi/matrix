@@ -1634,3 +1634,52 @@ export const updateUserTimestamp = debounce(async (login = false) => {
     throw new Error('Failed to update user timestamp. Please try again later.');
   }
 }, 5000); // Wait for 5 seconds before making another API call
+
+// API URL
+const INSERT_TICKET_NOTE_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_InsertTicketNote';
+
+/**
+ * Function to insert a staff note into a support ticket.
+ * @param {string} ticketId - The ID of the ticket to which the note should be added.
+ * @param {string} staffEmail - The email of the staff member adding the note.
+ * @param {string} noteContent - The content of the note.
+ * @returns {Promise} - Resolves with a success message or skips the request if duplicate.
+ */
+// Function to insert a staff note into a support ticket.
+export const insertTicketNote = async (ticketId, noteContent) => {
+  const requestKey = generateRequestKey(INSERT_TICKET_NOTE_API_URL, 'POST', {
+    ticket_id: ticketId,
+    note_content: noteContent,
+  });
+
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    return; 
+  }
+
+  try {
+    storeRequestInLocalStorage(requestKey);
+    const { email } = await fetchUserAttributes();
+    const response = await fetch(INSERT_TICKET_NOTE_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ticket_id: ticketId,
+        staff_email: email,
+        note_content: noteContent,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
+    }
+
+    const data = await response.json();
+    return data.body || 'Successfully inserted ticket note.';
+  } catch (error) {
+    console.error('Error inserting ticket note:', error);
+    throw new Error('Failed to insert ticket note. Please try again later.');
+  }
+};
