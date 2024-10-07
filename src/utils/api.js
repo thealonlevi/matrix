@@ -1683,3 +1683,53 @@ export const insertTicketNote = async (ticketId, noteContent) => {
     throw new Error('Failed to insert ticket note. Please try again later.');
   }
 };
+
+// API URL
+const INSERT_USER_NOTE_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_InsertUserNote';
+
+/**
+ * Function to insert a staff note into a user.
+ * @param {string} userEmail - The email of the user which we should add the note to.
+ * @param {string} staffEmail - The email of the staff member adding the note.
+ * @param {string} noteContent - The content of the note.
+ * @returns {Promise} - Resolves with a success message or skips the request if duplicate.
+ */
+// Function to insert a staff note into a user.
+export const insertUserNote = async (userEmail, noteContent) => {
+  const requestKey = generateRequestKey(INSERT_USER_NOTE_API_URL, 'POST', {
+    user_email: userEmail,
+    note: noteContent,
+  });
+
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    return; 
+  }
+
+  try {
+    storeRequestInLocalStorage(requestKey);
+    const { email } = await fetchUserAttributes();
+    const response = await fetch(INSERT_USER_NOTE_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_email: userEmail,
+        staff_email: email,
+        note: noteContent,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
+    }
+
+    const data = await response.json();
+    return data.body || 'Successfully inserted user note.';
+  } catch (error) {
+    console.error('Error inserting user note:', error);
+    throw new Error('Failed to insert user note. Please try again later.');
+  }
+};
+

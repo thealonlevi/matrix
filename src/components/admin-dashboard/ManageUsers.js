@@ -6,6 +6,7 @@ import { checkAdminPermission } from './utils/checkAdminPermissions';
 import { useNotification } from './utils/Notification';
 import './styles/ManageUsers.css';
 import LoadingScreen from '../LoadingScreen'; // Import the LoadingScreen component
+import UserInfoModal from './manage-users-system/UserInfoModal';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -274,24 +275,12 @@ const ManageUsers = () => {
         </table>
       )}
 
-      {/* Modal for showing user details */}
-      {isModalVisible && selectedUser && (
-        <div className="modal" onClick={closeModal}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <span className="close" onClick={closeModal}>&times;</span>
-            <h2>User Information</h2>
-            <p><strong>Email:</strong> {selectedUser.email}</p>
-            <p><strong>Credits:</strong> {selectedUser.credits}</p>
-            <p>
-              <strong>Last Login:</strong>{' '}
-              {selectedUser.LastActiveTimestamp
-                ? new Date(selectedUser.LastActiveTimestamp).toLocaleString()
-                : 'N/A'}
-            </p>
-            <p><strong>Role:</strong> {selectedUser.role}</p>
-          </div>
-        </div>
-      )}
+      <UserInfoModal
+        isModalVisible={isModalVisible}
+        closeModal={closeModal}
+        selectedUser={selectedUser}
+      />
+
     </div>
   );
 };
