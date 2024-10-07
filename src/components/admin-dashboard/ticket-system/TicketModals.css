@@ -236,3 +236,64 @@
 .add-note-icon:hover {
     color: #ffffff; /* White color on hover */
 }
+
+/* Notices Container */
+.notices-container {
+    background-color: #253347; /* Dark blue background */
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    overflow-y: auto;
+    max-height: 200px;
+    position: relative;
+}
+
+/* Individual Notice Item */
+.notice-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #2c3e50; /* Medium blue background */
+    border-left: 4px solid #3498db; /* Light blue border */
+    border-radius: 5px;
+    border: none;
+}
+
+/* Notice Content Styling */
+.notice-content {
+    margin-top: 5px;
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #34495e; /* Darker blue background */
+    color: #dfe6e9; /* Light gray text */
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Transparent Scrollbar for Notices Container */
+.notices-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notices-container::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3); /* Light blue scrollbar thumb */
+    border-radius: 3px;
+}
+
+.notices-container::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+/* Add Notice Pencil Icon */
+.add-notice-icon {
+    color: #3498db; /* Blue icon color */
+    font-size: 24px; /* Icon size */
+    cursor: pointer;
+    transition: color 0.3s;
+    position: absolute;
+    top: 15px; /* Adjust position based on the container */
+    right: 15px; /* Align to the top-right corner */
+}
+
+.add-notice-icon:hover {
+    color: #ffffff; /* White color on hover */
+}

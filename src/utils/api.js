@@ -1733,3 +1733,46 @@ export const insertUserNote = async (userEmail, noteContent) => {
   }
 };
 
+/**
+ * Function to insert a customer notice into a ticket.
+ * @param {string} ticketId - The ID of the ticket to which we should add the notice.
+ * @param {string} noticeContent - The content of the notice.
+ * @returns {Promise} - Resolves with a success message or skips the request if duplicate.
+ */
+export const insertTicketNotice = async (ticketId, noticeContent) => {
+  const requestKey = generateRequestKey('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_InsertTicketNotice', 'POST', {
+    ticket_id: ticketId,
+    notice_content: noticeContent,
+  });
+
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    return;
+  }
+
+  try {
+    storeRequestInLocalStorage(requestKey);
+    const { email } = await fetchUserAttributes();
+    const response = await fetch('https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_InsertTicketNotice', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ticket_id: ticketId,
+        sender_email: email,
+        notice_content: noticeContent,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
+    }
+
+    const data = await response.json();
+    return data.body || 'Successfully inserted ticket notice.';
+  } catch (error) {
+    console.error('Error inserting ticket notice:', error);
+    throw new Error('Failed to insert ticket notice. Please try again later.');
+  }
+};

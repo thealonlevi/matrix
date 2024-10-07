@@ -24,7 +24,7 @@ import {
 } from 'react-icons/fa';
 import { MdEditNote } from 'react-icons/md'; // Import pencil with paper icon
 import Modal from 'react-modal';
-import { insertTicketNote } from '../../../utils/api';
+import { insertTicketNote, insertTicketNotice } from '../../../utils/api';
 import { TicketOrderDetailsModal } from './TicketOrderDetailsModal'; // Import the new Order Details Modal
 import './TicketModals.css';
 
@@ -42,6 +42,9 @@ export const TicketDetailsModal = ({
   const [addNoteModalOpen, setAddNoteModalOpen] = useState(false);
   const [orderDetailsModalOpen, setOrderDetailsModalOpen] = useState(false); // New state for Order Details Modal
   const [newNoteContent, setNewNoteContent] = useState('');
+  const [addNoticeModalOpen, setAddNoticeModalOpen] = useState(false);
+  const [newNoticeContent, setNewNoticeContent] = useState('');
+
 
   // Function to handle note submission
   const handleNoteSubmit = async () => {
@@ -53,6 +56,19 @@ export const TicketDetailsModal = ({
       alert('Note added successfully!');
     } catch (error) {
       console.error('Failed to add note:', error);
+    }
+  };
+
+  // Function to handle notice submission
+  const handleNoticeSubmit = async () => {
+    try {
+      const ticketId = selectedTicket.ticket_id;
+      await insertTicketNotice(ticketId, newNoticeContent);
+      setNewNoticeContent('');
+      setAddNoticeModalOpen(false);
+      alert('Notice added successfully!');
+    } catch (error) {
+      console.error('Failed to add notice:', error);
     }
   };
 
@@ -156,6 +172,28 @@ export const TicketDetailsModal = ({
             <MdEditNote size={24} className="add-note-icon" onClick={() => setAddNoteModalOpen(true)} />
           </div>
 
+          {/* Notices Section */}
+          <p>
+            <FaStickyNote /> <strong>Notices:</strong>
+          </p>
+          <div className="notices-container">
+            {selectedTicket.notice && selectedTicket.notice.length > 0 ? (
+              selectedTicket.notice.map((notice, index) => (
+                <div key={index} className="notice-item">
+                  <p><FaUser /> <strong>Sender:</strong> {notice.sender_email}</p>
+                  <p><FaClock /> <strong>Timestamp:</strong> {notice.timestamp}</p>
+                  <div className="notice-content">
+                    <FaStickyNote /> {notice.notice_content}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p>No notices added yet.</p>
+            )}
+            {/* Clickable Pencil with Paper Icon for Adding Notice */}
+            <MdEditNote size={24} className="add-note-icon" onClick={() => setAddNoticeModalOpen(true)} />
+          </div>
+
           <div className="button-container">
             <button onClick={openReplacementModal} className="icon-btn issue-replacement-btn">
               <FaExchangeAlt size={20} />
@@ -205,6 +243,32 @@ export const TicketDetailsModal = ({
             <div className="button-container">
               <button onClick={handleNoteSubmit} className="confirm-btn">
                 <FaSave /> Submit Note
+              </button>
+            </div>
+          </Modal>
+
+          {/* Add Notice Modal */}
+          <Modal
+            isOpen={addNoticeModalOpen}
+            onRequestClose={() => setAddNoticeModalOpen(false)}
+            className="modal-content"
+            overlayClassName="modal-overlay"
+            contentLabel="Add Notice Modal"
+          >
+            <FaTimes className="modal-close-icon" onClick={() => setAddNoticeModalOpen(false)} />
+            <h2>
+              <FaStickyNote /> Add Notice
+            </h2>
+            <textarea
+              value={newNoticeContent}
+              onChange={(e) => setNewNoticeContent(e.target.value)}
+              placeholder="Enter your notice here..."
+              rows="4"
+              className="notice-textarea"
+            />
+            <div className="button-container">
+              <button onClick={handleNoticeSubmit} className="confirm-btn">
+                <FaSave /> Submit Notice
               </button>
             </div>
           </Modal>
