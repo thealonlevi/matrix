@@ -446,60 +446,6 @@ export const detachProductFromGroup = async (groupId, productId) => {
   }
 };
 
-// API URL
-const EXPORT_STOCK_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ExportStock';
-
-/**
- * Function to export stock for a given product.
- * @param {string} productId - The ID of the product for which to export stock.
- * @param {number} quantity - The quantity of stock to export.
- * @returns {Promise} - Resolves with the exported stock or rejects with an error message.
- */
-export const exportProductStock = async (productId, quantity) => {
-  // Generate a unique request key for this API call
-  const requestKey = generateRequestKey(EXPORT_STOCK_API_URL, 'POST', {
-    product_id: productId,
-    quantity: quantity,
-  });
-
-  // Check if the request is a duplicate
-  if (isDuplicateRequest(requestKey)) {
-    console.warn('Duplicate request detected. Skipping API call.');
-    throw new Error('Duplicate request detected. Please try again later.');
-  }
-
-  try {
-    // Store the request in local storage to prevent duplicates
-    storeRequestInLocalStorage(requestKey);
-
-    const response = await fetch(EXPORT_STOCK_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        product_id: productId,
-        quantity: quantity,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Unexpected response from the server.');
-    }
-
-    const data = await response.json();
-
-    if (data.body && !data.body.includes('Failed')) {
-      return data.body;  // Return the exported stock
-    } else {
-      throw new Error(data.body || 'Failed to export stock.');
-    }
-  } catch (error) {
-    console.error('Error exporting stock:', error);
-    throw new Error('Failed to export stock. Please try again later.');
-  }
-};
-
 
 // API URL
 const FETCH_ORDER_DETAILS_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchOrderDetails';
@@ -650,10 +596,13 @@ const FULFILL_ORDER_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaw
  * @param {string} orderId - The ID of the order to fulfill.
  * @returns {Promise} - Resolves with a success message or rejects with an error message.
  */
-export const fulfillOrder = async (orderId) => {
+export const fulfillOrder = async (orderId, product_id=null, quantity=null, note) => {
   // Generate a unique request key for this API call
   const requestKey = generateRequestKey(FULFILL_ORDER_API_URL, 'POST', {
     order_id: orderId,
+    product_id: product_id,
+    quantity: quantity,
+    note: note
   });
 
   // Check if the request is a duplicate
@@ -665,7 +614,7 @@ export const fulfillOrder = async (orderId) => {
   try {
     // Store the request in local storage to prevent duplicates
     storeRequestInLocalStorage(requestKey);
-
+    const { email } = await fetchUserAttributes();
     const response = await fetch(FULFILL_ORDER_API_URL, {
       method: 'POST',
       headers: {
@@ -673,6 +622,10 @@ export const fulfillOrder = async (orderId) => {
       },
       body: JSON.stringify({
         order_id: orderId,
+        product_id,
+        quantity,
+        operator_email: email,
+        note
       }),
     });
 
@@ -727,51 +680,6 @@ export const getProductList = async () => {
   }
 };
 
-
-// API URL for sending requests to SQS
-const MODIFY_ORDER_STATUS_SQS_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ModifyOrderStatusSQS';
-
-/**
- * Function to modify the order status by sending a request to an SQS queue.
- * @param {string} orderId - The ID of the order to be updated.
- * @param {string} requestedStatus - The new status to set for the order.
- * @returns {Promise} - Resolves with a success message or rejects with an error message.
- */
-export const modifyOrderStatusSQS = async (orderId, requestedStatus) => {
-  try {
-    const requestBody = {
-        body: JSON.stringify({
-          order_id: orderId,
-          requested_status: requestedStatus,
-        }),
-      };
-    console.log(orderId, requestedStatus);
-    const response = await fetch(MODIFY_ORDER_STATUS_SQS_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Unexpected response from the server.');
-    }
-
-    const data = await response.json();
-    console.log(data);
-
-    if (data.body && !JSON.parse(data.body).error) {
-      return data.body;  // Return the success message
-    } else {
-        console.log("Fk")
-        throw new Error(data.body || 'Failed to submit order status update request.');
-    }
-  } catch (error) {
-    console.error('Error modifying order status via SQS:', error);
-    throw new Error('Failed to modify order status. Please try again later.');
-  }
-};
 
 // API URL
 const MODIFY_PRODUCT_DETAILS_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ModifyProductDetails';
@@ -1808,5 +1716,61 @@ export const fetchUserInfo = async (email) => {
   } catch (error) {
     console.error('Error fetching user info:', error);
     throw new Error('Failed to fetch user info. Please try again later.');
+  }
+};
+
+// API URL for sending requests to SQS
+const MODIFY_ORDER_STATUS_SQS_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_ModifyOrderStatusSQS';
+
+/**
+ * Function to modify the order status by sending a request to an SQS queue.
+ * @param {string} orderId - The ID of the order to be updated.
+ * @param {string} requestedStatus - The new status to set for the order.
+ * @returns {Promise} - Resolves with a success message or rejects with an error message.
+ */
+export const modifyOrderStatusSQS = async (orderId, requestedStatus) => {
+  const requestKey = generateRequestKey(MODIFY_ORDER_STATUS_SQS_API_URL, 'POST', {
+    order_id: orderId,
+    requested_status: requestedStatus,
+  });
+
+  if (isDuplicateRequest(requestKey)) {
+    console.warn('Duplicate request detected. Skipping API call.');
+    return;
+  }
+
+  try {
+    storeRequestInLocalStorage(requestKey);
+    const requestBody = {
+        body: JSON.stringify({
+          order_id: orderId,
+          requested_status: requestedStatus,
+        }),
+      };
+    console.log(orderId, requestedStatus);
+    const response = await fetch(MODIFY_ORDER_STATUS_SQS_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
+    }
+
+    const data = await response.json();
+    console.log(data);
+
+    if (data.body && !JSON.parse(data.body).error) {
+      return data.body;  // Return the success message
+    } else {
+        console.log("Fk")
+        throw new Error(data.body || 'Failed to submit order status update request.');
+    }
+  } catch (error) {
+    console.error('Error modifying order status via SQS:', error);
+    throw new Error('Failed to modify order status. Please try again later.');
   }
 };

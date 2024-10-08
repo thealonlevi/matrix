@@ -106,10 +106,15 @@ const OrderDetails = () => {
       showNotification('Please enter a valid quantity.', 'error');
       return;
     }
+    const note = prompt(`Why are you fulfilling this?`);
+    if (!note) {
+      showNotification('Please specify a reason.', 'error');
+      return;
+    }
 
     setFulfillmentLoading(true);
     try {
-      const responseMessage = await fulfillOrder(orderId, productId, parseInt(quantity, 10));  // Using the imported function
+      const responseMessage = await fulfillOrder(orderId, productId, parseInt(quantity, 10), note);  // Using the imported function
 
       if (responseMessage) {
         showNotification('Product fulfilled successfully.', 'success');
