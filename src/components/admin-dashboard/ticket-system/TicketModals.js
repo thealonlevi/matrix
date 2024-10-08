@@ -1,6 +1,6 @@
 // src/components/admin-dashboard/ticket-system/TicketModals.js
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FaUser,
   FaClock,
@@ -24,8 +24,9 @@ import {
 } from 'react-icons/fa';
 import { MdEditNote } from 'react-icons/md'; // Import pencil with paper icon
 import Modal from 'react-modal';
-import { insertTicketNote, insertTicketNotice } from '../../../utils/api';
+import { insertTicketNote, insertTicketNotice, fetchUserInfo } from '../../../utils/api';
 import { TicketOrderDetailsModal } from './TicketOrderDetailsModal'; // Import the new Order Details Modal
+import UserInfoModal from '../manage-users-system/UserInfoModal';
 import './TicketModals.css';
 
 // Ticket Details Modal
@@ -44,7 +45,41 @@ export const TicketDetailsModal = ({
   const [newNoteContent, setNewNoteContent] = useState('');
   const [addNoticeModalOpen, setAddNoticeModalOpen] = useState(false);
   const [newNoticeContent, setNewNoticeContent] = useState('');
+  const [userInfo, setUserInfo] = useState(''); // plz do so that this calls fetchUserInfo(selectedTicket.userEmail) upon rendering and stores it in cache, and if its already in cache then it wont make hte api call, plz and ty\
+  const [userCache, setUserCache] = useState({}); // Cache for storing user information
+  const [isUserModalVisible, setIsUserModalVisible] = useState(false); // Modal visibility state
 
+  // Close the modal
+  const closeUserModal = () => {
+    setIsUserModalVisible(false); // Hide the modal
+  };
+
+
+   // Fetch user info on component mount or when selectedTicket.userEmail changes
+   useEffect(() => {
+    if (!selectedTicket?.userEmail) return;
+
+    // Check if user info is already in cache
+    if (userCache[selectedTicket.userEmail]) {
+      setUserInfo(userCache[selectedTicket.userEmail]); // Set user info from cache
+    } else {
+      // Fetch user info from API
+      const fetchUserDetails = async () => {
+        try {
+          const fetchedUserInfo = JSON.parse(await fetchUserInfo(selectedTicket.userEmail));
+          setUserInfo(fetchedUserInfo); // Set the state with the fetched data
+          setUserCache((prevCache) => ({
+            ...prevCache,
+            [selectedTicket.userEmail]: fetchedUserInfo, // Update the cache
+          }));
+        } catch (error) {
+          console.error('Error fetching user info:', error);
+        }
+      };
+
+      fetchUserDetails();
+    }
+  }, [selectedTicket?.userEmail, userCache]);
 
   // Function to handle note submission
   const handleNoteSubmit = async () => {
@@ -95,7 +130,14 @@ export const TicketDetailsModal = ({
             </a>
           </p>
           <p>
-            <FaEnvelope /> <strong>Email:</strong> {selectedTicket.userEmail}
+            <FaEnvelope /> <strong>Email: </strong>
+            <a
+              href="#"
+              onClick={() => setIsUserModalVisible(true)}
+              className="order-id-link"
+            >
+              {selectedTicket.userEmail}
+            </a>
           </p>
           <p>
             <FaShoppingCart /> <strong>Product Name:</strong> {productTitle}
@@ -219,6 +261,11 @@ export const TicketDetailsModal = ({
                 </button>
               </>
             )}
+            <UserInfoModal
+                isModalVisible={isUserModalVisible}
+                closeModal={closeUserModal}
+                selectedUser={userInfo}
+            />
           </div>
 
           {/* Add Note Modal */}

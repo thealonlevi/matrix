@@ -7,6 +7,7 @@ import { useNotification } from './utils/Notification';
 import './styles/ManageUsers.css';
 import LoadingScreen from '../LoadingScreen'; // Import the LoadingScreen component
 import UserInfoModal from './manage-users-system/UserInfoModal';
+import { fetchUserInfo } from '../../utils/api';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -166,6 +167,7 @@ const ManageUsers = () => {
   // Handle user click to open modal
   const handleUserClick = (user) => {
     setSelectedUser(user); // Set the selected user
+    console.log("User: ", user);
     setIsModalVisible(true); // Show the modal
     console.log("visible")
   };

@@ -1776,3 +1776,37 @@ export const insertTicketNotice = async (ticketId, noticeContent) => {
     throw new Error('Failed to insert ticket notice. Please try again later.');
   }
 };
+
+// API URL
+const FETCH_USER_INFO_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchUserInfo';
+
+/**
+ * Function to insert a staff note into a user.
+ * @param {string} email - The email of the user which we fetch information from.
+ * @returns {Promise} - Resolves with a success message.
+ */
+// Function to insert a staff note into a user.
+export const fetchUserInfo = async (email) => {
+
+  try {
+    const response = await fetch(FETCH_USER_INFO_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
+    }
+
+    const data = await response.json();
+    return data.body || 'Successfully fetched user info.';
+  } catch (error) {
+    console.error('Error fetching user info:', error);
+    throw new Error('Failed to fetch user info. Please try again later.');
+  }
+};
