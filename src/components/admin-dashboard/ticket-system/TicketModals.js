@@ -39,6 +39,7 @@ export const TicketDetailsModal = ({
   openCreditModal,
   openReplacementModal,
   isResolving,
+  productStockCount,
 }) => {
   const [addNoteModalOpen, setAddNoteModalOpen] = useState(false);
   const [orderDetailsModalOpen, setOrderDetailsModalOpen] = useState(false); // New state for Order Details Modal
@@ -141,6 +142,9 @@ export const TicketDetailsModal = ({
           </p>
           <p>
             <FaShoppingCart /> <strong>Product Name:</strong> {productTitle}
+          </p>
+          <p>
+            <FaShoppingCart /> <strong>Product Stock:</strong> {productStockCount}
           </p>
           <p>
             <FaInfoCircle /> <strong>Issue:</strong> {selectedTicket.issue}

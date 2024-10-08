@@ -1,6 +1,6 @@
 // src/components/admin-dashboard/SupportTicketSystem.js
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchSupportTickets } from '../../utils/api';
+import { fetchSupportTickets, getProductList } from '../../utils/api'; // please do so right before opening a ticket, it will do getProductList to put together productStockCount value, and add it to the values which are being passed to TicketModals.js
 import { FaArrowLeft, FaArrowRight, FaInfoCircle, FaSearch } from 'react-icons/fa';
 import ReactPaginate from 'react-paginate';
 import './styles/SupportTicketSystem.css';
@@ -28,6 +28,7 @@ const SupportTicketSystem = () => {
   const [creditAmount, setCreditAmount] = useState('');
   const [replacementQuantity, setReplacementQuantity] = useState('');
   const [productTitle, setProductTitle] = useState('');
+  const [productStockCount, setProductStockCount] = useState(null); // New state for product stock count
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [isResolving, setIsResolving] = useState(false);
@@ -94,14 +95,33 @@ const SupportTicketSystem = () => {
 
   const openModal = async (ticket) => {
     setSelectedTicket(ticket);
-    const title = await getProductTitleById(ticket.product_id);
-    setProductTitle(title || `Product ID: ${ticket.product_id}`);
+  
+    // Ensure the product ID is a string when calling getProductTitleById
+    const [mainProductId] = ticket.product_id.split('/');
+    const productTitle = await getProductTitleById(mainProductId.toString());
+    setProductTitle(productTitle || `Product ID: ${ticket.product_id}`);
+  
+    // Fetch product list and find the main product
+    const productList = await getProductList();
+    const mainProduct = productList.find((p) => p.product_id === parseInt(mainProductId, 10));
+    let stockCount = null;
+  
+    if (mainProduct && mainProduct.product_group) {
+      const subProduct = mainProduct.product_group.find((group) => group.product_id === parseInt(ticket.product_id.split('/')[1], 10));
+      if (subProduct) {
+        stockCount = subProduct.available_stock_count;
+      }
+    }
+  
+    setProductStockCount(stockCount);
     setModalIsOpen(true);
   };
-
+  
+  
   const closeModal = () => {
     setModalIsOpen(false);
     setSelectedTicket(null);
+    setProductStockCount(null); // Reset stock count when modal closes
   };
 
   const handleAddCredit = async () => {
@@ -127,6 +147,12 @@ const SupportTicketSystem = () => {
 
   const handleReplacement = async () => {
     if (!selectedTicket) return;
+    if (productStockCount<selectedTicket.replacementsCountAsked){
+      showNotification('Not enough stock, please resort to credit.', 'error')
+      setReplacementModalIsOpen(false);
+      setReplacementQuantity('');
+      return;
+    } 
     try {
       await handleIssueReplacement({
         userEmail: selectedTicket.userEmail,
@@ -256,6 +282,7 @@ const SupportTicketSystem = () => {
         openCreditModal={() => setCreditModalIsOpen(true)}
         openReplacementModal={() => setReplacementModalIsOpen(true)}
         isResolving={isResolving}
+        productStockCount={productStockCount}
       />
       <CreditModal
         creditModalIsOpen={creditModalIsOpen}
