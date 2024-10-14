@@ -1782,8 +1782,6 @@ export const modifyOrderStatusSQS = async (orderId, requestedStatus, ticketId = 
     throw new Error('Failed to modify order status. Please try again later.');
   }
 };
-<<<<<<< HEAD
-=======
 /**
  * Function to flag a ticket for admin review.
  * @param {Object} ticketData - The data required to flag a ticket.
@@ -1826,4 +1824,3 @@ export const flagTicket = async ({ ticket_id, flaggedBy }) => {
     throw new Error('Failed to flag the ticket. Please try again later.');
   }
 };
->>>>>>> 93f88376f69cebd8298eb36bfe990fd4a6e730ce

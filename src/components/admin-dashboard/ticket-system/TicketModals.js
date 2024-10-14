@@ -27,7 +27,11 @@ import Modal from 'react-modal';
 import { insertTicketNote, insertTicketNotice, fetchUserInfo } from '../../../utils/api';
 import { TicketOrderDetailsModal } from './TicketOrderDetailsModal'; // Import the new Order Details Modal
 import UserInfoModal from '../manage-users-system/UserInfoModal';
-import { modifyOrderStatusSQS } from '../../../utils/api';
+import { modifyOrderStatusSQS, fetchOrderDetails } from '../../../utils/api';
+import AddNoteModal from './AddNoteModal';
+import AddNoticeModal from './AddNoticeModal';
+import TicketActionButtons from './TicketActionButtons';
+import useTicketData from './useTicketData';
 import './TicketModals.css';
 
 // Ticket Details Modal
@@ -47,43 +51,16 @@ export const TicketDetailsModal = ({
   const [newNoteContent, setNewNoteContent] = useState('');
   const [addNoticeModalOpen, setAddNoticeModalOpen] = useState(false);
   const [newNoticeContent, setNewNoticeContent] = useState('');
-  const [userInfo, setUserInfo] = useState(''); // plz do so that this calls fetchUserInfo(selectedTicket.userEmail) upon rendering and stores it in cache, and if its already in cache then it wont make hte api call, plz and ty\
   const [userCache, setUserCache] = useState({}); // Cache for storing user information
   const [isUserModalVisible, setIsUserModalVisible] = useState(false); // Modal visibility state
   const [isMarkingPaid, setIsMarkingPaid] = useState(false); // New state to track loading
+  const { orderInfo, userInfo } = useTicketData(selectedTicket);
 
 
   // Close the modal
   const closeUserModal = () => {
     setIsUserModalVisible(false); // Hide the modal
   };
-
-
-   // Fetch user info on component mount or when selectedTicket.userEmail changes
-   useEffect(() => {
-    if (!selectedTicket?.userEmail) return;
-
-    // Check if user info is already in cache
-    if (userCache[selectedTicket.userEmail]) {
-      setUserInfo(userCache[selectedTicket.userEmail]); // Set user info from cache
-    } else {
-      // Fetch user info from API
-      const fetchUserDetails = async () => {
-        try {
-          const fetchedUserInfo = JSON.parse(await fetchUserInfo(selectedTicket.userEmail));
-          setUserInfo(fetchedUserInfo); // Set the state with the fetched data
-          setUserCache((prevCache) => ({
-            ...prevCache,
-            [selectedTicket.userEmail]: fetchedUserInfo, // Update the cache
-          }));
-        } catch (error) {
-          console.error('Error fetching user info:', error);
-        }
-      };
-
-      fetchUserDetails();
-    }
-  }, [selectedTicket?.userEmail, userCache]);
 
   // Function to handle note submission
   const handleNoteSubmit = async () => {
@@ -100,6 +77,9 @@ export const TicketDetailsModal = ({
 
   const handleMarkAsPaid = async () => {
     try {
+      if (orderInfo.payment_status?.S==="paid"){
+        console.log("FLAG");
+      }
       setIsMarkingPaid(true); // Set loading state to true
       const orderId = selectedTicket.orderID;
       const ticketId = selectedTicket.ticket_id || 'ADMIN'; // Use ticket_id or default to "ADMIN"
@@ -175,18 +155,6 @@ export const TicketDetailsModal = ({
           <p>
             <FaCheckCircle /> <strong>Status:</strong> {selectedTicket.status}
           </p>
-          <p>
-            <FaCheckCircle /> <strong>Status:</strong> {selectedTicket.status}
-          </p>
-          <div className="button-container">
-            <button 
-              onClick={handleMarkAsPaid} 
-              className="icon-btn mark-paid-btn" 
-              disabled={isMarkingPaid} // Disable the button while loading
-            >
-              {isMarkingPaid ? 'Processing...' : 'Mark as Paid'}
-            </button>
-          </div>
 
           <p>
             <FaCalendarAlt /> <strong>Creation Date:</strong> {selectedTicket.creationDate}
@@ -277,30 +245,15 @@ export const TicketDetailsModal = ({
           </div>
 
           <div className="button-container">
-            <button onClick={openReplacementModal} className="icon-btn issue-replacement-btn">
-              <FaExchangeAlt size={20} />
-            </button>
-            <button onClick={openCreditModal} className="icon-btn credit-btn">
-              <FaDollarSign size={20} />
-            </button>
-            {selectedTicket.status === 'pending' && (
-              <>
-                <button
-                  className="icon-btn resolve-btn"
-                  onClick={() => handleResolveOrDeny('resolved')}
-                  disabled={isResolving}
-                >
-                  <FaCheckCircle size={20} />
-                </button>
-                <button
-                  className="icon-btn deny-replacement-btn"
-                  onClick={() => handleResolveOrDeny('denied')}
-                  disabled={isResolving}
-                >
-                  <FaBan size={20} />
-                </button>
-              </>
-            )}
+          <TicketActionButtons
+            isMarkingPaid={isMarkingPaid}
+            handleMarkAsPaid={handleMarkAsPaid}
+            openReplacementModal={openReplacementModal}
+            openCreditModal={openCreditModal}
+            handleResolveOrDeny={handleResolveOrDeny}
+            isResolving={isResolving}
+            status={selectedTicket.status}
+          />
             <UserInfoModal
                 isModalVisible={isUserModalVisible}
                 closeModal={closeUserModal}
@@ -308,57 +261,21 @@ export const TicketDetailsModal = ({
             />
           </div>
 
-          {/* Add Note Modal */}
-          <Modal
+          <AddNoteModal
             isOpen={addNoteModalOpen}
-            onRequestClose={() => setAddNoteModalOpen(false)}
-            className="modal-content"
-            overlayClassName="modal-overlay"
-            contentLabel="Add Note Modal"
-          >
-            <FaTimes className="modal-close-icon" onClick={() => setAddNoteModalOpen(false)} />
-            <h2>
-              <FaStickyNote /> Add Staff Note
-            </h2>
-            <textarea
-              value={newNoteContent}
-              onChange={(e) => setNewNoteContent(e.target.value)}
-              placeholder="Enter your note here..."
-              rows="4"
-              className="note-textarea"
-            />
-            <div className="button-container">
-              <button onClick={handleNoteSubmit} className="confirm-btn">
-                <FaSave /> Submit Note
-              </button>
-            </div>
-          </Modal>
+            closeModal={() => setAddNoteModalOpen(false)}
+            newNoteContent={newNoteContent}
+            setNewNoteContent={setNewNoteContent}
+            handleNoteSubmit={handleNoteSubmit}
+          />
 
-          {/* Add Notice Modal */}
-          <Modal
+          <AddNoticeModal
             isOpen={addNoticeModalOpen}
-            onRequestClose={() => setAddNoticeModalOpen(false)}
-            className="modal-content"
-            overlayClassName="modal-overlay"
-            contentLabel="Add Notice Modal"
-          >
-            <FaTimes className="modal-close-icon" onClick={() => setAddNoticeModalOpen(false)} />
-            <h2>
-              <FaStickyNote /> Add Notice
-            </h2>
-            <textarea
-              value={newNoticeContent}
-              onChange={(e) => setNewNoticeContent(e.target.value)}
-              placeholder="Enter your notice here..."
-              rows="4"
-              className="notice-textarea"
-            />
-            <div className="button-container">
-              <button onClick={handleNoticeSubmit} className="confirm-btn">
-                <FaSave /> Submit Notice
-              </button>
-            </div>
-          </Modal>
+            closeModal={() => setAddNoticeModalOpen(false)}
+            newNoticeContent={newNoticeContent}
+            setNewNoticeContent={setNewNoticeContent}
+            handleNoticeSubmit={handleNoticeSubmit}
+          />
 
           {/* New Order Details Modal */}
           <TicketOrderDetailsModal
@@ -373,72 +290,3 @@ export const TicketDetailsModal = ({
     </Modal>
   );
 };
-
-// Credit Modal
-export const CreditModal = ({
-  creditModalIsOpen,
-  closeCreditModal,
-  creditAmount,
-  setCreditAmount,
-  handleAddCredit,
-}) => (
-  <Modal
-    isOpen={creditModalIsOpen}
-    onRequestClose={closeCreditModal}
-    className="modal-content"
-    overlayClassName="modal-overlay"
-    contentLabel="Credit Modal"
-  >
-    <FaTimes className="modal-close-icon" onClick={closeCreditModal} />
-    <h2>
-      <FaDollarSign /> Add Credit
-    </h2>
-    <p>How much credit would you like to add?</p>
-    <input
-      type="number"
-      value={creditAmount}
-      onChange={(e) => setCreditAmount(e.target.value)}
-      min="0.01"
-      step="0.01"
-    />
-    <div className="button-container">
-      <button onClick={handleAddCredit} className="confirm-btn">
-        <FaSave /> Confirm
-      </button>
-    </div>
-  </Modal>
-);
-
-// Replacement Modal
-export const ReplacementModal = ({
-  replacementModalIsOpen,
-  closeReplacementModal,
-  replacementQuantity,
-  setReplacementQuantity,
-  handleReplacement,
-}) => (
-  <Modal
-    isOpen={replacementModalIsOpen}
-    onRequestClose={closeReplacementModal}
-    className="modal-content"
-    overlayClassName="modal-overlay"
-    contentLabel="Replacement Modal"
-  >
-    <FaTimes className="modal-close-icon" onClick={closeReplacementModal} />
-    <h2>
-      <FaExchangeAlt /> Issue Replacement
-    </h2>
-    <p>How many replacements would you like to issue?</p>
-    <input
-      type="number"
-      value={replacementQuantity}
-      onChange={(e) => setReplacementQuantity(e.target.value)}
-      min="1"
-    />
-    <div className="button-container">
-      <button onClick={handleReplacement} className="confirm-btn">
-        <FaSave /> Confirm
-      </button>
-    </div>
-  </Modal>
-);

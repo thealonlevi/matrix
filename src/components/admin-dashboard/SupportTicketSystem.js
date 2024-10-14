@@ -13,7 +13,9 @@ import {
   handleCredit,
   handleResolveDeny,
 } from './utils/ticketUtils';
-import { TicketDetailsModal, CreditModal, ReplacementModal } from './ticket-system/TicketModals';
+import { TicketDetailsModal } from './ticket-system/TicketModals';
+import ReplacementModal from './ticket-system/ReplacementModal';
+import CreditModal from './ticket-system/CreditModal';
 
 const SupportTicketSystem = () => {
   const [tickets, setTickets] = useState([]);
