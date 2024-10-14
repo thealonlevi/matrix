@@ -127,12 +127,14 @@ const SupportTicketSystem = () => {
   };
 
   const handleAddCredit = async () => {
+    setCreditModalIsOpen(false);
     if (!selectedTicket) return;
     try {
       await handleCredit(
         {
           user_email: selectedTicket.userEmail,
           ticket_id: selectedTicket.ticket_id,
+          order_id: selectedTicket.orderID,
           operator: operatorEmail,
           staff_user_id: operatorUserId,
           credit_amount: parseFloat(creditAmount),
@@ -140,10 +142,11 @@ const SupportTicketSystem = () => {
         operatorUserId
       );
       showNotification('Credit added successfully.', 'success');
-      setCreditModalIsOpen(false);
       setCreditAmount('');
     } catch (error) {
+      setCreditModalIsOpen(false);
       showNotification('Failed to add credit. Please try again.', 'error');
+      
     }
   };
 
