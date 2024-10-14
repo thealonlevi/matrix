@@ -13,7 +13,7 @@ const FulfillmentHistoryModal = ({ isOpen, onClose, fulfillmentHistory }) => {
           {fulfillmentHistory && fulfillmentHistory.length > 0 ? (
             fulfillmentHistory.map((history, index) => (
               <li key={index}>
-
+                <strong>Product ID:</strong> {history.product_id} | 
                 <strong>Stock:</strong> {history.stock} | 
                 <strong>Timestamp:</strong> {new Date(history.timestamp).toLocaleString()}
               </li>

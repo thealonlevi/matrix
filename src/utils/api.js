@@ -1774,3 +1774,45 @@ export const modifyOrderStatusSQS = async (orderId, requestedStatus) => {
     throw new Error('Failed to modify order status. Please try again later.');
   }
 };
+/**
+ * Function to flag a ticket for admin review.
+ * @param {Object} ticketData - The data required to flag a ticket.
+ * @param {string} ticketData.ticket_id - The ID of the ticket to be flagged.
+ * @param {string} ticketData.flaggedBy - The email of the operator who flagged the ticket.
+ * @returns {Promise} - Resolves with a success message or rejects with an error message.
+ */
+export const flagTicket = async ({ ticket_id, flaggedBy }) => {
+  const FLAG_TICKET_API_URL =
+    'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FlagTicket';
+
+  try {
+    const requestBody = {
+      ticket_id,
+      flaggedBy,
+    };
+
+    const response = await fetch(FLAG_TICKET_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
+    }
+
+    const data = await response.json();
+    console.log(data);
+
+    if (data.body && !JSON.parse(data.body).error) {
+      return data.body; // Return success message if no error in response body
+    } else {
+      throw new Error(data.body || 'Failed to flag the ticket.');
+    }
+  } catch (error) {
+    console.error('Error flagging ticket:', error);
+    throw new Error('Failed to flag the ticket. Please try again later.');
+  }
+};
