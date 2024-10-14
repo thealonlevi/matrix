@@ -59,6 +59,9 @@ const AdminLayout = () => {
           <li className={isActive('/admin/support-tickets') ? 'active' : ''}>
             <Link to="/admin/support-tickets">Support Tickets</Link>
           </li>
+          <li className={isActive('/admin/logs') ? 'active' : ''}>
+            <Link to="/admin/logs">Logs</Link>
+          </li>
         </ul>
       </div>
       <div className="main-content">

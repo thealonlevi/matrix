@@ -1726,9 +1726,10 @@ const MODIFY_ORDER_STATUS_SQS_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-
  * Function to modify the order status by sending a request to an SQS queue.
  * @param {string} orderId - The ID of the order to be updated.
  * @param {string} requestedStatus - The new status to set for the order.
+ * @param {string} [ticketId] - (Optional) The ID of the ticket associated with the operation.
  * @returns {Promise} - Resolves with a success message or rejects with an error message.
  */
-export const modifyOrderStatusSQS = async (orderId, requestedStatus) => {
+export const modifyOrderStatusSQS = async (orderId, requestedStatus, ticketId = null) => {
   const requestKey = generateRequestKey(MODIFY_ORDER_STATUS_SQS_API_URL, 'POST', {
     order_id: orderId,
     requested_status: requestedStatus,
@@ -1741,21 +1742,29 @@ export const modifyOrderStatusSQS = async (orderId, requestedStatus) => {
 
   try {
     storeRequestInLocalStorage(requestKey);
+    const { email } = await fetchUserAttributes();
+
+    // Construct the request body with or without ticket_id based on its presence
     const requestBody = {
-        body: JSON.stringify({
-          order_id: orderId,
-          requested_status: requestedStatus,
-        }),
-      };
-    console.log(orderId, requestedStatus);
+      order_id: orderId,
+      requested_status: requestedStatus,
+      operator: email,
+    };
+
+    if (ticketId) {
+      requestBody.ticket_id = ticketId;  // Add ticket_id if provided
+    }
+
+    console.log(orderId, requestedStatus, ticketId);
+    
     const response = await fetch(MODIFY_ORDER_STATUS_SQS_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify({ body: JSON.stringify(requestBody) }),  // Wrap requestBody in "body"
     });
-    
+
     if (!response.ok) {
       throw new Error('Unexpected response from the server.');
     }
@@ -1766,8 +1775,7 @@ export const modifyOrderStatusSQS = async (orderId, requestedStatus) => {
     if (data.body && !JSON.parse(data.body).error) {
       return data.body;  // Return the success message
     } else {
-        console.log("Fk")
-        throw new Error(data.body || 'Failed to submit order status update request.');
+      throw new Error(data.body || 'Failed to submit order status update request.');
     }
   } catch (error) {
     console.error('Error modifying order status via SQS:', error);

@@ -27,6 +27,7 @@ import Modal from 'react-modal';
 import { insertTicketNote, insertTicketNotice, fetchUserInfo } from '../../../utils/api';
 import { TicketOrderDetailsModal } from './TicketOrderDetailsModal'; // Import the new Order Details Modal
 import UserInfoModal from '../manage-users-system/UserInfoModal';
+import { modifyOrderStatusSQS } from '../../../utils/api';
 import './TicketModals.css';
 
 // Ticket Details Modal
@@ -49,6 +50,8 @@ export const TicketDetailsModal = ({
   const [userInfo, setUserInfo] = useState(''); // plz do so that this calls fetchUserInfo(selectedTicket.userEmail) upon rendering and stores it in cache, and if its already in cache then it wont make hte api call, plz and ty\
   const [userCache, setUserCache] = useState({}); // Cache for storing user information
   const [isUserModalVisible, setIsUserModalVisible] = useState(false); // Modal visibility state
+  const [isMarkingPaid, setIsMarkingPaid] = useState(false); // New state to track loading
+
 
   // Close the modal
   const closeUserModal = () => {
@@ -94,6 +97,26 @@ export const TicketDetailsModal = ({
       console.error('Failed to add note:', error);
     }
   };
+
+  const handleMarkAsPaid = async () => {
+    try {
+      setIsMarkingPaid(true); // Set loading state to true
+      const orderId = selectedTicket.orderID;
+      const ticketId = selectedTicket.ticket_id || 'ADMIN'; // Use ticket_id or default to "ADMIN"
+      
+      // Call the modifyOrderStatusSQS function with order_id, 'paid', and ticket_id
+      await modifyOrderStatusSQS(orderId, 'paid', ticketId);
+      
+      alert('Order marked as paid successfully!');
+      closeModal(); // Optionally close the modal after marking the order as paid
+    } catch (error) {
+      console.error('Failed to mark order as paid:', error);
+      alert('Failed to mark order as paid. Please try again.');
+    } finally {
+      setIsMarkingPaid(false); // Reset loading state
+    }
+  };
+  
 
   // Function to handle notice submission
   const handleNoticeSubmit = async () => {
@@ -152,6 +175,19 @@ export const TicketDetailsModal = ({
           <p>
             <FaCheckCircle /> <strong>Status:</strong> {selectedTicket.status}
           </p>
+          <p>
+            <FaCheckCircle /> <strong>Status:</strong> {selectedTicket.status}
+          </p>
+          <div className="button-container">
+            <button 
+              onClick={handleMarkAsPaid} 
+              className="icon-btn mark-paid-btn" 
+              disabled={isMarkingPaid} // Disable the button while loading
+            >
+              {isMarkingPaid ? 'Processing...' : 'Mark as Paid'}
+            </button>
+          </div>
+
           <p>
             <FaCalendarAlt /> <strong>Creation Date:</strong> {selectedTicket.creationDate}
           </p>

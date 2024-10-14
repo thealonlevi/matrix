@@ -7,7 +7,6 @@ import { useNotification } from './utils/Notification';
 import './styles/ManageUsers.css';
 import LoadingScreen from '../LoadingScreen'; // Import the LoadingScreen component
 import UserInfoModal from './manage-users-system/UserInfoModal';
-import { fetchUserInfo } from '../../utils/api';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -222,6 +221,7 @@ const ManageUsers = () => {
                     value={user.role || 'user'}
                     onChange={(e) => handleRoleChange(user.userId, e.target.value)}
                     className="role-select-dropdown"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <option value="user">user</option>
                     <option value="support">support</option>
@@ -233,6 +233,7 @@ const ManageUsers = () => {
                     value={selectedAction[user.userId] || ''}
                     onChange={(e) => handleActionSelect(user.userId, e.target.value)}
                     className="actions-dropdown"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <option value="">Select Action</option>
                     <option value="delete">Delete User</option>

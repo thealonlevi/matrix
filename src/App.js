@@ -30,6 +30,7 @@ import SupportTicketSystem from './components/admin-dashboard/SupportTicketSyste
 import CreateTicket from './components/user-area/Create_Ticket';
 import Statistics from './components/admin-dashboard/Statistics';
 import CartWidget from './components/userSystem/CartWidget'; // Import CartWidget component
+import Logs from './components/admin-dashboard/Logs';
 
 // Function to get the current authenticated user
 async function currentAuthenticatedUser() {
@@ -104,6 +105,7 @@ const AppContent = () => {
           <Route path="staff" element={<ManageStaff />} />
           <Route path="support-tickets" element={<SupportTicketSystem />} />
           <Route path="statistics" element={<Statistics />} />
+          <Route path="logs" element={<Logs />} />
         </Route>
 
         {/* User Area routes */}
