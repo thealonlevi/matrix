@@ -188,7 +188,7 @@ export const TicketDetailsModal = ({
                 )}
                 {historyItem.exported_stock && (
                   <p>
-                    <FaBox /> <strong>Exported Stock:</strong> {historyItem.exported_stock}
+                    <FaBox /> <strong>Exported Stock: "</strong> {historyItem.exported_stock} <strong>"</strong>
                   </p>
                 )}
                 {historyItem.quantity && (

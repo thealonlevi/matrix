@@ -1,0 +1,131 @@
+/* General Layout */
+body {
+    background-color: #0d1117;
+    color: #c9d1d9;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Table Styles */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #161b22;
+    color: #c9d1d9;
+    font-size: 0.9rem; /* Better readability */
+    text-align: left;
+    table-layout: auto; /* Allow flexible width */
+}
+
+th, td {
+    padding: 10px 15px;
+    border: 1px solid #30363d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #21262d;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+tr:nth-child(even) {
+    background-color: #161b22;
+}
+
+tr:hover {
+    background-color: #0d1117;
+}
+
+select {
+    padding: 8px;
+    background-color: #0d1117;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+/* Adjust the width of specific columns */
+th:nth-child(1), td:nth-child(1) { /* TIMESTAMP column */
+    width: 20%;
+}
+
+th:nth-child(6), td:nth-child(6) { /* QUANTITY column */
+    width: 7%;
+}
+
+/* Style for Staff Logs */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    margin: 10px 0;
+    font-size: 18px;
+    color: #58a6ff;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+li:hover {
+    color: #ffa600;
+}
+
+/* Style for the Logs Display */
+.staff-logs {
+    margin-top: 20px;
+    padding-left: 15px;
+}
+
+.staff-logs h3 {
+    font-size: 22px;
+    color: #58a6ff;
+    margin-bottom: 10px;
+}
+
+.staff-logs ul {
+    padding: 0;
+    list-style: none;
+    line-height: 1.6;
+}
+
+.staff-logs li {
+    font-size: 16px;
+    color: #c9d1d9;
+}
+
+.staff-logs li strong {
+    color: #ffa600;
+}
+
+.staff-logs li em {
+    font-size: 14px;
+    color: #8b949e;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 1200px) {
+    table {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    th, td {
+        padding: 5px;
+        font-size: 0.75rem;
+    }
+}

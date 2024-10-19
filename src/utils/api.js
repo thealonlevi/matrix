@@ -1824,3 +1824,35 @@ export const flagTicket = async ({ ticket_id, flaggedBy }) => {
     throw new Error('Failed to flag the ticket. Please try again later.');
   }
 };
+
+// API URL
+const FETCH_LOG_TABLES_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchLogTables';
+
+/**
+ * Function to fetch log tables from DynamoDB.
+ * @param {string} tableName - The name of the table to fetch logs from.
+ * @returns {Promise<Object>} - Resolves with the log data from the specified table or rejects with an error message.
+ */
+export const fetchLogTables = async (tableName) => {
+  try {
+    const response = await fetch(FETCH_LOG_TABLES_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        tableName: tableName,  // Sending the table name in the request body
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
+    }
+
+    const data = await response.json();
+    return data.body ? JSON.parse(data.body) : {};  // Parse the body field containing log tables data
+  } catch (error) {
+    console.error('Error fetching log tables:', error);
+    throw new Error('Failed to fetch log tables. Please try again later.');
+  }
+};
