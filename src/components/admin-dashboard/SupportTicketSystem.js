@@ -1,6 +1,5 @@
-// src/components/admin-dashboard/SupportTicketSystem.js
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchSupportTickets, getProductList } from '../../utils/api'; // please do so right before opening a ticket, it will do getProductList to put together productStockCount value, and add it to the values which are being passed to TicketModals.js
+import { fetchSupportTickets, getProductList } from '../../utils/api'; 
 import { FaArrowLeft, FaArrowRight, FaInfoCircle, FaSearch } from 'react-icons/fa';
 import ReactPaginate from 'react-paginate';
 import './styles/SupportTicketSystem.css';
@@ -30,12 +29,12 @@ const SupportTicketSystem = () => {
   const [creditAmount, setCreditAmount] = useState('');
   const [replacementQuantity, setReplacementQuantity] = useState('');
   const [productTitle, setProductTitle] = useState('');
-  const [productStockCount, setProductStockCount] = useState(null); // New state for product stock count
+  const [productStockCount, setProductStockCount] = useState(null);
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [isResolving, setIsResolving] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const ticketsPerPage = 10; // Adjusted for pagination
+  const ticketsPerPage = 10;
 
   const [searchEmail, setSearchEmail] = useState('');
   const [searchOrderId, setSearchOrderId] = useState('');
@@ -98,12 +97,10 @@ const SupportTicketSystem = () => {
   const openModal = async (ticket) => {
     setSelectedTicket(ticket);
   
-    // Ensure the product ID is a string when calling getProductTitleById
     const [mainProductId] = ticket.product_id.split('/');
     const productTitle = await getProductTitleById(mainProductId.toString());
     setProductTitle(productTitle || `Product ID: ${ticket.product_id}`);
   
-    // Fetch product list and find the main product
     const productList = await getProductList();
     const mainProduct = productList.find((p) => p.product_id === parseInt(mainProductId, 10));
     let stockCount = null;
@@ -119,11 +116,10 @@ const SupportTicketSystem = () => {
     setModalIsOpen(true);
   };
   
-  
   const closeModal = () => {
     setModalIsOpen(false);
     setSelectedTicket(null);
-    setProductStockCount(null); // Reset stock count when modal closes
+    setProductStockCount(null);
   };
 
   const handleAddCredit = async () => {
@@ -146,18 +142,17 @@ const SupportTicketSystem = () => {
     } catch (error) {
       setCreditModalIsOpen(false);
       showNotification('Failed to add credit. Please try again.', 'error');
-      
     }
   };
 
   const handleReplacement = async () => {
     if (!selectedTicket) return;
-    if (productStockCount<selectedTicket.replacementsCountAsked){
-      showNotification('Not enough stock, please resort to credit.', 'error')
+    if (productStockCount < selectedTicket.replacementsCountAsked) {
+      showNotification('Not enough stock, please resort to credit.', 'error');
       setReplacementModalIsOpen(false);
       setReplacementQuantity('');
       return;
-    } 
+    }
     try {
       await handleIssueReplacement({
         userEmail: selectedTicket.userEmail,
@@ -203,15 +198,15 @@ const SupportTicketSystem = () => {
   };
 
   return (
-    <div className="support-ticket-system">
+    <div className="support-ticket-system-unique">
       <h2>Support Ticket System</h2>
 
-      <button className="toggle-filter-button" onClick={() => setFiltersVisible(!filtersVisible)}>
+      <button className="toggle-filter-button-unique" onClick={() => setFiltersVisible(!filtersVisible)}>
         <FaSearch /> {filtersVisible ? 'Hide Filters' : 'Show Filters'}
       </button>
 
       {filtersVisible && (
-        <div className="filter-section">
+        <div className="filter-section-unique">
           <input type="text" placeholder="Search by Email" value={searchEmail} onChange={(e) => setSearchEmail(e.target.value)} />
           <input type="text" placeholder="Search by Order ID" value={searchOrderId} onChange={(e) => setSearchOrderId(e.target.value)} />
           <input type="text" placeholder="Search by User ID" value={searchUserId} onChange={(e) => setSearchUserId(e.target.value)} />
@@ -233,7 +228,7 @@ const SupportTicketSystem = () => {
         </div>
       )}
 
-      <table className="tickets-table">
+      <table className="tickets-table-unique">
         <thead>
           <tr>
             <th>Order ID</th>
@@ -246,22 +241,21 @@ const SupportTicketSystem = () => {
         </thead>
         <tbody>
           {filteredTickets.slice(currentPage * ticketsPerPage, (currentPage + 1) * ticketsPerPage).map((ticket) => (
-            <tr key={ticket.ticket_id} className={ticket.status === 'pending' ? 'pending-row' : ''}>
+            <tr key={ticket.ticket_id} className={ticket.status === 'pending' ? 'pending-row-unique' : ''}>
               <td>{ticket.orderID}</td>
               <td>{ticket.userEmail}</td>
               <td>{ticket.issue}</td>
-              <td className={ticket.status === 'resolved' ? 'resolved' : ticket.status === 'denied' ? 'denied' : 'unresolved'}>{ticket.status}</td>
+              <td className={ticket.status === 'resolved' ? 'resolved-unique' : ticket.status === 'denied' ? 'denied-unique' : 'unresolved-unique'}>{ticket.status}</td>
               <td>{ticket.lastModificationDate}</td>
               <td>
-                <FaInfoCircle className="info-icon" size={24} onClick={() => openModal(ticket)} />
+                <FaInfoCircle className="info-icon-unique" size={24} onClick={() => openModal(ticket)} />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Pagination Controls using ReactPaginate */}
-      <div className="pagination-container">
+      <div className="pagination-container-unique">
         <ReactPaginate
           previousLabel={'← Previous'}
           nextLabel={'Next →'}
@@ -277,7 +271,6 @@ const SupportTicketSystem = () => {
         />
       </div>
 
-      {/* Modals */}
       <TicketDetailsModal
         modalIsOpen={modalIsOpen}
         closeModal={closeModal}

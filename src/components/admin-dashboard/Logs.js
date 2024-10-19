@@ -1,40 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { fetchLogTables } from '../../utils/api';
-import './styles/Logs.css'; // Import the CSS file
+import './styles/Logs.css'; // Updated CSS file
 
 const Logs = () => {
   const [selectedTable, setSelectedTable] = useState('');
   const [logData, setLogData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedLogDetails, setSelectedLogDetails] = useState(null); // State to store details of the clicked log entry
+  const [selectedLogDetails, setSelectedLogDetails] = useState(null); 
   const [selectedStaff, setSelectedStaff] = useState(null);
 
-  // Function to parse and format timestamp into a readable date
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
-    return date.toLocaleString(); // Convert to human-readable date and time
+    return date.toLocaleString(); 
   };
 
   const handleTableSelection = async (event) => {
     const tableName = event.target.value;
     setSelectedTable(tableName);
-    setSelectedLogDetails(null); // Clear the selected log details when switching tables
+    setSelectedLogDetails(null);
 
     if (tableName) {
       setLoading(true);
       try {
         const logs = await fetchLogTables(tableName);
-        console.log("Received Logs: ", logs);
         let sortedLogs = logs.records || [];
 
-        // Sort logs by timestamp (or logged_at) from most recent to oldest
         sortedLogs.sort((a, b) => {
           const dateA = new Date(a.timestamp || a.logged_at);
           const dateB = new Date(b.timestamp || b.logged_at);
-          return dateB - dateA; // Sort in descending order
+          return dateB - dateA;
         });
 
-        setLogData(sortedLogs); // Set the sorted log data
+        setLogData(sortedLogs);
       } catch (error) {
         console.error('Error fetching logs:', error);
       } finally {
@@ -45,25 +42,20 @@ const Logs = () => {
     }
   };
 
-  // Handle row click to display raw log details
   const handleLogClick = (log) => {
     setSelectedLogDetails(log);
   };
 
-  // Handle closing the modal
   const handleCloseModal = () => {
     setSelectedLogDetails(null);
   };
 
-  // Handle staff log selection
   const handleStaffClick = (staffEmail) => {
     let staffLogs = logData.find(log => log.email === staffEmail)?.logs || [];
-    
-    // Sort the selected staff logs by timestamp (most recent to oldest)
     staffLogs = staffLogs.sort((a, b) => {
       const dateA = new Date(a.timestamp);
       const dateB = new Date(b.timestamp);
-      return dateB - dateA; // Sort in descending order
+      return dateB - dateA;
     });
 
     setSelectedStaff({
@@ -73,12 +65,11 @@ const Logs = () => {
   };
 
   return (
-    <div>
+    <div className="body-logs-unique">
       <h1>System Logs</h1>
       <p>Here you can view the logs of various activities.</p>
 
-      {/* Dropdown to select log table */}
-      <select onChange={handleTableSelection} value={selectedTable}>
+      <select onChange={handleTableSelection} value={selectedTable} className="select-logs-unique">
         <option value="">Select a Log Table</option>
         <option value="matrix_credit_logs">Credit Logs</option>
         <option value="matrix_replacementslog">Replacement Logs</option>
@@ -86,74 +77,70 @@ const Logs = () => {
         <option value="matrix_stafflogs">Staff Logs</option>
       </select>
 
-      {/* Display loading state */}
       {loading && <p>Loading logs...</p>}
 
-      {/* Display selected table log data */}
       {!loading && logData.length > 0 && selectedTable !== 'matrix_stafflogs' ? (
-        <div>
-          <table>
+        <div className="table-container-logs-unique">
+          <table className="table-logs-unique">
             <thead>
               <tr>
-                {/* Conditionally render columns based on selected table */}
                 {selectedTable === 'matrix_credit_logs' ? (
                   <>
-                    <th>LOGGED_AT</th>
-                    <th>CREDIT_AMOUNT</th>
-                    <th>STAFF_EMAIL</th>
-                    <th>USER_EMAIL</th>
-                    <th>TRANSACTION_ID</th>
+                    <th className="th-logs-unique">LOGGED_AT</th>
+                    <th className="th-logs-unique">CREDIT_AMOUNT</th>
+                    <th className="th-logs-unique">STAFF_EMAIL</th>
+                    <th className="th-logs-unique">USER_EMAIL</th>
+                    <th className="th-logs-unique">TRANSACTION_ID</th>
                   </>
                 ) : selectedTable === 'matrix_replacementslog' ? (
                   <>
-                    <th>TIMESTAMP</th>
-                    <th>PRODUCT_ID</th>
-                    <th>QTY</th>
-                    <th>STAFF_EMAIL</th>
-                    <th>USER_EMAIL</th>
-                    <th>RESULT</th>
+                    <th className="th-logs-unique">TIMESTAMP</th>
+                    <th className="th-logs-unique">PRODUCT_ID</th>
+                    <th className="th-logs-unique">QTY</th>
+                    <th className="th-logs-unique">STAFF_EMAIL</th>
+                    <th className="th-logs-unique">USER_EMAIL</th>
+                    <th className="th-logs-unique">RESULT</th>
                   </>
                 ) : selectedTable === 'matrix_stockexportlog' ? (
                   <>
-                    <th>TIMESTAMP</th>
-                    <th>PRODUCTS</th>
-                    <th>QTY</th>
-                    <th>CUSTOMER_EMAIL</th>
-                    <th>OPERATOR_EMAIL</th>
-                    <th>NOTE</th>
+                    <th className="th-logs-unique">TIMESTAMP</th>
+                    <th className="th-logs-unique">PRODUCTS</th>
+                    <th className="th-logs-unique">QTY</th>
+                    <th className="th-logs-unique">CUSTOMER_EMAIL</th>
+                    <th className="th-logs-unique">OPERATOR_EMAIL</th>
+                    <th className="th-logs-unique">NOTE</th>
                   </>
                 ) : null}
               </tr>
             </thead>
             <tbody>
               {logData.map((log, index) => (
-                <tr key={index} onClick={() => handleLogClick(log)} style={{ cursor: 'pointer' }}>
-                  {/* Conditionally render rows based on selected table */}
+                <tr key={index} onClick={() => handleLogClick(log)} className="tr-hover-logs-unique">
                   {selectedTable === 'matrix_credit_logs' ? (
                     <>
-                      <td>{formatTimestamp(log.logged_at) || 'N/A'}</td>
-                      <td>{log.credit_amount || 'N/A'}</td>
-                      <td>{log.staff_email || 'N/A'}</td>
-                      <td>{log.user_email || 'N/A'}</td>
-                      <td>{log.transaction_id || 'N/A'}</td>
+                      <td className="td-logs-unique td-logs-timestamp-unique">{formatTimestamp(log.logged_at) || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.credit_amount || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.staff_email || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.user_email || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.transaction_id || 'N/A'}</td>
                     </>
                   ) : selectedTable === 'matrix_replacementslog' ? (
                     <>
-                      <td>{formatTimestamp(log.timestamp) || 'N/A'}</td>
-                      <td>{log.product_id || 'N/A'}</td>
-                      <td>{log.quantity || 'N/A'}</td>
-                      <td>{log.staff_email || 'N/A'}</td>
-                      <td>{log.user_email || 'N/A'}</td>
-                      <td>{log.result || 'N/A'}</td>
+                      <td className="td-logs-unique">{formatTimestamp(log.timestamp) || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.product_id || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.quantity || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.staff_email || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.user_email || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.result || 'N/A'}</td>
                     </>
                   ) : selectedTable === 'matrix_stockexportlog' ? (
                     <>
-                      <td>{formatTimestamp(log.timestamp) || 'N/A'}</td>
-                      <td>{log.products ? log.products.join(', ') : 'N/A'}</td>
-                      <td>{log.quantities ? log.quantities.join(', ') : 'N/A'}</td>
-                      <td>{log.customer_email || 'N/A'}</td>
-                      <td>{log.operator_email || 'N/A'}</td>
-                      <td>{log.note || 'N/A'}</td>
+                      <td className="td-logs-unique">{formatTimestamp(log.timestamp) || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.products ? log.products.join(', ') : 'N/A'}</td>
+                      <td className="td-logs-unique">{log.quantities ? log.quantities.join(', ') : 'N/A'}</td>
+                      <td className="td-logs-unique">{log.customer_email || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.operator_email || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.note || 'N/A'}</td>
                     </>
                   ) : null}
                 </tr>
@@ -161,13 +148,12 @@ const Logs = () => {
             </tbody>
           </table>
 
-          {/* Modal to display raw log details when a row is clicked */}
           {selectedLogDetails && (
-            <div className="modal">
-              <div className="modal-content">
-                <span className="close" onClick={handleCloseModal}>&times;</span>
+            <div className="modal-unique">
+              <div className="modal-content-unique">
+                <span className="close-unique" onClick={handleCloseModal}>&times;</span>
                 <h3>Log Details</h3>
-                <pre>{JSON.stringify(selectedLogDetails, null, 2)}</pre> {/* Display raw log details in JSON format */}
+                <pre>{JSON.stringify(selectedLogDetails, null, 2)}</pre>
               </div>
             </div>
           )}
@@ -175,27 +161,25 @@ const Logs = () => {
       ) : (
         selectedTable === 'matrix_stafflogs' && (
           <div>
-            <h2 className="staff-logs">Staff Logs</h2>
-            {/* Display staff emails */}
-            <ul className="logs-container">
+            <h2 className="staff-logs-h3-unique">Staff Logs</h2>
+            <ul className="ul-logs-unique">
               {logData.map((staff, index) => (
-                <li key={index} onClick={() => handleStaffClick(staff.email)} style={{ cursor: 'pointer' }}>
+                <li key={index} onClick={() => handleStaffClick(staff.email)} className="li-logs-unique">
                   {staff.email}
                 </li>
               ))}
             </ul>
-            {/* Display selected staff logs */}
             {selectedStaff && (
-              <div className="staff-logs">
-                <h3>Logs for {selectedStaff.email}</h3>
-                <ul>
+              <div className="staff-logs-unique">
+                <h3 className="staff-logs-h3-unique">Logs for {selectedStaff.email}</h3>
+                <ul className="staff-logs-ul-unique">
                   {selectedStaff.logs.map((log, index) => (
-                    <li key={index}>
-                      <strong>{log.action}:</strong> {log.action_value} 
-                      <br /><strong>Client Email:</strong> {log.client_email || 'N/A'}
-                      <br /><strong>Order ID:</strong> {log.order_id || 'N/A'}
-                      <br /><strong>Ticket ID:</strong> {log.ticket_id || 'N/A'}
-                      <em>{formatTimestamp(log.timestamp)}</em>
+                    <li key={index} className="staff-logs-li-unique">
+                      <strong className="staff-logs-li-strong-unique">{log.action}:</strong> {log.action_value}
+                      <br /><strong className="staff-logs-li-strong-unique">Client Email:</strong> {log.client_email || 'N/A'}
+                      <br /><strong className="staff-logs-li-strong-unique">Order ID:</strong> {log.order_id || 'N/A'}
+                      <br /><strong className="staff-logs-li-strong-unique">Ticket ID:</strong> {log.ticket_id || 'N/A'}
+                      <em className="staff-logs-li-em-unique">{formatTimestamp(log.timestamp)}</em>
                     </li>
                   ))}
                 </ul>
