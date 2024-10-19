@@ -6,6 +6,7 @@ const Logs = () => {
   const [selectedTable, setSelectedTable] = useState('');
   const [logData, setLogData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedLogDetails, setSelectedLogDetails] = useState(null); // State to store details of the clicked log entry
   const [selectedStaff, setSelectedStaff] = useState(null);
 
   // Function to parse and format timestamp into a readable date
@@ -17,6 +18,7 @@ const Logs = () => {
   const handleTableSelection = async (event) => {
     const tableName = event.target.value;
     setSelectedTable(tableName);
+    setSelectedLogDetails(null); // Clear the selected log details when switching tables
 
     if (tableName) {
       setLoading(true);
@@ -41,6 +43,16 @@ const Logs = () => {
     } else {
       setLogData([]);
     }
+  };
+
+  // Handle row click to display raw log details
+  const handleLogClick = (log) => {
+    setSelectedLogDetails(log);
+  };
+
+  // Handle closing the modal
+  const handleCloseModal = () => {
+    setSelectedLogDetails(null);
   };
 
   // Handle staff log selection
@@ -79,74 +91,87 @@ const Logs = () => {
 
       {/* Display selected table log data */}
       {!loading && logData.length > 0 && selectedTable !== 'matrix_stafflogs' ? (
-        <table>
-          <thead>
-            <tr>
-              {/* Conditionally render columns based on selected table */}
-              {selectedTable === 'matrix_credit_logs' ? (
-                <>
-                  <th>LOGGED_AT</th>
-                  <th>CREDIT_AMOUNT</th>
-                  <th>STAFF_EMAIL</th>
-                  <th>USER_EMAIL</th>
-                  <th>TRANSACTION_ID</th>
-                </>
-              ) : selectedTable === 'matrix_replacementslog' ? (
-                <>
-                  <th>TIMESTAMP</th>
-                  <th>PRODUCT_ID</th>
-                  <th>QTY</th>
-                  <th>STAFF_EMAIL</th>
-                  <th>USER_EMAIL</th>
-                  <th>RESULT</th>
-                </>
-              ) : selectedTable === 'matrix_stockexportlog' ? (
-                <>
-                  <th>TIMESTAMP</th>
-                  <th>PRODUCTS</th>
-                  <th>QTY</th>
-                  <th>CUSTOMER_EMAIL</th>
-                  <th>OPERATOR_EMAIL</th>
-                  <th>NOTE</th>
-                </>
-              ) : null}
-            </tr>
-          </thead>
-          <tbody>
-            {logData.map((log, index) => (
-              <tr key={index}>
-                {/* Conditionally render rows based on selected table */}
+        <div>
+          <table>
+            <thead>
+              <tr>
+                {/* Conditionally render columns based on selected table */}
                 {selectedTable === 'matrix_credit_logs' ? (
                   <>
-                    <td>{formatTimestamp(log.logged_at) || 'N/A'}</td>
-                    <td>{log.credit_amount || 'N/A'}</td>
-                    <td>{log.staff_email || 'N/A'}</td>
-                    <td>{log.user_email || 'N/A'}</td>
-                    <td>{log.transaction_id || 'N/A'}</td>
+                    <th>LOGGED_AT</th>
+                    <th>CREDIT_AMOUNT</th>
+                    <th>STAFF_EMAIL</th>
+                    <th>USER_EMAIL</th>
+                    <th>TRANSACTION_ID</th>
                   </>
                 ) : selectedTable === 'matrix_replacementslog' ? (
                   <>
-                    <td>{formatTimestamp(log.timestamp) || 'N/A'}</td>
-                    <td>{log.product_id || 'N/A'}</td>
-                    <td>{log.quantity || 'N/A'}</td>
-                    <td>{log.staff_email || 'N/A'}</td>
-                    <td>{log.user_email || 'N/A'}</td>
-                    <td>{log.result || 'N/A'}</td>
+                    <th>TIMESTAMP</th>
+                    <th>PRODUCT_ID</th>
+                    <th>QTY</th>
+                    <th>STAFF_EMAIL</th>
+                    <th>USER_EMAIL</th>
+                    <th>RESULT</th>
                   </>
                 ) : selectedTable === 'matrix_stockexportlog' ? (
                   <>
-                    <td>{formatTimestamp(log.timestamp) || 'N/A'}</td>
-                    <td>{log.products ? log.products.join(', ') : 'N/A'}</td>
-                    <td>{log.quantities ? log.quantities.join(', ') : 'N/A'}</td>
-                    <td>{log.customer_email || 'N/A'}</td>
-                    <td>{log.operator_email || 'N/A'}</td>
-                    <td>{log.note || 'N/A'}</td>
+                    <th>TIMESTAMP</th>
+                    <th>PRODUCTS</th>
+                    <th>QTY</th>
+                    <th>CUSTOMER_EMAIL</th>
+                    <th>OPERATOR_EMAIL</th>
+                    <th>NOTE</th>
                   </>
                 ) : null}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {logData.map((log, index) => (
+                <tr key={index} onClick={() => handleLogClick(log)} style={{ cursor: 'pointer' }}>
+                  {/* Conditionally render rows based on selected table */}
+                  {selectedTable === 'matrix_credit_logs' ? (
+                    <>
+                      <td>{formatTimestamp(log.logged_at) || 'N/A'}</td>
+                      <td>{log.credit_amount || 'N/A'}</td>
+                      <td>{log.staff_email || 'N/A'}</td>
+                      <td>{log.user_email || 'N/A'}</td>
+                      <td>{log.transaction_id || 'N/A'}</td>
+                    </>
+                  ) : selectedTable === 'matrix_replacementslog' ? (
+                    <>
+                      <td>{formatTimestamp(log.timestamp) || 'N/A'}</td>
+                      <td>{log.product_id || 'N/A'}</td>
+                      <td>{log.quantity || 'N/A'}</td>
+                      <td>{log.staff_email || 'N/A'}</td>
+                      <td>{log.user_email || 'N/A'}</td>
+                      <td>{log.result || 'N/A'}</td>
+                    </>
+                  ) : selectedTable === 'matrix_stockexportlog' ? (
+                    <>
+                      <td>{formatTimestamp(log.timestamp) || 'N/A'}</td>
+                      <td>{log.products ? log.products.join(', ') : 'N/A'}</td>
+                      <td>{log.quantities ? log.quantities.join(', ') : 'N/A'}</td>
+                      <td>{log.customer_email || 'N/A'}</td>
+                      <td>{log.operator_email || 'N/A'}</td>
+                      <td>{log.note || 'N/A'}</td>
+                    </>
+                  ) : null}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Modal to display raw log details when a row is clicked */}
+          {selectedLogDetails && (
+            <div className="modal">
+              <div className="modal-content">
+                <span className="close" onClick={handleCloseModal}>&times;</span>
+                <h3>Log Details</h3>
+                <pre>{JSON.stringify(selectedLogDetails, null, 2)}</pre> {/* Display raw log details in JSON format */}
+              </div>
+            </div>
+          )}
+        </div>
       ) : (
         selectedTable === 'matrix_stafflogs' && (
           <div>
