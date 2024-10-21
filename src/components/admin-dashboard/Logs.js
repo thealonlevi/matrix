@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchLogTables } from '../../utils/api';
+import { fetchLogTables, fetchStaffFlagList } from '../../utils/api';
 import './styles/Logs.css'; // Updated CSS file
 
 const Logs = () => {
@@ -18,19 +18,41 @@ const Logs = () => {
     const tableName = event.target.value;
     setSelectedTable(tableName);
     setSelectedLogDetails(null);
-
+  
     if (tableName) {
+      console.log(tableName);
       setLoading(true);
       try {
-        const logs = await fetchLogTables(tableName);
-        let sortedLogs = logs.records || [];
+        let logs = [];
 
-        sortedLogs.sort((a, b) => {
-          const dateA = new Date(a.timestamp || a.logged_at);
-          const dateB = new Date(b.timestamp || b.logged_at);
-          return dateB - dateA;
-        });
-
+        if (tableName === 'matrix_flag_logs') {
+          // Fetch flag logs
+          const flagLogs = await fetchStaffFlagList();
+          console.log("Flags: ", flagLogs);
+          logs = flagLogs || [];
+        } else {
+          logs = await fetchLogTables(tableName);
+        }
+        
+        let sortedLogs = logs.records || logs;  // For Flag Logs, directly access the array
+  
+        // Sort logs based on the table type
+        if (tableName === 'matrix_credit_logs') {
+          // Sort by `logged_at` for Credit Logs
+          sortedLogs.sort((a, b) => {
+            const dateA = new Date(a.logged_at);
+            const dateB = new Date(b.logged_at);
+            return dateB - dateA; // Sort from most recent to oldest
+          });
+        } else if (tableName === 'matrix_replacementslog' || tableName === 'matrix_stockexportlog' || tableName === 'matrix_flag_logs') {
+          // Sort by `timestamp` for Replacement Logs, Stock Export Logs, and Flag Logs
+          sortedLogs.sort((a, b) => {
+            const dateA = new Date(a.timestamp);
+            const dateB = new Date(b.timestamp);
+            return dateB - dateA; // Sort from most recent to oldest
+          });
+        }
+  
         setLogData(sortedLogs);
       } catch (error) {
         console.error('Error fetching logs:', error);
@@ -75,6 +97,7 @@ const Logs = () => {
         <option value="matrix_replacementslog">Replacement Logs</option>
         <option value="matrix_stockexportlog">Stock Export Logs</option>
         <option value="matrix_stafflogs">Staff Logs</option>
+        <option value="matrix_flag_logs">Flag Logs</option> {/* New option for Flag Logs */}
       </select>
 
       {loading && <p>Loading logs...</p>}
@@ -97,6 +120,7 @@ const Logs = () => {
                     <th className="th-logs-unique">TIMESTAMP</th>
                     <th className="th-logs-unique">PRODUCT_ID</th>
                     <th className="th-logs-unique">QTY</th>
+                    <th className="th-logs-unique">NOTE</th>
                     <th className="th-logs-unique">STAFF_EMAIL</th>
                     <th className="th-logs-unique">USER_EMAIL</th>
                     <th className="th-logs-unique">RESULT</th>
@@ -109,6 +133,12 @@ const Logs = () => {
                     <th className="th-logs-unique">CUSTOMER_EMAIL</th>
                     <th className="th-logs-unique">OPERATOR_EMAIL</th>
                     <th className="th-logs-unique">NOTE</th>
+                  </>
+                ) : selectedTable === 'matrix_flag_logs' ? (
+                  <>
+                    <th className="th-logs-unique">TIMESTAMP</th>
+                    <th className="th-logs-unique">FLAG_TRIGGER</th>
+                    <th className="th-logs-unique">STAFF_EMAIL</th>
                   </>
                 ) : null}
               </tr>
@@ -129,6 +159,7 @@ const Logs = () => {
                       <td className="td-logs-unique">{formatTimestamp(log.timestamp) || 'N/A'}</td>
                       <td className="td-logs-unique">{log.product_id || 'N/A'}</td>
                       <td className="td-logs-unique">{log.quantity || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.note || ''}</td>
                       <td className="td-logs-unique">{log.staff_email || 'N/A'}</td>
                       <td className="td-logs-unique">{log.user_email || 'N/A'}</td>
                       <td className="td-logs-unique">{log.result || 'N/A'}</td>
@@ -141,6 +172,12 @@ const Logs = () => {
                       <td className="td-logs-unique">{log.customer_email || 'N/A'}</td>
                       <td className="td-logs-unique">{log.operator_email || 'N/A'}</td>
                       <td className="td-logs-unique">{log.note || 'N/A'}</td>
+                    </>
+                  ) : selectedTable === 'matrix_flag_logs' ? (
+                    <>
+                      <td className="td-logs-unique">{formatTimestamp(log.timestamp) || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.flag_trigger || 'N/A'}</td>
+                      <td className="td-logs-unique">{log.email || 'N/A'}</td>
                     </>
                   ) : null}
                 </tr>

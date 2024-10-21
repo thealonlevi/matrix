@@ -1856,3 +1856,54 @@ export const fetchLogTables = async (tableName) => {
     throw new Error('Failed to fetch log tables. Please try again later.');
   }
 };
+
+const FETCH_STAFF_FLAG_LIST_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_StaffFlagList';
+
+/**
+ * Function to fetch the staff flag list.
+ * 
+ * This function sends a GET request to the API Gateway that triggers the Lambda function
+ * responsible for retrieving all flags from staff members.
+ * 
+ * @returns {Promise<Array>} - Resolves with an array of flags containing the flag information and email.
+ * @throws {Error} - If the API request fails or returns an unexpected response.
+ */
+export const fetchStaffFlagList = async () => {
+  try {
+    const response = await fetch(FETCH_STAFF_FLAG_LIST_API_URL, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`API Error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+
+    if (data.flags) {
+      // Map the flags and extract the necessary fields
+      const parsedFlags = data.flags.map(flag => {
+        return {
+          UID: flag.UID,
+          timestamp: flag.flag_data.timestamp.S,
+          relevant_order: flag.flag_data.relevant_order.S,
+          relevant_ticket: flag.flag_data.relevant_ticket.S,
+          flag_trigger: flag.flag_data.flag_trigger.S,
+          email: flag.flag_data.email.S,
+        };
+      });
+
+      console.log("Parsed flags:", parsedFlags); // Ensure flags are correctly parsed
+      return parsedFlags;
+    } else {
+      throw new Error('Failed to fetch staff flag list: Missing flags in the response.');
+    }
+  } catch (error) {
+    console.error('Error fetching staff flag list:', error.message);
+    throw new Error(`Failed to fetch staff flag list. Details: ${error.message}`);
+  }
+};

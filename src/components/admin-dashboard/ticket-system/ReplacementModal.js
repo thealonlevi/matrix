@@ -7,6 +7,8 @@ export const ReplacementModal = ({
   closeReplacementModal,
   replacementQuantity,
   setReplacementQuantity,
+  replacementNote,            // New state for the note
+  setReplacementNote,         // New setter for the note
   handleReplacement,
 }) => (
   <Modal
@@ -27,6 +29,16 @@ export const ReplacementModal = ({
       onChange={(e) => setReplacementQuantity(e.target.value)}
       min="1"
     />
+
+    {/* New Note Input for the Replacement Reason */}
+    <p>Please provide a reason for issuing the replacement:</p>
+    <textarea
+      value={replacementNote}                   // Bind note value
+      onChange={(e) => setReplacementNote(e.target.value)} // Update note value
+      rows="4"
+      placeholder="Enter the reason for issuing the replacement..."
+    />
+
     <div className="button-container">
       <button onClick={handleReplacement} className="confirm-btn">
         <FaSave /> Confirm

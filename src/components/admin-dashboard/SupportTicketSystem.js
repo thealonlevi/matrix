@@ -23,6 +23,7 @@ const SupportTicketSystem = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [creditModalIsOpen, setCreditModalIsOpen] = useState(false);
   const [replacementModalIsOpen, setReplacementModalIsOpen] = useState(false);
+  const [replacementNote, setReplacementNote] = useState('');  // New state for the replacement note
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [operatorEmail, setOperatorEmail] = useState('');
   const [operatorUserId, setOperatorUserId] = useState('');
@@ -45,6 +46,34 @@ const SupportTicketSystem = () => {
 
   const { showNotification } = useNotification();
   const initRef = useRef(false);
+
+  const handleReplacement = async () => {
+    if (!selectedTicket) return;
+    if (productStockCount < selectedTicket.replacementsCountAsked) {
+      showNotification('Not enough stock, please resort to credit.', 'error');
+      setReplacementModalIsOpen(false);
+      setReplacementQuantity('');
+      setReplacementNote('');  // Clear the note
+      return;
+    }
+    try {
+      await handleIssueReplacement({
+        userEmail: selectedTicket.userEmail,
+        ticket_id: selectedTicket.ticket_id,
+        operator: operatorEmail,
+        product_id: selectedTicket.product_id,
+        quantity: parseInt(replacementQuantity, 10),
+        orderID: selectedTicket.orderID,
+        note: replacementNote,  // Pass the replacement note to the backend
+      });
+      showNotification('Replacement issued successfully.', 'success');
+      setReplacementModalIsOpen(false);
+      setReplacementQuantity('');
+      setReplacementNote('');  // Clear the note after submission
+    } catch (error) {
+      showNotification('Failed to issue replacement. Please try again.', 'error');
+    }
+  };
 
   useEffect(() => {
     const loadTickets = async () => {
@@ -145,30 +174,6 @@ const SupportTicketSystem = () => {
     }
   };
 
-  const handleReplacement = async () => {
-    if (!selectedTicket) return;
-    if (productStockCount < selectedTicket.replacementsCountAsked) {
-      showNotification('Not enough stock, please resort to credit.', 'error');
-      setReplacementModalIsOpen(false);
-      setReplacementQuantity('');
-      return;
-    }
-    try {
-      await handleIssueReplacement({
-        userEmail: selectedTicket.userEmail,
-        ticket_id: selectedTicket.ticket_id,
-        operator: operatorEmail,
-        product_id: selectedTicket.product_id,
-        quantity: parseInt(replacementQuantity, 10),
-        orderID: selectedTicket.orderID,
-      });
-      showNotification('Replacement issued successfully.', 'success');
-      setReplacementModalIsOpen(false);
-      setReplacementQuantity('');
-    } catch (error) {
-      showNotification('Failed to issue replacement. Please try again.', 'error');
-    }
-  };
 
   const handleResolveOrDeny = async (status) => {
     if (!selectedTicket || isResolving) return;
@@ -294,6 +299,8 @@ const SupportTicketSystem = () => {
         closeReplacementModal={() => setReplacementModalIsOpen(false)}
         replacementQuantity={replacementQuantity}
         setReplacementQuantity={setReplacementQuantity}
+        replacementNote={replacementNote}             // Pass note state
+        setReplacementNote={setReplacementNote} 
         handleReplacement={handleReplacement}
       />
     </div>
