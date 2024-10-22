@@ -43,8 +43,8 @@ const ManageStaff = () => {
             raw: staffMember, // Store the unformatted JSON data
             email: staffMember.email,
             createdAt: new Date(staffMember.created_at).toLocaleString(),
-            creditLimit: staffMember.credit_limit,
-            issuedCreditsTotal: staffMember.issued_credits_total,
+            credits: `${staffMember.issued_credits_total} / ${staffMember.credit_limit}`, // Combine issued credits and credit limit
+            replacements: `${staffMember.issued_replacements_total || 'N/A'} / ${staffMember.replacement_limit || 'N/A'}`, // Combine replacements issued and replacement limit
             lastLogin: new Date(staffMember.last_login).toLocaleString(),
             permissions: Array.isArray(staffMember.permissions) ? staffMember.permissions.join(', ') : staffMember.permissions,
             role: staffMember.role,
@@ -89,9 +89,8 @@ const ManageStaff = () => {
       setStaff(updatedStaffList.map(staffMember => ({
         raw: staffMember,
         email: staffMember.email,
-        createdAt: new Date(staffMember.created_at).toLocaleString(),
-        creditLimit: staffMember.credit_limit,
-        issuedCreditsTotal: staffMember.issued_credits_total,
+        credits: `${staffMember.issued_credits_total} / ${staffMember.credit_limit}`, // Combine issued credits and credit limit
+        replacements: `${staffMember.issued_replacements_total || 'N/A'} / ${staffMember.replacement_limit || 'N/A'}`, // Combine replacements issued and replacement limit
         lastLogin: new Date(staffMember.last_login).toLocaleString(),
         permissions: Array.isArray(staffMember.permissions) ? staffMember.permissions.join(', ') : staffMember.permissions,
         role: staffMember.role,
@@ -124,8 +123,8 @@ const ManageStaff = () => {
             <th>#</th>
             <th>Email</th>
             <th>Role</th>
-            <th>Credit Limit</th>
-            <th>Issued Credits</th>
+            <th>Credits (Issued / Limit)</th> {/* Combined credits */}
+            <th>Replacements (Issued / Limit)</th> {/* Combined replacements */}
             <th>Permissions</th>
             <th>Last Login</th>
             <th>Edit</th>
@@ -137,8 +136,8 @@ const ManageStaff = () => {
               <td>{index + 1}</td>
               <td>{staffMember.email}</td>
               <td>{staffMember.role}</td>
-              <td>{staffMember.creditLimit}</td>
-              <td>{staffMember.issuedCreditsTotal}</td>
+              <td>{staffMember.credits}</td> {/* Display combined credits */}
+              <td>{staffMember.replacements}</td> {/* Display combined replacements */}
               <td>{staffMember.permissions}</td>
               <td>{staffMember.lastLogin}</td>
               <td>
