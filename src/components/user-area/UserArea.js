@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchUserAttributes } from 'aws-amplify/auth';
 import { userInfoUtil } from '../../utils/api'; // Import the API utility
 import UserOrders from './UserOrders'; // Import the UserOrders component
+import UserSupport from './UserSupport'; // Import the UserSupport component
 import { FaUser, FaEnvelope, FaLock, FaDollarSign, FaCreditCard } from 'react-icons/fa';
 import './styles/UserArea.css';
 
@@ -79,6 +80,8 @@ const UserArea = () => {
         );
       case 'Orders':
         return <UserOrders userEmail={userEmail} userId={userId} />;
+      case 'Support': // Add the Support case
+        return <UserSupport userEmail={userEmail} />;
       // Add cases for other tabs like Drops, Leaderboard, etc.
       default:
         return null;
@@ -91,13 +94,7 @@ const UserArea = () => {
       <div className="user-area-nav">
         <button onClick={() => setActiveTab('Dashboard')} className={`nav-link ${activeTab === 'Dashboard' ? 'active' : ''}`}>Dashboard</button>
         <button onClick={() => setActiveTab('Orders')} className={`nav-link ${activeTab === 'Orders' ? 'active' : ''}`}>Orders</button>
-        <button onClick={() => setActiveTab('Drops')} className={`nav-link ${activeTab === 'Drops' ? 'active' : ''}`}>Drops</button>
-        <button onClick={() => setActiveTab('Leaderboard')} className={`nav-link ${activeTab === 'Leaderboard' ? 'active' : ''}`}>Leaderboard</button>
-        <button onClick={() => setActiveTab('Referrals')} className={`nav-link ${activeTab === 'Referrals' ? 'active' : ''}`}>Referrals</button>
-        <button onClick={() => setActiveTab('Balance')} className={`nav-link ${activeTab === 'Balance' ? 'active' : ''}`}>Balance</button>
-        <button onClick={() => setActiveTab('Edit Account')} className={`nav-link ${activeTab === 'Edit Account' ? 'active' : ''}`}>Edit Account</button>
-        <button onClick={() => setActiveTab('Change Password')} className={`nav-link ${activeTab === 'Change Password' ? 'active' : ''}`}>Change Password</button>
-        <button onClick={() => setActiveTab('2-Factor Auth')} className={`nav-link ${activeTab === '2-Factor Auth' ? 'active' : ''}`}>2-Factor Auth</button>
+        <button onClick={() => setActiveTab('Support')} className={`nav-link ${activeTab === 'Support' ? 'active' : ''}`}>Support</button>
       </div>
 
       {/* Render Content Based on Active Tab */}

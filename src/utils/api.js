@@ -1907,3 +1907,42 @@ export const fetchStaffFlagList = async () => {
     throw new Error(`Failed to fetch staff flag list. Details: ${error.message}`);
   }
 };
+
+// API URL for fetching user tickets
+const FETCH_USER_TICKETS_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchUserTickets';
+
+/**
+ * Function to fetch user tickets from the Matrix_FetchUserTickets API.
+ * @param {string} userEmail - The email of the user whose tickets are to be fetched.
+ * @returns {Promise<Array>} - Resolves with an array of user tickets or rejects with an error message.
+ */
+export const fetchUserTickets = async (userEmail) => {
+  try {
+    const response = await fetch(FETCH_USER_TICKETS_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userEmail: userEmail,  // Send the user's email in the request body
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user tickets.');
+    }
+
+    const data = await response.json();
+    console.log("Tickets Data: ", data);
+
+    // Parse the body to get the list of tickets
+    if (data && data.body) {
+      return data;  // Return the tickets
+    } else {
+      throw new Error('No tickets found in the response.');
+    }
+  } catch (error) {
+    console.error('Error fetching user tickets:', error);
+    throw new Error('Failed to fetch user tickets. Please try again later.');
+  }
+};

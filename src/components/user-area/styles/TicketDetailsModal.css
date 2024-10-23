@@ -1,0 +1,137 @@
+/* Modal Overlay */
+.ticket-details-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8); /* Darken background when modal is open */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;     /* Center vertically */
+    z-index: 1000;
+}
+
+/* Modal Content */
+.ticket-details-modal {
+    background-color: #16181f;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+    max-width: 450px; /* Set the modal width */
+    width: 100%;
+    max-height: 75vh; /* Set maximum height to make the modal more compact */
+    overflow-y: auto; /* Add vertical scroll if content exceeds the max-height */
+    border: none;
+    z-index: 1001; /* Ensure modal is above other content */
+}
+
+/* Modal Header */
+.ticket-details-modal h2 {
+    color: #1abc9c;
+    margin-bottom: 10px;
+    font-size: 18px; /* Reduced font size for a more compact design */
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Modal Paragraphs */
+.ticket-details-modal p {
+    color: #ced6e0;
+    margin-bottom: 8px;
+    font-size: 12px; /* Slightly smaller font */
+    line-height: 1.5;
+}
+
+/* Modal Close Icon */
+.modal-close-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 18px; /* Reduced size */
+    color: #ff6b6b;
+    background-color: #2d3436;
+    padding: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: color 0.3s, background-color 0.3s;
+}
+
+.modal-close-icon:hover {
+    color: #ffffff;
+    background-color: #d63031;
+}
+
+/* Notices Container */
+.notices-container {
+    background-color: #253347;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    max-height: 100px; /* Limit height to make it scrollable */
+    overflow-y: auto;  /* Add vertical scrolling */
+}
+
+.notice-item {
+    background-color: #2c3e50;
+    border-left: 4px solid #3498db;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.notice-content {
+    margin-top: 5px;
+    padding: 8px;
+    background-color: #34495e;
+    color: #dfe6e9;
+    border-radius: 5px;
+}
+
+/* History Container */
+.history-container {
+    background-color: #20232b;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    max-height: 100px; /* Limit height to make it scrollable */
+    overflow-y: auto;  /* Add vertical scrolling */
+}
+
+.history-item {
+    background-color: #2c3e50;
+    border-left: 4px solid #e74c3c;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Close Button */
+.modal-close-button {
+    background-color: #ff6b6b;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+    margin: 10px auto 0;
+}
+
+.modal-close-button:hover {
+    background-color: #d63031;
+}
+
+/* Status colors */
+.status-resolved {
+    color: #28a745 !important; /* Green */
+  }
+  
+  .status-denied {
+    color: #e74c3c !important; /* Red */
+  }
+  
+  .status-pending {
+    color: #f39c12 !important; /* Orange */
+  }
+  
