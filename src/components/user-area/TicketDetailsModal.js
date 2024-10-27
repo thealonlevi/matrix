@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import {
   FaUser,
@@ -10,9 +10,11 @@ import {
   FaStickyNote,
   FaHistory
 } from 'react-icons/fa';
+import { updateTicketUnreadStatus } from '../../utils/api';
 import './styles/TicketDetailsModal.css';
 
 const TicketDetailsModal = ({ modalIsOpen, closeModal, selectedTicket }) => {
+  const [localUnread, setLocalUnread] = useState(selectedTicket?.unread);
 
   // Function to get status-specific CSS class
   const getStatusClass = (status) => {
@@ -27,6 +29,32 @@ const TicketDetailsModal = ({ modalIsOpen, closeModal, selectedTicket }) => {
         return '';
     }
   };
+
+  // Effect to update unread status if necessary
+  useEffect(() => {
+    const markAsRead = async () => {
+      if (selectedTicket && (localUnread === true || localUnread === undefined)) {
+        console.log("Unread Status:", localUnread);
+        try {
+          await updateTicketUnreadStatus(selectedTicket.ticket_id, false);
+          console.log('Ticket marked as read.');
+          setLocalUnread(false); // Update the local state to reflect the read status
+        } catch (error) {
+          console.error('Error marking ticket as read:', error);
+        }
+      }
+    };
+
+    if (modalIsOpen) {
+      markAsRead();
+    }
+  }, [modalIsOpen, selectedTicket, localUnread]);
+
+  useEffect(() => {
+    if (selectedTicket) {
+      setLocalUnread(selectedTicket.unread);
+    }
+  }, [selectedTicket]);
 
   return (
     <Modal

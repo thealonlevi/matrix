@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { fetchUserTickets } from '../../utils/api';
-import TicketDetailsModal from './TicketDetailsModal'; // Import the TicketDetailsModal component
-import './styles/UserSupport.css'; // Custom CSS for table and modal
+import { fetchUserTickets, updateTicketUnreadStatus } from '../../utils/api'; // Import the updateTicketUnreadStatus function
+import TicketDetailsModal from './TicketDetailsModal';
+import './styles/UserSupport.css';
 
 const UserSupport = ({ userEmail }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [selectedTicket, setSelectedTicket] = useState(null); // To store the currently selected ticket
+  const [selectedTicket, setSelectedTicket] = useState(null);
 
-  // Fetch user tickets on component mount
   useEffect(() => {
     const fetchTickets = async () => {
       try {
@@ -31,19 +30,32 @@ const UserSupport = ({ userEmail }) => {
     if (userEmail) fetchTickets();
   }, [userEmail]);
 
-  // Open the modal when a ticket is clicked
-  const openModal = (ticket) => {
-    setSelectedTicket(ticket); // Set the selected ticket data
-    setModalIsOpen(true); // Open the modal
+  // Open the modal when a ticket is clicked and mark as read if it was unread
+  const openModal = async (ticket) => {
+    setSelectedTicket(ticket);
+    setModalIsOpen(true);
+
+    // Update the unread status if it's true
+    if (ticket.unread) {
+      try {
+        await updateTicketUnreadStatus(ticket.ticket_id, false);
+        // Locally update the ticket to reflect the unread status change
+        setTickets((prevTickets) =>
+          prevTickets.map((t) =>
+            t.ticket_id === ticket.ticket_id ? { ...t, unread: false } : t
+          )
+        );
+      } catch (error) {
+        console.error('Failed to update ticket unread status:', error);
+      }
+    }
   };
 
-  // Close the modal
   const closeModal = () => {
-    setModalIsOpen(false); // Close the modal
-    setSelectedTicket(null); // Clear the selected ticket
+    setModalIsOpen(false);
+    setSelectedTicket(null);
   };
 
-  // Show a loading state
   if (loading) return <p>Loading tickets...</p>;
   if (error) return <p>{error}</p>;
 
@@ -64,7 +76,7 @@ const UserSupport = ({ userEmail }) => {
           </thead>
           <tbody>
             {tickets.map((ticket) => (
-              <tr key={ticket.ticket_id} onClick={() => openModal(ticket)} className="ticket-row">
+              <tr key={ticket.ticket_id} onClick={() => openModal(ticket)} className={`ticket-row ${ticket.unread ? 'ticket-unread' : ''}`}>
                 <td>{ticket.ticket_id}</td>
                 <td>{ticket.issue}</td>
                 <td>{ticket.status}</td>
@@ -75,7 +87,6 @@ const UserSupport = ({ userEmail }) => {
         </table>
       )}
 
-      {/* Render the TicketDetailsModal */}
       {selectedTicket && (
         <TicketDetailsModal
           modalIsOpen={modalIsOpen}

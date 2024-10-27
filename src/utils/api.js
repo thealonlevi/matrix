@@ -1946,3 +1946,42 @@ export const fetchUserTickets = async (userEmail) => {
     throw new Error('Failed to fetch user tickets. Please try again later.');
   }
 };
+
+// API URL
+const MATRIX_TICKET_UNREAD_STATUS_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_TicketUnreadStatus';
+
+/**
+ * Function to update the unread status of a ticket.
+ * @param {string} ticketId - The ID of the ticket to update.
+ * @param {boolean} unread - The unread status to set (true or false).
+ * @returns {Promise} - Resolves with a success message or rejects with an error message.
+ */
+export const updateTicketUnreadStatus = async (ticketId, unread) => {
+  try {
+    const response = await fetch(MATRIX_TICKET_UNREAD_STATUS_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ticket_id: ticketId,
+        unread_value: unread,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Unexpected response from the server.');
+    }
+
+    const data = await response.json();
+
+    if (data.statusCode===200) {
+      return data.body;  // Return the success message
+    } else {
+      throw new Error('Failed to update unread status.');
+    }
+  } catch (error) {
+    console.error('Error updating unread status:', error);
+    throw new Error('Failed to update unread status. Please try again later.');
+  }
+};

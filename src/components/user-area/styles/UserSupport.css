@@ -97,3 +97,13 @@
     background-color: #ff0000;
   }
   
+  /* Styles for unread tickets */
+.ticket-unread {
+  font-weight: bold;
+  color: #ff4444; /* Different color for unread tickets */
+  background-color: #2a2a2a; /* Darker background for contrast */
+}
+
+.ticket-unread:hover {
+  background-color: #444; /* Adjust hover effect */
+}
