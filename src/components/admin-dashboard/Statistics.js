@@ -22,7 +22,13 @@ const Statistics = () => {
         console.log("Revenue Cache: ", result);
 
         if (result) {
-          const sortedData = result.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+          // Sort data and parse all timestamps in UTC
+          const sortedData = result
+            .map(entry => ({
+              ...entry,
+              timestamp: new Date(entry.timestamp + 'Z'), // Appends 'Z' to ensure UTC interpretation
+            }))
+            .sort((a, b) => a.timestamp - b.timestamp);
           setCumulativeRevenue(sortedData);
         } else {
           throw new Error('Revenue data is missing or malformed');
@@ -40,31 +46,49 @@ const Statistics = () => {
 
   const filterAndCalculateCumulativeRevenue = () => {
     const now = new Date();
-    let filteredData = [];
-
-    const rangeLimit = {
-      '1 MONTH': 30,
-      '1 WEEK': 7,
-      '1 DAY': 1,
-    };
-
-    const limitDays = rangeLimit[timeRange];
-
-    if (cumulativeRevenue.length) {
-      filteredData = cumulativeRevenue.filter((entry) => {
-        const entryDate = new Date(entry.timestamp);
-        const dayDifference = Math.floor((now - entryDate) / (1000 * 60 * 60 * 24));
-        const matchesPaymentMethod = paymentMethod === 'All' || entry.paymentMethod === paymentMethod;
-        return dayDifference < limitDays && matchesPaymentMethod;
-      });
-    }
-
-    let cumulativeSum = 0;
-    const recalculatedRevenue = filteredData.map((entry) => {
-      cumulativeSum += parseFloat(entry.finalPrice);
-      return cumulativeSum;
+    const limitDays = { '1 MONTH': 30, '1 WEEK': 7, '1 DAY': 1 }[timeRange];
+    let filteredData = cumulativeRevenue.filter(entry => {
+      const dayDifference = (now - entry.timestamp) / (1000 * 60 * 60 * 24);
+      return dayDifference < limitDays && (paymentMethod === 'All' || entry.paymentMethod === paymentMethod);
     });
-    const dateLabels = filteredData.map((entry) => new Date(entry.timestamp).toLocaleDateString());
+
+    let recalculatedRevenue, dateLabels;
+
+    if (timeRange === '1 DAY') {
+      // Generate the last 24 hours based on the current UTC time
+      const hours = Array.from({ length: 24 }, (_, i) => {
+        const hour = new Date(now.getTime() - (23 - i) * 60 * 60 * 1000);
+        hour.setUTCHours(hour.getUTCHours(), 0, 0, 0); // Set to the start of the hour in UTC
+        return {
+          hour: hour.getUTCHours(),
+          label: hour.toISOString().split('T')[1].slice(0, 5), // Format as "HH:MM" in UTC
+          revenue: 0,
+        };
+      });
+
+      // Populate hourly revenue data
+      filteredData.forEach(entry => {
+        const entryHour = entry.timestamp.getUTCHours();
+        const hourIndex = hours.findIndex(hour => hour.hour === entryHour);
+        if (hourIndex !== -1) hours[hourIndex].revenue += parseFloat(entry.finalPrice);
+      });
+
+      // Calculate cumulative sum for each hour
+      let cumulativeSum = 0;
+      recalculatedRevenue = hours.map(entry => {
+        cumulativeSum += entry.revenue;
+        return cumulativeSum;
+      });
+      dateLabels = hours.map(entry => entry.label);
+    } else {
+      // Standard cumulative sum for 1 WEEK and 1 MONTH views
+      let cumulativeSum = 0;
+      recalculatedRevenue = filteredData.map(entry => {
+        cumulativeSum += parseFloat(entry.finalPrice);
+        return cumulativeSum;
+      });
+      dateLabels = filteredData.map(entry => entry.timestamp.toISOString().split('T')[0]); // Display date in UTC format
+    }
 
     return { recalculatedRevenue, dateLabels };
   };
@@ -98,7 +122,7 @@ const Statistics = () => {
       x: {
         title: {
           display: true,
-          text: 'Date',
+          text: timeRange === '1 DAY' ? 'Hour (UTC)' : 'Date',
         },
       },
       y: {
