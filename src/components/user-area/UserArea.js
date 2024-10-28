@@ -25,11 +25,13 @@ const UserArea = () => {
         setUserId(userId);
 
         // Fetch user info, including credits
-        const userInfoResponse = await userInfoUtil('POST', { email, fetchUserData: true });
+        const userInfoResponse = await userInfoUtil('POST', { email, fetchPublicUserData: true });
         console.log(userInfoResponse);
+        const parsedUserInfo = JSON.parse(userInfoResponse.body);
+        console.log("INFO: ", parsedUserInfo);
 
         // Ensure userCredits is a numeric value
-        const userCredits = userInfoResponse.credits ? parseFloat(userInfoResponse.credits) : 0;
+        const userCredits = parsedUserInfo.credits ? parseFloat(parsedUserInfo.credits) : 0;
         setUserCredits(userCredits);
       } catch (err) {
         console.error('Error fetching user data or credits:', err);

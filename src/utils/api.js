@@ -1985,3 +1985,37 @@ export const updateTicketUnreadStatus = async (ticketId, unread) => {
     throw new Error('Failed to update unread status. Please try again later.');
   }
 };
+
+// API URL
+const FETCH_REVENUE_CACHE_API_URL = 'https://p1hssnsfz2.execute-api.eu-west-1.amazonaws.com/prod/Matrix_FetchRevenueCache';
+
+/**
+ * Function to fetch the cached revenue data from the Matrix_FetchRevenueCache API.
+ * @returns {Promise<Array>} - Resolves with an array of cached revenue orders or rejects with an error message.
+ */
+export const fetchRevenueCache = async () => {
+  try {
+    const response = await fetch(FETCH_REVENUE_CACHE_API_URL, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch revenue cache.');
+    }
+
+    const data = await response.json();
+
+    // Check if the response contains the body with cached revenue data
+    if (data && data.body) {
+      return data.body; // Return the cached revenue data
+    } else {
+      throw new Error('No cached revenue data found in the response.');
+    }
+  } catch (error) {
+    console.error('Error fetching revenue cache:', error);
+    throw new Error('Failed to fetch revenue cache. Please try again later.');
+  }
+};
