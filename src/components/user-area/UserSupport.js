@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { fetchUserTickets, updateTicketUnreadStatus } from '../../utils/api'; // Import the updateTicketUnreadStatus function
+import { fetchUserTickets, updateTicketUnreadStatus } from '../../utils/api';
 import TicketDetailsModal from './TicketDetailsModal';
+import { getProductTitleById } from '../admin-dashboard/utils/adminUtils';
 import './styles/UserSupport.css';
 
 const UserSupport = ({ userEmail }) => {
@@ -15,7 +16,19 @@ const UserSupport = ({ userEmail }) => {
       try {
         const response = await fetchUserTickets(userEmail);
         const fetchedTickets = JSON.parse(response.body).tickets;
-        const sortedTickets = fetchedTickets.sort(
+
+        const ticketsWithTitles = await Promise.all(
+          fetchedTickets.map(async (ticket) => {
+            const [mainProductId] = ticket.product_id.split('/');
+            const productTitle = await getProductTitleById(mainProductId.toString());
+            return {
+              ...ticket,
+              productTitle: productTitle || `Product ID: ${ticket.product_id}`, // Fall back to ID if title not found
+            };
+          })
+        );
+
+        const sortedTickets = ticketsWithTitles.sort(
           (a, b) => new Date(b.lastModificationDate) - new Date(a.lastModificationDate)
         );
         setTickets(sortedTickets);
@@ -39,7 +52,6 @@ const UserSupport = ({ userEmail }) => {
     if (ticket.unread) {
       try {
         await updateTicketUnreadStatus(ticket.ticket_id, false);
-        // Locally update the ticket to reflect the unread status change
         setTickets((prevTickets) =>
           prevTickets.map((t) =>
             t.ticket_id === ticket.ticket_id ? { ...t, unread: false } : t
@@ -69,6 +81,7 @@ const UserSupport = ({ userEmail }) => {
           <thead>
             <tr>
               <th>Ticket ID</th>
+              <th>Product</th> {/* Updated to display Product Title */}
               <th>Issue</th>
               <th>Status</th>
               <th>Creation Date</th>
@@ -78,6 +91,7 @@ const UserSupport = ({ userEmail }) => {
             {tickets.map((ticket) => (
               <tr key={ticket.ticket_id} onClick={() => openModal(ticket)} className={`ticket-row ${ticket.unread ? 'ticket-unread' : ''}`}>
                 <td>{ticket.ticket_id}</td>
+                <td>{ticket.productTitle}</td> {/* Display Product Title */}
                 <td>{ticket.issue}</td>
                 <td>{ticket.status}</td>
                 <td>{ticket.creationDate}</td>
