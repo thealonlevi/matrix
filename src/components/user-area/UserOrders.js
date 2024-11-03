@@ -1,57 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import { fetchUserOrders } from '../../utils/api';
-import './styles/UserOrders.css'; // Ensure you style accordingly
-import FulfillmentHistoryModal from './user-orders-depth/FulfillmentHistoryModal'; // Corrected Modal Import Path
+import { FiEye, FiMoreHorizontal, FiCreditCard, FiArrowLeft, FiClock, FiDollarSign, FiMail, FiShoppingCart, FiUser } from 'react-icons/fi';
+import FulfillmentHistoryModal from './user-orders-depth/FulfillmentHistoryModal';
+import './styles/UserOrders.css';
 
 const UserOrders = ({ userEmail, userId }) => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [error, setError] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch user order history
   useEffect(() => {
     if (!userEmail || !userId) return;
 
-    const fetchUserOrdersData = async () => {
+    const fetchOrders = async () => {
       try {
-        const response = await fetchUserOrders({
-          email: userEmail,
-          userId: userId,
-        });
-
-        if (response.body) {
-          const responseBody = JSON.parse(response.body);
-          if (responseBody.orders) {
-            setOrders(responseBody.orders);
-            localStorage.setItem('userOrders', JSON.stringify(responseBody.orders));
-          } else {
-            setError('No orders found for this user.');
-          }
-        } else {
-          setError('Failed to fetch user orders.');
-        }
-      } catch (err) {
-        console.error('Error fetching user orders:', err);
+        const response = await fetchUserOrders({ email: userEmail, userId });
+        const ordersData = response.body ? JSON.parse(response.body).orders : null;
+        ordersData ? setOrders(ordersData) : setError('No orders found for this user.');
+        localStorage.setItem('userOrders', JSON.stringify(ordersData));
+      } catch (error) {
+        console.error('Error fetching user orders:', error);
         setError('An error occurred while fetching user orders.');
       }
     };
 
-    fetchUserOrdersData();
+    fetchOrders();
   }, [userEmail, userId]);
 
-  // When a user clicks on an order, it opens up the details
   const handleOrderClick = (orderId) => {
     const selected = orders.find((order) => order.orderId === orderId);
     setSelectedOrder(selected);
   };
 
-  // Open the Fulfillment History modal
   const openFulfillmentModal = () => {
     setIsModalOpen(true);
   };
 
-  // Back to Orders - close the details view
   const closeDetails = () => {
     setSelectedOrder(null);
   };
@@ -59,10 +44,9 @@ const UserOrders = ({ userEmail, userId }) => {
   return (
     <div className="user-orders">
       {error && <p className="error-message">{error}</p>}
-      
       <h2>Your Orders</h2>
-      
-      {/* Table layout for the orders */}
+      <div className="divider"></div>
+
       {!selectedOrder ? (
         <div className="orders-table-container">
           <table className="orders-table">
@@ -75,12 +59,12 @@ const UserOrders = ({ userEmail, userId }) => {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order, index) => (
-                <tr key={index} onClick={() => handleOrderClick(order.orderId)} className="order-row">
-                  <td>{order.orderId}</td>
-                  <td>${order.final_price}</td>
+              {orders.map((order) => (
+                <tr key={order.orderId} onClick={() => handleOrderClick(order.orderId)} className="order-row">
+                  <td><FiShoppingCart /> {order.orderId}</td>
+                  <td><FiDollarSign /> ${order.final_price}</td>
                   <td>{order.payment_status}</td>
-                  <td>{new Date(order.order_date).toLocaleString()}</td>
+                  <td><FiClock /> {new Date(order.order_date).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
@@ -88,28 +72,34 @@ const UserOrders = ({ userEmail, userId }) => {
         </div>
       ) : (
         <div className="order-details-section">
-          <div className="order-info-column">
-            <h3>Order Details for {selectedOrder.orderId}</h3>
-            <ul>
-              <li><strong>Order ID:</strong> {selectedOrder.orderId}</li>
-              <li><strong>Total Price:</strong> ${selectedOrder.total_price}</li>
-              <li><strong>Final Price:</strong> ${selectedOrder.final_price}</li>
-              <li><strong>Discount Amount:</strong> ${selectedOrder.discount_amount}</li>
-              <li><strong>Payment Method:</strong> {selectedOrder.payment_method}</li>
-              <li><strong>Payment Status:</strong> {selectedOrder.payment_status}</li>
-              <li><strong>Order Date:</strong> {new Date(selectedOrder.order_date).toLocaleString()}</li>
-              <li><strong>User ID:</strong> {selectedOrder.userId}</li>
-              <li><strong>User Email:</strong> {selectedOrder.user_email}</li>
-            </ul>
+          <h3>Order Details</h3>
+          
+          <div className="detail-box">
+            <h4>Pricing</h4>
+            <div className="detail-item"><FiDollarSign /> <strong>Total Price:</strong> ${selectedOrder.total_price}</div>
+            <div className="detail-item"><FiDollarSign /> <strong>Discount Amount:</strong> ${selectedOrder.discount_amount}</div>
+            <div className="detail-item"><FiDollarSign /> <strong>Final Price:</strong> ${selectedOrder.final_price}</div>
           </div>
 
-          <div className="order-additional-column">
-            <button onClick={openFulfillmentModal} className="view-fulfillment-btn">View Fulfillment History</button>
+          <div className="detail-box">
+            <h4>Order Info</h4>
+            <div className="detail-item"><FiShoppingCart /> <strong>Order ID:</strong> {selectedOrder.orderId}</div>
+            <div className="detail-item"><FiCreditCard /><strong>Payment Method:</strong> {selectedOrder.payment_method}</div>
+            <div className="detail-item"><FiMoreHorizontal/><strong>Payment Status:</strong> {selectedOrder.payment_status}</div>
+            <div className="detail-item"><FiClock /> <strong>Order Date:</strong> {new Date(selectedOrder.order_date).toLocaleString()}</div>
           </div>
 
-          <button onClick={closeDetails} className="back-to-orders">Back to Orders</button>
+          <div className="detail-box">
+            <h4>User Info</h4>
+            <div className="detail-item"><FiUser /> <strong>User ID:</strong> {selectedOrder.userId}</div>
+            <div className="detail-item"><FiMail /> <strong>User Email:</strong> {selectedOrder.user_email}</div>
+          </div>
 
-          {/* Fulfillment History Modal */}
+          <div className="button-group">
+            <button onClick={openFulfillmentModal} className="view-fulfillment-btn"><FiEye/> View Stock</button>
+            <button onClick={closeDetails} className="back-to-orders"><FiArrowLeft /> Back to Orders</button>
+          </div>
+
           {isModalOpen && (
             <FulfillmentHistoryModal 
               isOpen={isModalOpen} 
